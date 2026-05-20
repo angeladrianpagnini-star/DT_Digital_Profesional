@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DT Digital - Prototipo</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <button id="introAudioBtn" class="intro-audio-btn" type="button" aria-label="Activar audio de presentacion">
+      <span class="audio-icon" aria-hidden="true"></span>
+      <strong>Audio</strong>
+    </button>
+    <section id="styleScreen" class="style-screen">
+      <div class="style-card">
+        <img src="assets/menu-seleccion-juego.png" alt="Selecciona el estilo de juego DT">
+        <div class="style-actions" aria-label="Seleccion de estilo de juego">
+          <button data-game-style="strategy">DT: Estratega</button>
+          <button data-game-style="intensity">DT: Intensidad</button>
+        </div>
+      </div>
+    </section>
+    <section id="setupScreen" class="setup-screen">
+      <div class="setup-card">
+        <p class="eyebrow">Configurar partido</p>
+        <h1>DT Digital</h1>
+        <section class="setup-module">
+          <h2>Identificacion</h2>
+          <p class="setup-note">El perfil queda registrado en este dispositivo para validar cuenta, equipo, ranking y futuras competencias.</p>
+          <div class="login-grid">
+            <label>
+              Usuario
+              <input id="loginName" type="text" autocomplete="name" placeholder="Ayudante DT o DT">
+            </label>
+            <label>
+              Equipo unico
+              <input id="loginTeam" type="text" autocomplete="organization" placeholder="Nombre del equipo">
+            </label>
+            <label>
+              DNI
+              <input id="loginDni" type="text" inputmode="numeric" placeholder="Documento">
+            </label>
+            <label>
+              Telefono
+              <input id="loginPhone" type="tel" autocomplete="tel" placeholder="+54...">
+            </label>
+            <label>
+              Mail
+              <input id="loginEmail" type="email" autocomplete="email" placeholder="mail@dominio.com">
+            </label>
+            <label>
+              Direccion
+              <input id="loginAddress" type="text" autocomplete="street-address" placeholder="Direccion">
+            </label>
+            <label>
+              Pais
+              <input id="loginCountry" type="text" autocomplete="country-name" placeholder="Pais">
+            </label>
+            <label>
+              Codigo MFA
+              <input id="loginCode" type="text" inputmode="numeric" placeholder="000000">
+            </label>
+            <button id="loginBtn">Registrar / ingresar</button>
+            <button id="newProfileBtn" type="button">Nuevo perfil</button>
+          </div>
+          <p id="loginStatus" class="setup-status">Primero registra el usuario para habilitar modos de juego. Los registros quedan guardados por navegador/dispositivo.</p>
+          <div class="registered-list">
+            <span>Equipos registrados</span>
+            <div id="registeredProfiles"></div>
+          </div>
+        </section>
+        <h2>Modo</h2>
+        <div class="setup-options compact">
+          <button data-mode="local">1 vs 1 local</button>
+          <button data-mode="ai">1 vs Maquina</button>
+          <button data-mode="online">Online / enlace</button>
+          <button data-mode="league">Liga</button>
+        </div>
+        <section id="localPanel" class="setup-module mode-panel">
+          <h2>Jugador 2 local</h2>
+          <p class="setup-note">Para 1 vs 1 local el segundo DT debe estar registrado y autenticado por equipo unico + MFA.</p>
+          <div class="login-grid">
+            <label>
+              Equipo jugador 2
+              <input id="localP2TeamKey" type="text" placeholder="Nombre exacto del equipo">
+            </label>
+            <label>
+              Codigo MFA jugador 2
+              <input id="localP2Code" type="text" inputmode="numeric" placeholder="000000">
+            </label>
+            <button id="localP2AuthBtn">Validar jugador 2</button>
+          </div>
+          <p id="localP2Status" class="setup-status">Jugador 2 pendiente de autenticar.</p>
+        </section>
+        <section id="onlinePanel" class="setup-module mode-panel hidden">
+          <h2>Online / enlace</h2>
+          <p class="setup-note">Este modo no inicia partida directa: crea un vinculo para compartir o permite pegar uno recibido.</p>
+          <div class="login-grid">
+            <button id="createOnlineLinkBtn">Crear enlace de partida</button>
+            <label>
+              Enlace recibido
+              <input id="joinOnlineLink" type="text" placeholder="Pegar enlace">
+            </label>
+          </div>
+          <p id="onlineStatus" class="setup-status">Pendiente de sincronizacion online profesional.</p>
+        </section>
+        <section id="leaguePanel" class="setup-module mode-panel hidden">
+          <h2>Liga / torneo</h2>
+          <p class="setup-note">El administrador autenticado crea la competencia, invita equipos y define formato, llaves y fechas.</p>
+          <div class="login-grid">
+            <label>
+              Nombre liga
+              <input id="leagueName" type="text" placeholder="Liga DT">
+            </label>
+            <label>
+              Formato
+              <select id="leagueFormat">
+                <option value="fixture">Fixture todos contra todos</option>
+                <option value="knockout">Llaves eliminatorias</option>
+                <option value="local">Torneo local en un dispositivo</option>
+              </select>
+            </label>
+            <button id="createLeagueBtn">Crear liga</button>
+          </div>
+          <p id="leagueStatus" class="setup-status">Pendiente de backend: usuarios, equipos, fixture, tabla y ranking global.</p>
+        </section>
+        <h2>Dificultad IA</h2>
+        <div class="setup-options compact">
+          <button data-ai="easy">Facil</button>
+          <button data-ai="medium">Medio</button>
+          <button data-ai="hard">Dificil</button>
+        </div>
+        <h2>Formacion</h2>
+        <div class="setup-options compact">
+          <button data-formation="f433">4-3-3</button>
+          <button data-formation="f4222">4-2-2-2</button>
+          <button data-formation="f442">4-4-2</button>
+          <button data-formation="f4411">4-4-1-1</button>
+          <button data-formation="f32212">3-2-2-1-2</button>
+          <button data-formation="f3223">3-2-2-3</button>
+        </div>
+        <h2>Duracion</h2>
+        <p class="setup-note">La duracion solo inicia cancha en 1 vs 1 local o 1 vs Maquina.</p>
+        <div class="setup-options">
+          <button data-duration="5">5 minutos por tiempo</button>
+          <button data-duration="10">10 minutos por tiempo</button>
+          <button data-duration="15">15 minutos por tiempo</button>
+        </div>
+        <button id="openLockerSetupBtn" class="locker-open-btn" type="button">Entrar al vestuario</button>
+        <button id="prepareLineupBtn" class="locker-open-btn" type="button">Preparar alineacion en cancha</button>
+        <button id="styleBackBtn" class="locker-open-btn secondary" type="button">Volver a estilos</button>
+        <button id="startMatchBtn" class="start-match-btn" type="button">Iniciar partido</button>
+      </div>
+    </section>
+    <main class="app">
+      <section class="topbar">
+        <div>
+          <p class="eyebrow">DT Digital</p>
+          <h1>Mesa tactica</h1>
+        </div>
+        <div class="scoreboard">
+          <span id="teamAName">Azul</span>
+          <strong id="score">0 - 0</strong>
+          <span id="teamBName">Rojo</span>
+        </div>
+        <div class="timers">
+          <span id="halfLabel">Primer tiempo</span>
+          <span>Tiempo <strong id="matchTimer">05:00</strong></span>
+          <span>Turno ref. <strong id="turnTimer">15</strong></span>
+        </div>
+        <div class="profile-pill">
+          <span id="profileName">Invitado</span>
+          <strong id="profileRank">Rango inicial</strong>
+        </div>
+        <button id="audioBtn" class="icon-btn sound-btn" title="Activar sonido">SONIDO</button>
+        <button id="lockerBtn" class="icon-btn" title="Vestuario">VES</button>
+        <button id="startPreparedBtn" class="icon-btn start-prepared hidden" title="Iniciar partido">INICIO</button>
+        <button id="pauseBtn" class="icon-btn" title="Pausar o salir">ESC</button>
+      </section>
+
+      <section class="layout">
+        <aside class="panel left-panel">
+          <h2>Turno</h2>
+          <p id="turnLabel" class="turn-label">Equipo Azul</p>
+          <div class="selected-box">
+            <span>Ficha</span>
+            <strong id="selectedPiece">Selecciona una ficha</strong>
+          </div>
+          <div class="selected-box">
+            <span>Plantel</span>
+            <strong id="squadStatus">11 en cancha / 4 suplentes</strong>
+          </div>
+          <div class="actions">
+            <button data-action="move">Mover</button>
+            <button data-action="moveBall">Mover con balon</button>
+            <button data-action="pass">Pase</button>
+            <button data-action="shot">Remate</button>
+            <button id="endTurnBtn">Finalizar turno</button>
+          </div>
+          <div class="ability-box">
+            <span>Capacidades</span>
+            <div id="abilityGrid" class="ability-grid"></div>
+          </div>
+          <div class="ability-box">
+            <span>Referencia</span>
+            <div class="role-buttons">
+              <button data-role="ARQ">Arquero</button>
+              <button data-role="DEF">Defensor</button>
+              <button data-role="VOL">Volante</button>
+              <button data-role="EXT">Extremo</button>
+              <button data-role="MP">Media punta</button>
+              <button data-role="DEL">Delantero</button>
+            </div>
+          </div>
+          <div class="ability-box">
+            <span>Banco</span>
+            <div id="benchList" class="bench-list panel-bench"></div>
+          </div>
+          <h2>Historial</h2>
+          <ol id="log" class="log"></ol>
+        </aside>
+
+        <section class="stadium">
+          <div class="stands top-stands"></div>
+          <div class="table-wrap">
+            <div class="pitch" aria-label="Tablero DT Estratega">
+              <div class="keeper-row top-goal">
+                <button id="topKeeper" class="keeper-cell" data-keeper="red">ARQ</button>
+              </div>
+              <div id="board" class="board" aria-label="50 cuadrantes de cancha"></div>
+              <div class="keeper-row bottom-goal">
+                <button id="bottomKeeper" class="keeper-cell" data-keeper="blue">ARQ</button>
+              </div>
+            </div>
+          </div>
+          <div class="stands bottom-stands"></div>
+        </section>
+
+        <aside class="panel right-panel">
+          <h2>Cuenta</h2>
+          <div class="account-box">
+            <span>Login futuro</span>
+            <strong>Perfil, skins, cancha, indumentaria y ranking</strong>
+          </div>
+          <div class="play-card-stack">
+            <h2>Cartas especiales</h2>
+            <div id="specialCards" class="cards"></div>
+            <h2>Cartas de disputa</h2>
+            <div class="duel-buttons">
+              <button class="duel-card" data-duel="A">A</button>
+              <button class="duel-card" data-duel="B">B</button>
+              <button class="duel-card" data-duel="C">C</button>
+              <button class="duel-card" data-duel="D">D</button>
+            </div>
+            <h2>Zona de duelo disputa</h2>
+            <div id="duelPanel" class="duel-panel collapsed">
+              <div class="duel-card-preview mine">
+                <span>Frente propio</span>
+                <strong id="duelMine">-</strong>
+              </div>
+              <div class="versus">VS</div>
+              <div class="duel-card-preview rival">
+                <span id="duelRivalLabel">Dorso rival</span>
+                <strong id="duelRival">?</strong>
+              </div>
+              <p id="duelStatus">Sin disputa activa.</p>
+            </div>
+            <h2>Cartas de remate / arquero</h2>
+            <div class="shot-cards">
+              <button data-shot="1">1</button>
+              <button data-shot="2">2</button>
+              <button data-shot="3">3</button>
+              <button data-shot="4">4</button>
+            </div>
+            <h2>Zona de duelo remate / arquero</h2>
+            <div id="shotPanel" class="shot-panel">
+              <div class="duel-card-preview mine">
+                <span id="shotMineLabel">Remate</span>
+                <strong id="shotMine">-</strong>
+              </div>
+              <div class="versus">VS</div>
+              <div class="duel-card-preview rival">
+                <span id="shotRivalLabel">Dorso arquero</span>
+                <strong id="shotRival">?</strong>
+              </div>
+              <p id="shotStatus">Sin remate activo.</p>
+            </div>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <div id="gameBanner" class="game-banner hidden" aria-live="polite">
+      <div class="game-banner-card">
+        <strong id="gameBannerTitle">GOOOLLLL!!!</strong>
+        <span id="gameBannerText">Equipo Azul convierte.</span>
+      </div>
+    </div>
+    <audio id="crowdAudio" src="assets/tribuna-estadio.mp3" loop preload="auto"></audio>
+    <audio id="menuAudio" src="assets/presentacion-dt.mp3" loop preload="auto"></audio>
+    <audio id="lockerAudio" src="assets/vestuario-motivacion.mp3" loop preload="auto"></audio>
+    <audio id="goalAudio" src="assets/gol-principal.mp3" preload="auto"></audio>
+    <audio id="oleAudio" src="assets/ole.mp3" preload="auto"></audio>
+    <audio id="whistleAudio" src="assets/silbato.mp3" preload="auto"></audio>
+
+    <dialog id="pauseDialog">
+      <h2>Pausa</h2>
+      <p>Prototipo inicial para validar dinamica, tablero y reglas.</p>
+      <div class="dialog-actions">
+        <button id="resumeBtn">Continuar</button>
+        <button id="resetBtn">Reiniciar</button>
+        <button id="menuBtn">Menu de partido</button>
+        <button id="changeStyleBtn">Cambiar estilo</button>
+      </div>
+    </dialog>
+
+    <dialog id="changeDialog">
+      <h2>Cambios disponibles</h2>
+      <p>Despues del gol podes realizar cambios. El tiempo queda detenido hasta reanudar.</p>
+      <div class="dialog-actions">
+        <button id="lockerChangeBtn">Vestuario</button>
+        <button id="makeChangeBtn">Realizar cambio</button>
+        <button id="resumeAfterGoalBtn">Reanudar juego</button>
+      </div>
+    </dialog>
+
+    <dialog id="lockerDialog" class="locker-dialog">
+      <div class="locker-head">
+        <div>
+          <p class="eyebrow">Vestuario DT</p>
+          <h2>Equipo, tactica y tienda</h2>
+        </div>
+        <div class="locker-head-actions">
+          <button id="lockerAudioBtn" class="intro-audio-btn locker-audio-btn" type="button" aria-label="Silenciar audio de vestuario">
+            <span class="audio-icon" aria-hidden="true"></span>
+            <strong>Silencio</strong>
+          </button>
+          <button id="closeLockerBtn" class="icon-btn" type="button">X</button>
+        </div>
+      </div>
+      <div class="locker-grid">
+        <section class="locker-panel">
+          <h3>Visual de jugadores</h3>
+          <div class="locker-options">
+            <button data-player-visual="round">Ficha redonda</button>
+            <button data-player-visual="figure">Figura base</button>
+            <button data-player-visual="realistic" disabled title="Proximamente: pendiente de figura adecuada">Figura realista bloqueada</button>
+          </div>
+          <div class="locker-player-preview">
+            <span id="lockerPlayerPreview" class="locker-player figure">
+              <span class="locker-player-head"></span>
+              <span class="locker-player-neck"></span>
+              <span class="locker-player-body">DT</span>
+              <span class="locker-player-arms"></span>
+              <span class="locker-player-legs"></span>
+              <span class="locker-player-feet"></span>
+            </span>
+          </div>
+          <h3>Cancha / ambiente</h3>
+          <div class="locker-options field-options">
+            <button data-field-effect="sunny">Soleado</button>
+            <button data-field-effect="rain">Lluvia</button>
+            <button data-field-effect="night">Noche / luces</button>
+          </div>
+          <div class="tactics-panel embedded-tactics">
+            <h3>Pizarron tactico</h3>
+            <div class="locker-options tactic-team-options">
+              <button data-tactic-team="blue">Equipo 1</button>
+              <button data-tactic-team="red">Equipo 2</button>
+            </div>
+            <div class="locker-options tactic-options">
+              <button data-locker-tactic="f433">4-3-3</button>
+              <button data-locker-tactic="f4222">4-2-2-2</button>
+              <button data-locker-tactic="f442">4-4-2</button>
+              <button data-locker-tactic="f4411">4-4-1-1</button>
+              <button data-locker-tactic="f32212">3-2-2-1-2</button>
+              <button data-locker-tactic="f3223">3-2-2-3</button>
+              <button data-locker-tactic="personalizada">Personalizada</button>
+            </div>
+            <div id="tacticBoard" class="mini-pitch tactic-board" aria-label="Pizarron tactico editable"></div>
+          </div>
+        </section>
+        <section class="locker-panel">
+          <h3>Indumentaria</h3>
+          <div class="kit-preview-grid">
+            <div class="kit-preview" data-kit-preview="blue">
+              <span>Equipo 1</span>
+              <div class="kit-shirt"></div>
+              <div class="kit-shorts"></div>
+              <div class="kit-socks"></div>
+            </div>
+            <div class="kit-preview" data-kit-preview="red">
+              <span>Equipo 2</span>
+              <div class="kit-shirt"></div>
+              <div class="kit-shorts"></div>
+              <div class="kit-socks"></div>
+            </div>
+          </div>
+          <div class="kit-editor">
+            <strong>Camiseta</strong>
+            <div class="kit-swatches">
+              <button data-kit-team="blue" data-kit-part="kit" data-kit-color="#2177c7" style="--swatch:#2177c7"></button>
+              <button data-kit-team="blue" data-kit-part="kit" data-kit-color="#111111" style="--swatch:#111111"></button>
+              <button data-kit-team="blue" data-kit-part="kit" data-kit-color="#6ec6ff" style="--swatch:#6ec6ff"></button>
+              <button data-kit-team="blue" data-kit-part="kit" data-kit-color="#16a34a" style="--swatch:#16a34a"></button>
+              <button data-kit-team="blue" data-kit-part="kit" data-kit-color="#ffd23f" style="--swatch:#ffd23f"></button>
+              <button data-kit-team="blue" data-kit-part="kit" data-kit-color="repeating-linear-gradient(90deg, #ffffff 0 12px, #6ec6ff 12px 24px)" style="--swatch:repeating-linear-gradient(90deg, #ffffff 0 12px, #6ec6ff 12px 24px)"></button>
+              <button data-kit-team="red" data-kit-part="kit" data-kit-color="#d84343" style="--swatch:#d84343"></button>
+              <button data-kit-team="red" data-kit-part="kit" data-kit-color="#8b1030" style="--swatch:#8b1030"></button>
+              <button data-kit-team="red" data-kit-part="kit" data-kit-color="#f07a20" style="--swatch:#f07a20"></button>
+              <button data-kit-team="red" data-kit-part="kit" data-kit-color="#ec4899" style="--swatch:#ec4899"></button>
+              <button data-kit-team="red" data-kit-part="kit" data-kit-color="repeating-linear-gradient(90deg, #ffffff 0 12px, #d84343 12px 24px)" style="--swatch:repeating-linear-gradient(90deg, #ffffff 0 12px, #d84343 12px 24px)"></button>
+              <button data-kit-team="red" data-kit-part="kit" data-kit-color="repeating-linear-gradient(90deg, #f7d51d 0 12px, #1f3d8a 12px 24px)" style="--swatch:repeating-linear-gradient(90deg, #f7d51d 0 12px, #1f3d8a 12px 24px)"></button>
+            </div>
+            <strong>Pantalon</strong>
+            <div class="kit-swatches">
+              <button data-kit-team="blue" data-kit-part="shorts" data-kit-color="#14528f" style="--swatch:#14528f"></button>
+              <button data-kit-team="blue" data-kit-part="shorts" data-kit-color="#101010" style="--swatch:#101010"></button>
+              <button data-kit-team="blue" data-kit-part="shorts" data-kit-color="#f2f5ee" style="--swatch:#f2f5ee"></button>
+              <button data-kit-team="red" data-kit-part="shorts" data-kit-color="#9d252b" style="--swatch:#9d252b"></button>
+              <button data-kit-team="red" data-kit-part="shorts" data-kit-color="#101010" style="--swatch:#101010"></button>
+              <button data-kit-team="red" data-kit-part="shorts" data-kit-color="#f2f5ee" style="--swatch:#f2f5ee"></button>
+            </div>
+            <strong>Medias</strong>
+            <div class="kit-swatches">
+              <button data-kit-team="blue" data-kit-part="socks" data-kit-color="#ffffff" style="--swatch:#ffffff"></button>
+              <button data-kit-team="blue" data-kit-part="socks" data-kit-color="#2177c7" style="--swatch:#2177c7"></button>
+              <button data-kit-team="blue" data-kit-part="socks" data-kit-color="#111111" style="--swatch:#111111"></button>
+              <button data-kit-team="red" data-kit-part="socks" data-kit-color="#ffffff" style="--swatch:#ffffff"></button>
+              <button data-kit-team="red" data-kit-part="socks" data-kit-color="#d84343" style="--swatch:#d84343"></button>
+              <button data-kit-team="red" data-kit-part="socks" data-kit-color="#111111" style="--swatch:#111111"></button>
+            </div>
+          </div>
+          <div class="skin-shop-preview">
+            <div><strong>Pack Local</strong><span>Base</span></div>
+            <div><strong>Pack Visitante</strong><span>Bloqueado</span></div>
+            <div><strong>Estadio Noche</strong><span>Futuro premio</span></div>
+            <div><strong>Vestuario Pro</strong><span>Futuro skin</span></div>
+          </div>
+        </section>
+        <section class="locker-panel changes-panel">
+          <div class="locker-bench-tools">
+            <h4>Suplentes y cambios</h4>
+            <div id="lockerBenchList" class="locker-bench-list"></div>
+            <div class="change-picker">
+              <label>
+                Sale
+                <select id="lockerOutSelect"></select>
+              </label>
+              <label>
+                Entra
+                <select id="lockerInSelect"></select>
+              </label>
+              <button id="lockerApplyChangeBtn" type="button">Preparar cambio</button>
+            </div>
+          </div>
+        </section>
+        <section class="locker-panel">
+          <h3>Charla tecnica</h3>
+          <textarea id="teamTalkInput" rows="7" placeholder="Mensaje del DT para sus jugadores..."></textarea>
+          <div class="dialog-actions">
+            <button id="saveTeamTalkBtn" type="button">Guardar charla</button>
+            <button id="saveLockerBtn" type="button">Guardar vestuario</button>
+          </div>
+          <p id="lockerStatus" class="setup-status">Las charlas quedan en el registro local del equipo.</p>
+        </section>
+      </div>
+    </dialog>
+
+    <dialog id="secretDialog">
+      <h2 id="secretTitle">Pasar dispositivo</h2>
+      <p id="secretText">Carta elegida. Entrega el dispositivo al rival para que elija sin ver la carta anterior.</p>
+      <div class="dialog-actions">
+        <button id="secretContinueBtn">Continuar</button>
+      </div>
+    </dialog>
+
+    <script src="app.js"></script>
+  </body>
+</html>
