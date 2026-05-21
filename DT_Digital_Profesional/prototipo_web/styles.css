@@ -907,7 +907,7 @@ h3 {
 
 .stadium {
   display: grid;
-  grid-template-rows: 92px auto 92px;
+  grid-template-rows: 112px auto 92px;
   min-height: calc(100vh - 120px);
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -922,6 +922,58 @@ h3 {
 
 .bottom-stands {
   transform: rotate(180deg);
+}
+
+.ad-strip {
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(92px, 1fr));
+  gap: 8px;
+  align-items: center;
+  padding: 10px 12px;
+}
+
+.ad-strip img,
+.ad-placeholder {
+  width: 100%;
+  height: 78px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: #111a16;
+  box-shadow: inset 0 0 0 1px rgba(243, 187, 69, 0.08), 0 8px 18px rgba(0, 0, 0, 0.28);
+}
+
+.ad-placeholder {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 2px;
+  padding: 6px;
+  color: #f8f0d0;
+  text-align: center;
+  text-transform: uppercase;
+  background:
+    radial-gradient(circle at 50% 0, rgba(243, 187, 69, 0.18), transparent 45%),
+    linear-gradient(145deg, #17261f, #0b100e);
+}
+
+.ad-placeholder strong {
+  font-size: clamp(13px, 1.3vw, 18px);
+  line-height: 1;
+}
+
+.ad-placeholder span {
+  color: var(--line);
+  font-size: clamp(12px, 1.1vw, 15px);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.ad-placeholder small {
+  color: #d8dfd6;
+  font-size: clamp(9px, 0.85vw, 12px);
+  font-weight: 700;
+  line-height: 1.1;
 }
 
 .table-wrap {
@@ -2785,8 +2837,25 @@ dialog::backdrop {
 
   .stadium {
     order: 1;
-    grid-template-rows: 38px auto 38px;
+    grid-template-rows: 68px auto 38px;
     min-height: auto;
+  }
+
+  .ad-strip {
+    grid-template-columns: repeat(5, minmax(112px, 1fr));
+    gap: 6px;
+    padding: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ad-strip img,
+  .ad-placeholder {
+    height: 54px;
+  }
+
+  .ad-placeholder small {
+    display: none;
   }
 
   .left-panel {
