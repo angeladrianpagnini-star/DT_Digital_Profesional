@@ -398,6 +398,49 @@ h3 {
   color: var(--ink);
 }
 
+.floating-match-hud {
+  position: fixed;
+  top: 12px;
+  right: 92px;
+  z-index: 82;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 46px;
+  padding: 8px 12px;
+  border: 2px solid rgba(246, 192, 65, 0.85);
+  border-radius: 999px;
+  background: rgba(15, 23, 20, 0.88);
+  color: #edf3df;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.36);
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+}
+
+.floating-match-hud.hidden {
+  display: none;
+}
+
+.floating-match-hud span {
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.floating-match-hud strong {
+  min-width: 74px;
+  color: var(--line);
+  font-size: 24px;
+  line-height: 1;
+  text-align: center;
+}
+
+.floating-match-hud b {
+  color: var(--ink);
+  font-weight: 800;
+}
+
 .profile-pill {
   display: grid;
   gap: 2px;
@@ -2448,6 +2491,31 @@ dialog::backdrop {
 
   .scoreboard strong {
     font-size: 24px;
+  }
+
+  .floating-match-hud {
+    top: 10px;
+    right: 10px;
+    grid-template-columns: auto auto;
+    gap: 4px 8px;
+    min-height: 42px;
+    max-width: calc(100vw - 20px);
+    padding: 7px 10px;
+    border-width: 1px;
+  }
+
+  .floating-match-hud span:first-child {
+    grid-column: 1 / -1;
+    text-align: center;
+  }
+
+  .floating-match-hud strong {
+    min-width: 58px;
+    font-size: 21px;
+  }
+
+  .floating-match-hud span {
+    font-size: 11px;
   }
 
   .timers,

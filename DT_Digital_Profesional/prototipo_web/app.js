@@ -9,6 +9,10 @@ const scoreEl = document.querySelector("#score");
 const matchTimerEl = document.querySelector("#matchTimer");
 const halfLabelEl = document.querySelector("#halfLabel");
 const turnTimerEl = document.querySelector("#turnTimer");
+const floatingMatchHudEl = document.querySelector("#floatingMatchHud");
+const floatingHalfEl = document.querySelector("#floatingHalf");
+const floatingScoreEl = document.querySelector("#floatingScore");
+const floatingTimerEl = document.querySelector("#floatingTimer");
 const logEl = document.querySelector("#log");
 const specialCardsEl = document.querySelector("#specialCards");
 const quickControlsEl = document.querySelector("#quickControls");
@@ -845,9 +849,19 @@ function renderHud() {
   teamBNameEl.textContent = teamLabel("red");
   turnLabelEl.textContent = `Turno: ${teamLabel(state.currentTeam)}`;
   scoreEl.textContent = `${state.score.blue} - ${state.score.red}`;
-  halfLabelEl.textContent = state.half === 1 ? "Primer tiempo" : "Segundo tiempo";
-  matchTimerEl.textContent = formatVisibleMatchTime();
+  const halfText = state.half === 1 ? "Primer tiempo" : "Segundo tiempo";
+  const timerText = formatVisibleMatchTime();
+  const scoreText = `${state.score.blue} - ${state.score.red}`;
+  halfLabelEl.textContent = halfText;
+  matchTimerEl.textContent = timerText;
   turnTimerEl.textContent = state.turnSeconds;
+  if (floatingMatchHudEl) {
+    const showFloatingHud = Boolean(state && setupScreenEl.classList.contains("hidden") && styleScreenEl.classList.contains("hidden"));
+    floatingMatchHudEl.classList.toggle("hidden", !showFloatingHud);
+    floatingHalfEl.textContent = lineupEditing ? "Previa" : state.finished ? "Final" : halfText;
+    floatingScoreEl.textContent = scoreText;
+    floatingTimerEl.textContent = timerText;
+  }
   if (startPreparedBtn) {
     startPreparedBtn.classList.toggle("hidden", !lineupEditing);
   }
