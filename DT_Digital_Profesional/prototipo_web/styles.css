@@ -814,6 +814,8 @@ h3 {
 
 :root.lineup-editing .piece {
   cursor: grab;
+  touch-action: none;
+  user-select: none;
 }
 
 :root.lineup-editing .piece:active {
@@ -822,6 +824,7 @@ h3 {
 
 :root.lineup-editing .board {
   box-shadow: 0 0 0 5px rgba(243, 187, 69, 0.42);
+  touch-action: none;
 }
 
 .field-lines {
@@ -1408,7 +1411,7 @@ h3 {
 .game-banner {
   position: fixed;
   inset: 0;
-  z-index: 20;
+  z-index: 120;
   display: grid;
   place-items: center;
   pointer-events: none;
@@ -2115,7 +2118,7 @@ dialog::backdrop {
 .quick-controls {
   position: fixed;
   inset: 0;
-  z-index: 18;
+  z-index: 90;
   display: none;
   pointer-events: none;
 }
@@ -2148,7 +2151,8 @@ dialog::backdrop {
 
 .quick-special,
 .quick-shot {
-  top: 63%;
+  top: auto;
+  bottom: 18%;
 }
 
 .quick-toggle {
@@ -2172,6 +2176,8 @@ dialog::backdrop {
   display: none;
   min-width: 174px;
   max-width: min(76vw, 360px);
+  max-height: min(72vh, 520px);
+  overflow-y: auto;
   padding: 8px;
   gap: 7px;
   background: rgba(15, 23, 20, 0.96);
@@ -2211,7 +2217,7 @@ dialog::backdrop {
 
 .quick-card-grid {
   grid-template-columns: repeat(2, minmax(64px, 1fr));
-  min-width: 158px;
+  min-width: min(340px, 76vw);
 }
 
 .quick-card-grid button {
@@ -2220,6 +2226,44 @@ dialog::backdrop {
   border: 3px solid var(--line);
   color: #111815;
   font-size: 28px;
+}
+
+.quick-reveal-panel {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 8px;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(243, 187, 69, 0.35);
+}
+
+.quick-reveal-panel h3 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 14px;
+}
+
+.quick-reveal-cards {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 7px;
+  align-items: center;
+}
+
+.quick-reveal-panel .duel-card-preview {
+  min-height: 74px;
+  padding: 6px;
+}
+
+.quick-reveal-panel .duel-card-preview strong {
+  font-size: 26px;
+}
+
+.quick-reveal-panel p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.25;
 }
 
 @media (max-width: 1050px) {
@@ -2515,12 +2559,14 @@ dialog::backdrop {
 
   .quick-special,
   .quick-shot {
-    top: 58%;
+    top: auto;
+    bottom: 12%;
   }
 
   .quick-panel {
     min-width: 156px;
     max-width: min(72vw, 320px);
+    max-height: 68vh;
     padding: 7px;
   }
 
@@ -2532,6 +2578,14 @@ dialog::backdrop {
   .quick-card-grid button {
     min-height: 60px;
     font-size: 25px;
+  }
+
+  .quick-reveal-cards {
+    gap: 5px;
+  }
+
+  .quick-reveal-panel .duel-card-preview {
+    min-height: 68px;
   }
 }
 
@@ -2568,5 +2622,9 @@ dialog::backdrop {
 
   .quick-panel {
     max-width: calc(100vw - 68px);
+  }
+
+  .quick-card-grid {
+    min-width: min(280px, calc(100vw - 68px));
   }
 }

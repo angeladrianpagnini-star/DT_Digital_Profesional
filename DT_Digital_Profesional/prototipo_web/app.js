@@ -13,6 +13,15 @@ const logEl = document.querySelector("#log");
 const specialCardsEl = document.querySelector("#specialCards");
 const quickControlsEl = document.querySelector("#quickControls");
 const quickSpecialCardsEl = document.querySelector("#quickSpecialCards");
+const quickDuelMineEl = document.querySelector("#quickDuelMine");
+const quickDuelRivalEl = document.querySelector("#quickDuelRival");
+const quickDuelRivalLabelEl = document.querySelector("#quickDuelRivalLabel");
+const quickDuelStatusEl = document.querySelector("#quickDuelStatus");
+const quickShotMineEl = document.querySelector("#quickShotMine");
+const quickShotMineLabelEl = document.querySelector("#quickShotMineLabel");
+const quickShotRivalEl = document.querySelector("#quickShotRival");
+const quickShotRivalLabelEl = document.querySelector("#quickShotRivalLabel");
+const quickShotStatusEl = document.querySelector("#quickShotStatus");
 const benchListEl = document.querySelector("#benchList");
 const abilityGridEl = document.querySelector("#abilityGrid");
 const duelMineEl = document.querySelector("#duelMine");
@@ -476,6 +485,7 @@ function render() {
   renderShotCards();
   renderShotPanel();
   renderDuelPanel();
+  renderQuickRevealPanels();
   renderLog();
 }
 
@@ -733,6 +743,34 @@ function renderQuickActionState() {
     button.classList.toggle("kickoff-only", state.kickoffPassRequired && action === "pass");
     button.classList.toggle("priority", Boolean(selected && hasBall(selected) && action === "shot" && getPreferredAction(selected) === "shot"));
   });
+}
+
+function syncQuickPreview(sourceElement, targetElement) {
+  if (!sourceElement || !targetElement) return;
+  targetElement.className = sourceElement.className;
+}
+
+function renderQuickRevealPanels() {
+  if (!quickControlsEl) return;
+
+  if (quickDuelMineEl) {
+    quickDuelMineEl.textContent = duelMineEl.textContent;
+    quickDuelRivalEl.textContent = duelRivalEl.textContent;
+    quickDuelRivalLabelEl.textContent = duelRivalLabelEl.textContent;
+    quickDuelStatusEl.textContent = duelStatusEl.textContent;
+    syncQuickPreview(duelMineEl.closest(".duel-card-preview"), document.querySelector("#quickDuelMineCard"));
+    syncQuickPreview(duelRivalEl.closest(".duel-card-preview"), document.querySelector("#quickDuelRivalCard"));
+  }
+
+  if (quickShotMineEl) {
+    quickShotMineEl.textContent = shotMineEl.textContent;
+    quickShotMineLabelEl.textContent = shotMineLabelEl.textContent;
+    quickShotRivalEl.textContent = shotRivalEl.textContent;
+    quickShotRivalLabelEl.textContent = shotRivalLabelEl.textContent;
+    quickShotStatusEl.textContent = shotStatusEl.textContent;
+    syncQuickPreview(shotMineEl.closest(".duel-card-preview"), document.querySelector("#quickShotMineCard"));
+    syncQuickPreview(shotRivalEl.closest(".duel-card-preview"), document.querySelector("#quickShotRivalCard"));
+  }
 }
 
 function renderHud() {
