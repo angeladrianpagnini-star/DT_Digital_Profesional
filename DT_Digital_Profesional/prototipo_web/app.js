@@ -497,6 +497,7 @@ function newGame() {
 function render() {
   introAudioBtn?.classList.toggle("hidden", setupScreenEl.classList.contains("hidden") && !lockerDialog?.open);
   document.documentElement.classList.toggle("lineup-editing", lineupEditing);
+  if (!lineupEditing) document.documentElement.classList.remove("lineup-dragging");
   renderBoard();
   renderHud();
   renderCards();
@@ -614,6 +615,7 @@ function startLineupPieceDrag(event, piece) {
     startY: event.clientY,
     moved: false
   };
+  document.documentElement.classList.add("lineup-dragging");
   event.currentTarget.setPointerCapture(event.pointerId);
   event.currentTarget.addEventListener("pointermove", moveLineupPieceDrag);
   event.currentTarget.addEventListener("pointerup", stopLineupPieceDrag, { once: true });
@@ -630,6 +632,7 @@ function moveLineupPieceDrag(event) {
 
 function stopLineupPieceDrag(event) {
   event.currentTarget.removeEventListener("pointermove", moveLineupPieceDrag);
+  document.documentElement.classList.remove("lineup-dragging");
   if (!draggingLineupPiece) return;
   const dragged = draggingLineupPiece;
   draggingLineupPiece = null;
@@ -3560,6 +3563,9 @@ function prepareLineupOnField() {
   switchAudioScene("match");
   addLog("Modo alineacion: arrastra los jugadores antes de iniciar el partido.");
   render();
+  window.setTimeout(() => {
+    document.querySelector(".stadium")?.scrollIntoView({ block: "start", inline: "center" });
+  }, 80);
 }
 
 function startPreparedLineupGame() {
