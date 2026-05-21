@@ -21,7 +21,7 @@
     </button>
     <section id="styleScreen" class="style-screen">
       <div class="style-card">
-        <img src="assets/menu-seleccion-juego.png" alt="Selecciona el estilo de juego DT" aria-hidden="true">
+        <img src="assets/menu-seleccion-juego.png" alt="" aria-hidden="true">
         <div class="style-copy" aria-hidden="true">
           <strong class="style-logo">DT</strong>
           <p id="stylePrompt">Selecciona el estilo de juego:</p>
@@ -296,10 +296,10 @@
             <div id="specialCards" class="cards"></div>
             <h2>Cartas de disputa</h2>
             <div class="duel-buttons">
-              <button class="duel-card" data-duel="A">A</button>
-              <button class="duel-card" data-duel="B">B</button>
-              <button class="duel-card" data-duel="C">C</button>
-              <button class="duel-card" data-duel="D">D</button>
+              <button class="duel-card notranslate" data-duel="A" translate="no">A</button>
+              <button class="duel-card notranslate" data-duel="B" translate="no">B</button>
+              <button class="duel-card notranslate" data-duel="C" translate="no">C</button>
+              <button class="duel-card notranslate" data-duel="D" translate="no">D</button>
             </div>
             <h2>Zona de duelo disputa</h2>
             <div id="duelPanel" class="duel-panel collapsed">
@@ -339,9 +339,9 @@
       </section>
     </main>
 
-    <nav id="quickControls" class="quick-controls" aria-label="Controles rapidos de cancha">
+    <nav id="quickControls" class="quick-controls notranslate" aria-label="Controles rapidos de cancha" translate="no">
       <div class="quick-cluster quick-left quick-move">
-        <button class="quick-toggle" type="button" data-quick-menu="move" aria-expanded="false">M</button>
+        <button class="quick-toggle" type="button" data-quick-menu="move" data-label="M" aria-expanded="false">M</button>
         <div class="quick-panel" data-quick-panel="move">
           <button type="button" data-quick-action="move">Mover</button>
           <button type="button" data-quick-action="moveBall">Mover con balon</button>
@@ -351,11 +351,11 @@
         </div>
       </div>
       <div class="quick-cluster quick-left quick-special">
-        <button class="quick-toggle" type="button" data-quick-menu="special" aria-expanded="false">CE</button>
+        <button class="quick-toggle" type="button" data-quick-menu="special" data-label="CE" aria-expanded="false">CE</button>
         <div id="quickSpecialCards" class="quick-panel" data-quick-panel="special"></div>
       </div>
       <div class="quick-cluster quick-right quick-duel">
-        <button class="quick-toggle" type="button" data-quick-menu="duel" aria-expanded="false">D</button>
+        <button class="quick-toggle" type="button" data-quick-menu="duel" data-label="D" aria-expanded="false">D</button>
         <div class="quick-panel quick-card-grid" data-quick-panel="duel">
           <button type="button" data-quick-duel="A">A</button>
           <button type="button" data-quick-duel="B">B</button>
@@ -379,7 +379,7 @@
         </div>
       </div>
       <div class="quick-cluster quick-right quick-shot">
-        <button class="quick-toggle" type="button" data-quick-menu="shot" aria-expanded="false">R</button>
+        <button class="quick-toggle" type="button" data-quick-menu="shot" data-label="R" aria-expanded="false">R</button>
         <div class="quick-panel quick-card-grid" data-quick-panel="shot">
           <button type="button" data-quick-shot="1">1</button>
           <button type="button" data-quick-shot="2">2</button>

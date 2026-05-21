@@ -185,13 +185,7 @@ body:not(.show-language-switch) .language-switch {
 }
 
 .style-card img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0.08;
-  filter: saturate(0.6);
+  display: none;
 }
 
 .style-copy {
@@ -2441,9 +2435,20 @@ dialog::backdrop {
   border-radius: 50%;
   background: var(--line);
   color: #15120b;
+  font-size: 0;
   font-weight: 900;
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.42);
   cursor: pointer;
+}
+
+.quick-toggle::after {
+  content: attr(data-label);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.quick-toggle[data-label="CE"]::after {
+  font-size: 17px;
 }
 
 .quick-toggle[aria-expanded="true"] {
@@ -2513,6 +2518,21 @@ dialog::backdrop {
   background: #eef4df;
   border: 3px solid var(--line);
   color: #111815;
+  font-size: 28px;
+}
+
+.duel-card,
+[data-quick-duel] {
+  font-size: 0 !important;
+}
+
+.duel-card::after {
+  content: attr(data-duel);
+  font-size: 30px;
+}
+
+[data-quick-duel]::after {
+  content: attr(data-quick-duel);
   font-size: 28px;
 }
 
