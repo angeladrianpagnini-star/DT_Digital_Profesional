@@ -541,6 +541,27 @@ function getNeutralForwardSpot(team, half = state?.half || 1) {
   };
 }
 
+function pushOpponentOutsideKickoffCircle(kickingTeam) {
+  const opponent = getOpponentTeam(kickingTeam);
+  const centerX = (board.width - 1) / 2;
+  const centerY = (board.height - 1) / 2;
+  const horizontalRadius = setupSelection.gameStyle === "intensity" ? 2.2 : 1.25;
+  const verticalRadius = setupSelection.gameStyle === "intensity" ? 3.2 : 1.75;
+  const ownGoal = getGoalZoneForHalf(opponent);
+  const limitY = ownGoal.y < 0
+    ? Math.max(0, Math.floor(board.height / 2) - 2)
+    : Math.min(board.height - 1, Math.ceil(board.height / 2) + 1);
+
+  state.pieces
+    .filter(piece => piece.team === opponent && piece.status === "field" && piece.type !== "ARQ")
+    .forEach(piece => {
+      const insideCircle = Math.abs(piece.x - centerX) <= horizontalRadius
+        && Math.abs(piece.y - centerY) <= verticalRadius;
+      if (!insideCircle) return;
+      piece.y = ownGoal.y < 0 ? Math.min(piece.y, limitY) : Math.max(piece.y, limitY);
+    });
+}
+
 function makeSquad(team, prefix) {
   const keeperY = team === "blue" ? board.height : -1;
   const fieldRows = getFormationPositions(team);
@@ -590,6 +611,7 @@ function placeKickoffPlayer(team) {
   state.ball.y = kickoff.y;
   selectedPieceId = kickoff.id;
   selectedAction = "pass";
+  pushOpponentOutsideKickoffCircle(team);
   return kickoff;
 }
 
