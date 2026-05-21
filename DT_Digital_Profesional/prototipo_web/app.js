@@ -148,7 +148,32 @@ const uiText = {
     history: "Historial",
     specialCards: "Cartas especiales",
     duelCards: "Cartas de disputa",
-    shotCards: "Cartas de remate / arquero"
+    shotCards: "Cartas de remate / arquero",
+    duelZone: "Zona de duelo disputa",
+    shotZone: "Zona de duelo remate / arquero",
+    selectPiece: "Selecciona una ficha",
+    fieldPlayers: "en cancha",
+    substitutes: "suplentes",
+    roleARQ: "Arquero",
+    roleDEF: "Defensor",
+    roleVOL: "Volante",
+    roleEXT: "Extremo",
+    roleMP: "Media punta",
+    roleDEL: "Delantero",
+    substitute: "suplente",
+    skillCard: "Jugada Habilidosa",
+    longShotCard: "Remate Larga Distancia",
+    secondMoveCard: "Segundo Movimiento",
+    ownFront: "Frente propio",
+    rivalBack: "Dorso rival",
+    rivalFront: "Frente rival",
+    shooterBack: "Dorso rematador",
+    shooterFront: "Frente rematador",
+    keeperBack: "Dorso arquero",
+    keeperFront: "Frente arquero",
+    shotLabel: "Remate",
+    noDuel: "Sin disputa activa.",
+    noShot: "Sin remate activo."
   },
   en: {
     language: "Language",
@@ -174,7 +199,32 @@ const uiText = {
     history: "History",
     specialCards: "Special cards",
     duelCards: "Duel cards",
-    shotCards: "Shot / keeper cards"
+    shotCards: "Shot / keeper cards",
+    duelZone: "Duel reveal zone",
+    shotZone: "Shot / keeper reveal zone",
+    selectPiece: "Select a piece",
+    fieldPlayers: "on field",
+    substitutes: "subs",
+    roleARQ: "Keeper",
+    roleDEF: "Defender",
+    roleVOL: "Midfielder",
+    roleEXT: "Winger",
+    roleMP: "Attacking mid",
+    roleDEL: "Forward",
+    substitute: "sub",
+    skillCard: "Skill play",
+    longShotCard: "Long-range shot",
+    secondMoveCard: "Second move",
+    ownFront: "Your front",
+    rivalBack: "Rival back",
+    rivalFront: "Rival front",
+    shooterBack: "Shooter back",
+    shooterFront: "Shooter front",
+    keeperBack: "Keeper back",
+    keeperFront: "Keeper front",
+    shotLabel: "Shot",
+    noDuel: "No active duel.",
+    noShot: "No active shot."
   },
   pt: {
     language: "Idioma",
@@ -200,7 +250,32 @@ const uiText = {
     history: "Historico",
     specialCards: "Cartas especiais",
     duelCards: "Cartas de disputa",
-    shotCards: "Cartas de chute / goleiro"
+    shotCards: "Cartas de chute / goleiro",
+    duelZone: "Zona de duelo",
+    shotZone: "Zona de chute / goleiro",
+    selectPiece: "Selecione uma peca",
+    fieldPlayers: "em campo",
+    substitutes: "reservas",
+    roleARQ: "Goleiro",
+    roleDEF: "Defensor",
+    roleVOL: "Meio-campo",
+    roleEXT: "Ponta",
+    roleMP: "Meia atacante",
+    roleDEL: "Atacante",
+    substitute: "reserva",
+    skillCard: "Jogada habilidosa",
+    longShotCard: "Chute de longa distancia",
+    secondMoveCard: "Segundo movimento",
+    ownFront: "Frente proprio",
+    rivalBack: "Verso rival",
+    rivalFront: "Frente rival",
+    shooterBack: "Verso atacante",
+    shooterFront: "Frente atacante",
+    keeperBack: "Verso goleiro",
+    keeperFront: "Frente goleiro",
+    shotLabel: "Chute",
+    noDuel: "Sem disputa ativa.",
+    noShot: "Sem chute ativo."
   }
 };
 const crowdTracks = ["assets/tribuna-estadio.mp3"];
@@ -491,9 +566,15 @@ function makeSquad(team, prefix) {
 }
 
 function placeKickoffPlayer(team) {
-  const kickoff = state.pieces.find(piece => piece.team === team && piece.type === "DEL" && piece.status === "field");
-  if (!kickoff) return null;
   const spot = getKickoffSpot(team);
+  const kickoff = state.pieces
+    .filter(piece => piece.team === team && piece.type === "DEL" && piece.status === "field")
+    .sort((a, b) => {
+      const aDistance = Math.abs(a.x - spot.x) + Math.abs(a.y - spot.y);
+      const bDistance = Math.abs(b.x - spot.x) + Math.abs(b.y - spot.y);
+      return aDistance - bDistance;
+    })[0];
+  if (!kickoff) return null;
   kickoff.x = spot.x;
   kickoff.y = spot.y;
   state.ball.ownerId = kickoff.id;
@@ -639,7 +720,7 @@ function renderBoard() {
     pieceEl.className = `piece ${piece.team}${piece.id === selectedPieceId ? " selected" : ""}${piece.blockedTurns > 0 ? " blocked" : ""}`;
     if (state.animationHide?.pieceId === piece.id) pieceEl.classList.add("animating-source");
     pieceEl.textContent = piece.type;
-    pieceEl.title = `${stats[piece.type].name} ${teamLabel(piece.team)} (${colorLabel(piece.team)})`;
+    pieceEl.title = `${roleName(piece.type)} ${teamLabel(piece.team)} (${colorLabel(piece.team)})`;
     positionPieceInStack(pieceEl, piece);
     pieceEl.addEventListener("pointerdown", event => startLineupPieceDrag(event, piece));
     pieceEl.addEventListener("click", event => {
@@ -912,6 +993,18 @@ function textFor(key) {
   return uiText[currentLanguage]?.[key] || uiText.es[key] || key;
 }
 
+function roleName(type) {
+  return textFor(`role${type}`) || stats[type]?.name || type;
+}
+
+function cardDisplayLabel(card) {
+  if (!card) return "";
+  if (card.label === "Jugada Habilidosa") return textFor("skillCard");
+  if (card.label === "Remate Larga Distancia") return textFor("longShotCard");
+  if (card.label === "Segundo Movimiento") return textFor("secondMoveCard");
+  return card.label;
+}
+
 function halfAbbrev() {
   if (lineupEditing) return "PRE";
   if (state.finished) return "FIN";
@@ -920,13 +1013,22 @@ function halfAbbrev() {
 
 function applyLanguage() {
   if (languageSelectEl) languageSelectEl.value = currentLanguage;
-  document.querySelector(".language-switch span").textContent = textFor("language");
+  const languageLabel = document.querySelector(".language-switch span");
+  if (languageLabel) languageLabel.textContent = textFor("language");
   introAudioBtn?.querySelector("strong") && (introAudioBtn.querySelector("strong").textContent = textFor("audio"));
   document.querySelector("[data-action='move']").textContent = textFor("move");
   document.querySelector("[data-action='moveBall']").textContent = textFor("moveBall");
   document.querySelector("[data-action='pass']").textContent = textFor("pass");
   document.querySelector("[data-action='shot']").textContent = textFor("shot");
   document.querySelector("#endTurnBtn").textContent = textFor("endTurn");
+  document.querySelector("[data-quick-action='move']").textContent = textFor("move");
+  document.querySelector("[data-quick-action='moveBall']").textContent = textFor("moveBall");
+  document.querySelector("[data-quick-action='pass']").textContent = textFor("pass");
+  document.querySelector("[data-quick-action='shot']").textContent = textFor("shot");
+  document.querySelector("[data-quick-end-turn]").textContent = textFor("endTurn");
+  document.querySelectorAll("[data-role]").forEach(button => {
+    button.textContent = roleName(button.dataset.role);
+  });
   const leftHeaders = document.querySelectorAll(".left-panel h2");
   if (leftHeaders[0]) leftHeaders[0].textContent = textFor("turn");
   if (leftHeaders[1]) leftHeaders[1].textContent = textFor("history");
@@ -937,13 +1039,25 @@ function applyLanguage() {
   if (abilityLabels[0]) abilityLabels[0].textContent = textFor("abilities");
   if (abilityLabels[1]) abilityLabels[1].textContent = textFor("reference");
   if (abilityLabels[2]) abilityLabels[2].textContent = textFor("bench");
-  document.querySelectorAll(".right-panel h2").forEach(header => {
-    if (header.textContent.includes("especiales") || header.textContent.includes("Special") || header.textContent.includes("especiais")) header.textContent = textFor("specialCards");
-    if (header.textContent.includes("disputa") || header.textContent.includes("Duel")) header.textContent = textFor("duelCards");
-    if (header.textContent.includes("remate") || header.textContent.includes("Shot") || header.textContent.includes("chute")) header.textContent = textFor("shotCards");
-  });
+  const rightHeaders = document.querySelectorAll(".right-panel .play-card-stack > h2");
+  if (rightHeaders[0]) rightHeaders[0].textContent = textFor("specialCards");
+  if (rightHeaders[1]) rightHeaders[1].textContent = textFor("duelCards");
+  if (rightHeaders[2]) rightHeaders[2].textContent = textFor("duelZone");
+  if (rightHeaders[3]) rightHeaders[3].textContent = textFor("shotCards");
+  if (rightHeaders[4]) rightHeaders[4].textContent = textFor("shotZone");
+  const quickHeaders = document.querySelectorAll(".quick-reveal-panel h3");
+  if (quickHeaders[0]) quickHeaders[0].textContent = textFor("duelZone");
+  if (quickHeaders[1]) quickHeaders[1].textContent = textFor("shotZone");
   syncAudioButtons();
   renderHud();
+  if (state) {
+    renderCards();
+    renderDuelPanel();
+    renderShotPanel();
+    renderBench();
+    renderAbilities();
+    renderQuickRevealPanels();
+  }
 }
 
 function renderHud() {
@@ -961,17 +1075,17 @@ function renderHud() {
         : "Arquero elige carta 1-4"
       : "Rematador elige carta 1-4"
     : selected
-    ? `${stats[selected.type].name} ${teamLabel(selected.team)}`
-    : "Selecciona una ficha";
+    ? `${roleName(selected.type)} ${teamLabel(selected.team)}`
+    : textFor("selectPiece");
 
   const active = state.pieces.filter(piece => piece.team === state.currentTeam && piece.status === "field").length;
   const bench = state.pieces.filter(piece => piece.team === state.currentTeam && piece.status === "bench").length;
   const styleName = setupSelection.gameStyle === "intensity" ? "DT Intensidad" : "DT Estratega";
-  squadStatusEl.textContent = `${active} en cancha / ${bench} suplentes / ${styleName}`;
+  squadStatusEl.textContent = `${active} ${textFor("fieldPlayers")} / ${bench} ${textFor("substitutes")} / ${styleName}`;
 
   teamANameEl.textContent = teamLabel("blue");
   teamBNameEl.textContent = teamLabel("red");
-  turnLabelEl.textContent = `Turno: ${teamLabel(state.currentTeam)}`;
+  turnLabelEl.textContent = `${textFor("turn")}: ${teamLabel(state.currentTeam)}`;
   scoreEl.textContent = `${state.score.blue} - ${state.score.red}`;
   const halfText = state.half === 1 ? textFor("firstHalf") : textFor("secondHalf");
   const timerText = formatVisibleMatchTime();
@@ -982,6 +1096,7 @@ function renderHud() {
   if (floatingMatchHudEl) {
     const showFloatingHud = Boolean(state && setupScreenEl.classList.contains("hidden") && styleScreenEl.classList.contains("hidden"));
     floatingMatchHudEl.classList.toggle("hidden", !showFloatingHud);
+    document.documentElement.classList.toggle("field-active", showFloatingHud);
     floatingHalfEl.textContent = textFor("time");
     floatingScoreEl.textContent = `${halfAbbrev()} ${scoreText}`;
     floatingTimerEl.textContent = timerText;
@@ -1008,7 +1123,7 @@ function renderCards() {
   }
   state.cards[state.currentTeam].forEach(card => {
     const button = document.createElement("button");
-    button.textContent = card.label;
+    button.textContent = cardDisplayLabel(card);
     button.classList.toggle("used", card.used);
     button.disabled = card.used;
     button.addEventListener("click", () => useSpecialCard(card.id));
@@ -1016,7 +1131,7 @@ function renderCards() {
     if (quickSpecialCardsEl) {
       const quickButton = document.createElement("button");
       quickButton.type = "button";
-      quickButton.textContent = card.label;
+      quickButton.textContent = cardDisplayLabel(card);
       quickButton.classList.toggle("used", card.used);
       quickButton.disabled = card.used;
       quickButton.addEventListener("click", () => {
@@ -1068,6 +1183,7 @@ function renderShotCards() {
 function renderShotPanel() {
   const mineCard = shotMineEl.closest(".duel-card-preview");
   const rivalCard = shotRivalEl.closest(".duel-card-preview");
+  mineCard.querySelector("span").textContent = textFor("shotLabel");
   mineCard.classList.remove("hidden-card", "revealed");
   rivalCard.classList.toggle("hidden-card", Boolean(state.pendingShot && !state.pendingShot.keeperCard));
   rivalCard.classList.toggle("revealed", Boolean(state.pendingShot && state.pendingShot.keeperCard));
@@ -1075,13 +1191,13 @@ function renderShotPanel() {
   if (state.pendingShot) {
     const aiShooterVsHuman = state.mode === "ai" && state.pendingShot.attackingTeam === "red" && state.pendingShot.keeperTeam === "blue";
     const hideFirstCard = (state.mode === "local" || aiShooterVsHuman) && state.pendingShot.shotCard && !state.pendingShot.keeperCard;
-    shotMineLabelEl.textContent = hideFirstCard ? "Dorso rematador" : "Frente rematador";
+    shotMineLabelEl.textContent = hideFirstCard ? textFor("shooterBack") : textFor("shooterFront");
     shotMineEl.textContent = hideFirstCard ? "?" : state.pendingShot.shotCard || "-";
     const keeperText = state.pendingShot.longDistance
       ? [state.pendingShot.keeperCard || "?", state.pendingShot.reboundCard || "?"].join(" / ")
       : state.pendingShot.keeperCard || "?";
     shotRivalEl.textContent = keeperText;
-    shotRivalLabelEl.textContent = state.pendingShot.keeperCard ? "Frente arquero" : "Dorso arquero";
+    shotRivalLabelEl.textContent = state.pendingShot.keeperCard ? textFor("keeperFront") : textFor("keeperBack");
     shotStatusEl.textContent = getShotPrompt();
     return;
   }
@@ -1090,21 +1206,21 @@ function renderShotPanel() {
     rivalCard.classList.remove("hidden-card");
     shotMineEl.textContent = state.lastShot.shotCard;
     shotRivalEl.textContent = state.lastShot.keeperCard;
-    shotRivalLabelEl.textContent = "Frente arquero";
+    shotRivalLabelEl.textContent = textFor("keeperFront");
     shotStatusEl.textContent = state.lastShot.result;
     return;
   }
 
   shotMineEl.textContent = "-";
-  shotMineLabelEl.textContent = "Remate";
+  shotMineLabelEl.textContent = textFor("shotLabel");
   shotRivalEl.textContent = "?";
-  shotRivalLabelEl.textContent = "Dorso arquero";
-  shotStatusEl.textContent = "Sin remate activo.";
+  shotRivalLabelEl.textContent = textFor("keeperBack");
+  shotStatusEl.textContent = textFor("noShot");
 }
 
 function getShotPrompt() {
   const shot = state.pendingShot;
-  if (!shot) return "Sin remate activo.";
+  if (!shot) return textFor("noShot");
   const aiShooterVsHuman = state.mode === "ai" && shot.attackingTeam === "red" && shot.keeperTeam === "blue";
   if (!shot.shotCard) return "Remate activo. Elegi carta 1-4.";
   if (aiShooterVsHuman && !shot.keeperCard) return "La IA ya pateo. Elegi tu carta de arquero 1-4.";
@@ -1119,15 +1235,16 @@ function renderDuelPanel() {
   duelPanelEl.classList.toggle("collapsed", !state.pendingDispute);
   const mineCard = duelMineEl.closest(".duel-card-preview");
   const rivalCard = duelRivalEl.closest(".duel-card-preview");
+  mineCard.querySelector("span").textContent = textFor("ownFront");
   mineCard.classList.remove("hidden-card", "revealed");
   rivalCard.classList.toggle("hidden-card", Boolean(state.pendingDispute && !state.pendingDispute.revealed));
   rivalCard.classList.toggle("revealed", Boolean(state.pendingDispute && state.pendingDispute.revealed));
 
   if (!state.pendingDispute) {
-    duelRivalLabelEl.textContent = "Dorso rival";
+    duelRivalLabelEl.textContent = textFor("rivalBack");
     duelMineEl.textContent = "-";
     duelRivalEl.textContent = "?";
-    duelStatusEl.textContent = "Sin disputa activa.";
+    duelStatusEl.textContent = textFor("noDuel");
     return;
   }
 
@@ -1137,7 +1254,7 @@ function renderDuelPanel() {
   const humanCard = activeIsHolder ? state.pendingDispute.holderCard : state.pendingDispute.challengerCard;
   const rivalCardValue = activeIsHolder ? state.pendingDispute.challengerCard : state.pendingDispute.holderCard;
   duelMineEl.textContent = humanCard || "-";
-  duelRivalLabelEl.textContent = state.pendingDispute.revealed ? "Frente rival" : "Dorso rival";
+  duelRivalLabelEl.textContent = state.pendingDispute.revealed ? textFor("rivalFront") : textFor("rivalBack");
   duelRivalEl.textContent = state.pendingDispute.revealed ? rivalCardValue : "?";
   if (state.mode === "local" && state.pendingDispute.localWaitingSecond) {
     duelMineEl.textContent = humanCard || "-";
@@ -1158,7 +1275,7 @@ function renderBench() {
     .forEach(piece => {
       const item = document.createElement("div");
       item.className = "bench-chip";
-      item.textContent = `${stats[piece.type].name} suplente`;
+      item.textContent = `${roleName(piece.type)} ${textFor("substitute")}`;
       benchListEl.append(item);
     });
 }
@@ -2226,7 +2343,7 @@ function describePassAudio(fromPiece, toPiece) {
   const targetGoal = getGoalZone(getOpponentTeam(fromPiece.team));
   const fromDistance = Math.abs(fromPiece.y - targetGoal.y);
   const toDistance = Math.abs(toPiece.y - targetGoal.y);
-  const receiverName = stats[toPiece.type].name.toLowerCase();
+  const receiverName = roleName(toPiece.type).toLowerCase();
 
   if (toDistance > fromDistance) {
     return `Juega para atras, mantiene el balon ${teamLabel(fromPiece.team)}.`;
@@ -2863,7 +2980,7 @@ function isInsideField(x, y) {
 }
 
 function pieceLabel(piece) {
-  return `${stats[piece.type].name} ${teamLabel(piece.team)}`;
+  return `${roleName(piece.type)} ${teamLabel(piece.team)}`;
 }
 
 function teamLabel(team) {
@@ -3345,7 +3462,7 @@ function renderLockerBench() {
     benchPieces.forEach(piece => {
       const chip = document.createElement("div");
       chip.className = "locker-bench-chip";
-      chip.textContent = `${stats[piece.type].name} suplente`;
+      chip.textContent = `${roleName(piece.type)} ${textFor("substitute")}`;
       lockerBenchListEl.append(chip);
     });
   }
@@ -3354,7 +3471,7 @@ function renderLockerBench() {
   fieldPieces.filter(piece => piece.type !== "ARQ").forEach(piece => {
     const option = document.createElement("option");
     option.value = piece.id;
-    option.textContent = `${stats[piece.type].name} en cancha`;
+    option.textContent = `${roleName(piece.type)} ${textFor("fieldPlayers")}`;
     lockerOutSelectEl.append(option);
   });
 
@@ -3362,7 +3479,7 @@ function renderLockerBench() {
   benchPieces.forEach(piece => {
     const option = document.createElement("option");
     option.value = piece.id;
-    option.textContent = `${stats[piece.type].name} suplente`;
+    option.textContent = `${roleName(piece.type)} ${textFor("substitute")}`;
     lockerInSelectEl.append(option);
   });
 }
@@ -3378,7 +3495,7 @@ function prepareLockerChange() {
     lockerStatusEl.textContent = "No se encontro una de las fichas del cambio.";
     return;
   }
-  lockerStatusEl.textContent = `Cambio preparado: sale ${stats[outPiece.type].name}, entra ${stats[inPiece.type].name}.`;
+  lockerStatusEl.textContent = `Cambio preparado: sale ${roleName(outPiece.type)}, entra ${roleName(inPiece.type)}.`;
 }
 
 function saveTeamTalk() {

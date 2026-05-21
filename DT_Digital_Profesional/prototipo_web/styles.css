@@ -108,6 +108,7 @@ input {
   position: fixed;
   top: 18px;
   left: 18px;
+  transform: none;
   z-index: 83;
   display: inline-flex;
   align-items: center;
@@ -119,6 +120,11 @@ input {
   background: rgba(16, 22, 19, 0.88);
   color: var(--muted);
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.32);
+}
+
+:root.field-active .language-switch {
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .language-switch span {
