@@ -173,7 +173,12 @@ const uiText = {
     keeperFront: "Frente arquero",
     shotLabel: "Remate",
     noDuel: "Sin disputa activa.",
-    noShot: "Sin remate activo."
+    noShot: "Sin remate activo.",
+    stylePrompt: "Selecciona el estilo de juego:",
+    strategyTitle: "DT: Estratega",
+    strategyDesc: "Juego tactico, movimientos estandar",
+    intensityTitle: "DT: Intensidad",
+    intensityDesc: "Juego dinamico, capacidades ampliadas"
   },
   en: {
     language: "Language",
@@ -224,7 +229,12 @@ const uiText = {
     keeperFront: "Keeper front",
     shotLabel: "Shot",
     noDuel: "No active duel.",
-    noShot: "No active shot."
+    noShot: "No active shot.",
+    stylePrompt: "Select game style:",
+    strategyTitle: "DT: Strategy",
+    strategyDesc: "Tactical game, standard moves",
+    intensityTitle: "DT: Intensity",
+    intensityDesc: "Dynamic game, expanded abilities"
   },
   pt: {
     language: "Idioma",
@@ -275,7 +285,12 @@ const uiText = {
     keeperFront: "Frente goleiro",
     shotLabel: "Chute",
     noDuel: "Sem disputa ativa.",
-    noShot: "Sem chute ativo."
+    noShot: "Sem chute ativo.",
+    stylePrompt: "Selecione o estilo de jogo:",
+    strategyTitle: "DT: Estrategia",
+    strategyDesc: "Jogo tatico, movimentos padrao",
+    intensityTitle: "DT: Intensidade",
+    intensityDesc: "Jogo dinamico, capacidades ampliadas"
   }
 };
 const crowdTracks = ["assets/tribuna-estadio.mp3"];
@@ -366,8 +381,8 @@ let suppressNextPieceClick = false;
 
 const lockerTactics = {
   f433: [
-    ["ARQ", 50, 92], ["DEF", 0, 72], ["DEF", 50, 94], ["DEF", 63, 94], ["DEF", 100, 72],
-    ["VOL", 25, 28], ["VOL", 50, 52], ["VOL", 75, 28],
+    ["ARQ", 50, 92], ["DEF", 0, 50], ["DEF", 25, 100], ["DEF", 75, 100], ["DEF", 100, 50],
+    ["VOL", 25, 25], ["VOL", 50, 50], ["VOL", 75, 25],
     ["DEL", 0, 2], ["DEL", 50, 2], ["DEL", 100, 2]
   ],
   f4222: [
@@ -529,23 +544,16 @@ function getNeutralForwardSpot(team, half = state?.half || 1) {
 function makeSquad(team, prefix) {
   const keeperY = team === "blue" ? board.height : -1;
   const fieldRows = getFormationPositions(team);
-  const centralX = Math.floor((board.width - 1) / 2);
-  const kickoffIndex = fieldRows
-    .map((row, index) => ({ row, index }))
-    .filter(({ row }) => row[0] === "DEL")
-    .sort((a, b) => Math.abs(a.row[1] - centralX) - Math.abs(b.row[1] - centralX))[0]?.index ?? -1;
 
   const starters = [
     { id: `${prefix}-arq`, team, type: "ARQ", x: keeperZones[team].x, y: keeperY, status: "field", blockedTurns: 0 },
     ...fieldRows.map(([type, x, y], index) => {
-      const isKickoffForward = index === kickoffIndex;
-      const position = isKickoffForward ? getNeutralForwardSpot(team, 1) : { x, y };
       return {
       id: `${prefix}-${type.toLowerCase()}-${index + 1}`,
       team,
       type,
-      x: position.x,
-      y: position.y,
+      x,
+      y,
       status: "field",
       blockedTurns: 0
       };
@@ -1011,10 +1019,21 @@ function halfAbbrev() {
   return state.half === 1 ? "PT" : "ST";
 }
 
+function syncScreenChrome() {
+  const showingStyleScreen = !styleScreenEl.classList.contains("hidden");
+  document.body.classList.toggle("show-language-switch", showingStyleScreen);
+}
+
 function applyLanguage() {
   if (languageSelectEl) languageSelectEl.value = currentLanguage;
   const languageLabel = document.querySelector(".language-switch span");
   if (languageLabel) languageLabel.textContent = textFor("language");
+  document.documentElement.lang = currentLanguage;
+  document.querySelector("#stylePrompt").textContent = textFor("stylePrompt");
+  document.querySelector("#strategyTitle").textContent = textFor("strategyTitle");
+  document.querySelector("#strategyDesc").textContent = textFor("strategyDesc");
+  document.querySelector("#intensityTitle").textContent = textFor("intensityTitle");
+  document.querySelector("#intensityDesc").textContent = textFor("intensityDesc");
   introAudioBtn?.querySelector("strong") && (introAudioBtn.querySelector("strong").textContent = textFor("audio"));
   document.querySelector("[data-action='move']").textContent = textFor("move");
   document.querySelector("[data-action='moveBall']").textContent = textFor("moveBall");
@@ -3842,6 +3861,7 @@ function returnToSetupMenu() {
   state.started = false;
   setupScreenEl.classList.remove("hidden");
   styleScreenEl.classList.add("hidden");
+  syncScreenChrome();
   switchAudioScene("menu");
   markSetupSelections();
   render();
@@ -3858,6 +3878,7 @@ function returnToStyleSelection() {
   if (state) state.started = false;
   setupScreenEl.classList.remove("hidden");
   styleScreenEl.classList.remove("hidden");
+  syncScreenChrome();
   switchAudioScene("menu");
   markSetupSelections();
   render();
@@ -3934,6 +3955,7 @@ document.querySelectorAll("[data-game-style]").forEach(button => {
     newGame();
     markSetupSelections();
     styleScreenEl.classList.add("hidden");
+    syncScreenChrome();
     switchAudioScene("menu");
     const styleName = setupSelection.gameStyle === "intensity" ? "DT Intensidad" : "DT Estratega";
     loginStatusEl.textContent = `${styleName} seleccionado. Ahora registra o elige tus equipos.`;
@@ -4237,6 +4259,7 @@ newGame();
 markSetupSelections();
 syncSetupUi();
 applyLockerSettings();
+syncScreenChrome();
 applyLanguage();
 syncAudioButtons();
 switchAudioScene("menu");

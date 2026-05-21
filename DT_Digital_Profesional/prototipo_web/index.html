@@ -21,10 +21,26 @@
     </button>
     <section id="styleScreen" class="style-screen">
       <div class="style-card">
-        <img src="assets/menu-seleccion-juego.png" alt="Selecciona el estilo de juego DT">
+        <img src="assets/menu-seleccion-juego.png" alt="Selecciona el estilo de juego DT" aria-hidden="true">
+        <div class="style-copy" aria-hidden="true">
+          <strong class="style-logo">DT</strong>
+          <p id="stylePrompt">Selecciona el estilo de juego:</p>
+        </div>
         <div class="style-actions" aria-label="Seleccion de estilo de juego">
-          <button data-game-style="strategy">DT: Estratega</button>
-          <button data-game-style="intensity">DT: Intensidad</button>
+          <button class="style-choice strategy-choice" data-game-style="strategy">
+            <span class="style-icon field-icon" aria-hidden="true"></span>
+            <span>
+              <strong id="strategyTitle">DT: Estratega</strong>
+              <small id="strategyDesc">Juego tactico, movimientos estandar</small>
+            </span>
+          </button>
+          <button class="style-choice intensity-choice" data-game-style="intensity">
+            <span class="style-icon bolt-icon" aria-hidden="true"></span>
+            <span>
+              <strong id="intensityTitle">DT: Intensidad</strong>
+              <small id="intensityDesc">Juego dinamico, capacidades ampliadas</small>
+            </span>
+          </button>
         </div>
       </div>
     </section>
