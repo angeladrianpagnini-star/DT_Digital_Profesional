@@ -601,6 +601,7 @@ function startLineupPieceDrag(event, piece) {
 
 function moveLineupPieceDrag(event) {
   if (!draggingLineupPiece) return;
+  event.preventDefault();
   if (Math.abs(event.clientX - draggingLineupPiece.startX) + Math.abs(event.clientY - draggingLineupPiece.startY) > 6) {
     draggingLineupPiece.moved = true;
   }
@@ -719,6 +720,9 @@ function closeQuickMenus() {
 
 function toggleQuickMenu(menuName) {
   if (!quickControlsEl) return;
+  if (menuName === "shot") {
+    prepareQuickShotFlow();
+  }
   quickControlsEl.querySelectorAll(".quick-cluster").forEach(cluster => {
     const toggle = cluster.querySelector(".quick-toggle");
     const isTarget = toggle?.dataset.quickMenu === menuName;
@@ -728,11 +732,35 @@ function toggleQuickMenu(menuName) {
   });
 }
 
+function getQuickShotTarget() {
+  const selected = getSelectedPiece();
+  if (!selected || !hasBall(selected) || state.pendingShot || state.pendingDispute) return null;
+  const previousAction = selectedAction;
+  selectedAction = "shot";
+  const target = getShotTarget();
+  selectedAction = previousAction;
+  return target;
+}
+
+function prepareQuickShotFlow() {
+  if (state.pendingShot || state.pendingDispute) return;
+  const selected = getSelectedPiece();
+  const target = getQuickShotTarget();
+  if (!selected || !target) return;
+  selectedAction = "shot";
+  render();
+  onKeeperClick(target.team);
+}
+
 function renderQuickActionState() {
   if (!quickControlsEl) return;
   const selected = getSelectedPiece();
   const fieldVisible = styleScreenEl.classList.contains("hidden") && setupScreenEl.classList.contains("hidden");
   quickControlsEl.classList.toggle("visible", fieldVisible);
+  const shotReady = Boolean(state.pendingShot || getQuickShotTarget());
+  const duelReady = Boolean(state.pendingDispute);
+  quickControlsEl.querySelector('[data-quick-menu="duel"]')?.classList.toggle("attention", duelReady);
+  quickControlsEl.querySelector('[data-quick-menu="shot"]')?.classList.toggle("attention", shotReady);
 
   quickControlsEl.querySelectorAll("[data-quick-action]").forEach(button => {
     const action = button.dataset.quickAction;
