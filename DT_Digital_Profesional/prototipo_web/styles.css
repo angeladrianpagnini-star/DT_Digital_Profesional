@@ -2112,6 +2112,116 @@ dialog::backdrop {
   grid-column: 1 / -1;
 }
 
+.quick-controls {
+  position: fixed;
+  inset: 0;
+  z-index: 18;
+  display: none;
+  pointer-events: none;
+}
+
+.quick-controls.visible {
+  display: block;
+}
+
+.quick-cluster {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.quick-left {
+  left: max(8px, env(safe-area-inset-left));
+}
+
+.quick-right {
+  right: max(8px, env(safe-area-inset-right));
+  flex-direction: row-reverse;
+}
+
+.quick-move,
+.quick-duel {
+  top: 34%;
+}
+
+.quick-special,
+.quick-shot {
+  top: 63%;
+}
+
+.quick-toggle {
+  width: 54px;
+  height: 54px;
+  border: 3px solid rgba(255, 255, 255, 0.86);
+  border-radius: 50%;
+  background: var(--line);
+  color: #15120b;
+  font-weight: 900;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.42);
+  cursor: pointer;
+}
+
+.quick-toggle[aria-expanded="true"] {
+  background: #fff4bf;
+  box-shadow: 0 0 0 5px rgba(243, 187, 69, 0.28), 0 10px 26px rgba(0, 0, 0, 0.42);
+}
+
+.quick-panel {
+  display: none;
+  min-width: 174px;
+  max-width: min(76vw, 360px);
+  padding: 8px;
+  gap: 7px;
+  background: rgba(15, 23, 20, 0.96);
+  border: 2px solid var(--line);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.52);
+}
+
+.quick-cluster.open .quick-panel {
+  display: grid;
+}
+
+.quick-panel button {
+  min-height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: #26372f;
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.quick-panel button.active,
+.quick-panel button.active-card {
+  background: var(--line);
+  color: #171208;
+}
+
+.quick-panel button.priority {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px rgba(240, 106, 80, 0.24);
+}
+
+.quick-panel button:disabled,
+.quick-panel button.used {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.quick-card-grid {
+  grid-template-columns: repeat(2, minmax(64px, 1fr));
+  min-width: 158px;
+}
+
+.quick-card-grid button {
+  min-height: 66px;
+  background: #eef4df;
+  border: 3px solid var(--line);
+  color: #111815;
+  font-size: 28px;
+}
+
 @media (max-width: 1050px) {
   .topbar,
   .layout {
@@ -2162,20 +2272,22 @@ dialog::backdrop {
   }
 
   .style-screen {
-    align-items: start;
-    overflow-y: auto;
+    place-items: center;
+    overflow: hidden;
     padding: 10px 8px 24px;
   }
 
   .style-card {
-    width: min(100%, 520px);
-    min-height: min(100vh - 34px, 820px);
-    aspect-ratio: auto;
+    width: min(100%, 560px);
+    max-height: calc(100dvh - 24px);
+    aspect-ratio: 1;
   }
 
   .style-card img {
+    position: absolute;
+    inset: 0;
     height: auto;
-    min-height: 100%;
+    min-height: 0;
     object-fit: contain;
   }
 
@@ -2381,6 +2493,46 @@ dialog::backdrop {
   .dialog-actions {
     grid-template-columns: 1fr;
   }
+
+  .quick-toggle {
+    width: 48px;
+    height: 48px;
+    border-width: 2px;
+  }
+
+  .quick-left {
+    left: 7px;
+  }
+
+  .quick-right {
+    right: 7px;
+  }
+
+  .quick-move,
+  .quick-duel {
+    top: 30%;
+  }
+
+  .quick-special,
+  .quick-shot {
+    top: 58%;
+  }
+
+  .quick-panel {
+    min-width: 156px;
+    max-width: min(72vw, 320px);
+    padding: 7px;
+  }
+
+  .quick-panel button {
+    min-height: 40px;
+    font-size: 14px;
+  }
+
+  .quick-card-grid button {
+    min-height: 60px;
+    font-size: 25px;
+  }
 }
 
 @media (max-width: 430px) {
@@ -2390,8 +2542,8 @@ dialog::backdrop {
   }
 
   .style-actions {
-    top: 39%;
-    bottom: 8%;
+    top: 36.5%;
+    bottom: 15%;
   }
 
   .pitch {
@@ -2406,5 +2558,15 @@ dialog::backdrop {
   .duel-card,
   .shot-cards button {
     min-height: 64px;
+  }
+
+  .quick-toggle {
+    width: 44px;
+    height: 44px;
+    font-size: 14px;
+  }
+
+  .quick-panel {
+    max-width: calc(100vw - 68px);
   }
 }

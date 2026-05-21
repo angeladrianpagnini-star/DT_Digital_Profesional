@@ -290,6 +290,41 @@
       </section>
     </main>
 
+    <nav id="quickControls" class="quick-controls" aria-label="Controles rapidos de cancha">
+      <div class="quick-cluster quick-left quick-move">
+        <button class="quick-toggle" type="button" data-quick-menu="move" aria-expanded="false">M</button>
+        <div class="quick-panel" data-quick-panel="move">
+          <button type="button" data-quick-action="move">Mover</button>
+          <button type="button" data-quick-action="moveBall">Mover con balon</button>
+          <button type="button" data-quick-action="pass">Pase</button>
+          <button type="button" data-quick-action="shot">Remate</button>
+          <button type="button" data-quick-end-turn>Finalizar turno</button>
+        </div>
+      </div>
+      <div class="quick-cluster quick-left quick-special">
+        <button class="quick-toggle" type="button" data-quick-menu="special" aria-expanded="false">CE</button>
+        <div id="quickSpecialCards" class="quick-panel" data-quick-panel="special"></div>
+      </div>
+      <div class="quick-cluster quick-right quick-duel">
+        <button class="quick-toggle" type="button" data-quick-menu="duel" aria-expanded="false">D</button>
+        <div class="quick-panel quick-card-grid" data-quick-panel="duel">
+          <button type="button" data-quick-duel="A">A</button>
+          <button type="button" data-quick-duel="B">B</button>
+          <button type="button" data-quick-duel="C">C</button>
+          <button type="button" data-quick-duel="D">D</button>
+        </div>
+      </div>
+      <div class="quick-cluster quick-right quick-shot">
+        <button class="quick-toggle" type="button" data-quick-menu="shot" aria-expanded="false">R</button>
+        <div class="quick-panel quick-card-grid" data-quick-panel="shot">
+          <button type="button" data-quick-shot="1">1</button>
+          <button type="button" data-quick-shot="2">2</button>
+          <button type="button" data-quick-shot="3">3</button>
+          <button type="button" data-quick-shot="4">4</button>
+        </div>
+      </div>
+    </nav>
+
     <div id="gameBanner" class="game-banner hidden" aria-live="polite">
       <div class="game-banner-card">
         <strong id="gameBannerTitle">GOOOLLLL!!!</strong>

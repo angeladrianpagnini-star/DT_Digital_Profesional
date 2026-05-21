@@ -11,6 +11,8 @@ const halfLabelEl = document.querySelector("#halfLabel");
 const turnTimerEl = document.querySelector("#turnTimer");
 const logEl = document.querySelector("#log");
 const specialCardsEl = document.querySelector("#specialCards");
+const quickControlsEl = document.querySelector("#quickControls");
+const quickSpecialCardsEl = document.querySelector("#quickSpecialCards");
 const benchListEl = document.querySelector("#benchList");
 const abilityGridEl = document.querySelector("#abilityGrid");
 const duelMineEl = document.querySelector("#duelMine");
@@ -697,6 +699,42 @@ function animateVisualMove({ kind, from, to, team, label, withBall = false, piec
   }, 20);
 }
 
+function closeQuickMenus() {
+  if (!quickControlsEl) return;
+  quickControlsEl.querySelectorAll(".quick-cluster.open").forEach(cluster => {
+    cluster.classList.remove("open");
+    cluster.querySelector(".quick-toggle")?.setAttribute("aria-expanded", "false");
+  });
+}
+
+function toggleQuickMenu(menuName) {
+  if (!quickControlsEl) return;
+  quickControlsEl.querySelectorAll(".quick-cluster").forEach(cluster => {
+    const toggle = cluster.querySelector(".quick-toggle");
+    const isTarget = toggle?.dataset.quickMenu === menuName;
+    const shouldOpen = isTarget && !cluster.classList.contains("open");
+    cluster.classList.toggle("open", shouldOpen);
+    toggle?.setAttribute("aria-expanded", shouldOpen ? "true" : "false");
+  });
+}
+
+function renderQuickActionState() {
+  if (!quickControlsEl) return;
+  const selected = getSelectedPiece();
+  const fieldVisible = styleScreenEl.classList.contains("hidden") && setupScreenEl.classList.contains("hidden");
+  quickControlsEl.classList.toggle("visible", fieldVisible);
+
+  quickControlsEl.querySelectorAll("[data-quick-action]").forEach(button => {
+    const action = button.dataset.quickAction;
+    const needsBall = action === "moveBall" || action === "pass" || action === "shot";
+    const blockedByKickoff = state.kickoffPassRequired && action !== "pass";
+    button.disabled = Boolean(blockedByKickoff || (selected && needsBall && !hasBall(selected)));
+    button.classList.toggle("active", action === selectedAction);
+    button.classList.toggle("kickoff-only", state.kickoffPassRequired && action === "pass");
+    button.classList.toggle("priority", Boolean(selected && hasBall(selected) && action === "shot" && getPreferredAction(selected) === "shot"));
+  });
+}
+
 function renderHud() {
   const selected = getSelectedPiece();
   if (state.kickoffPassRequired) {
@@ -739,10 +777,14 @@ function renderHud() {
   button.classList.toggle("kickoff-only", state.kickoffPassRequired && button.dataset.action === "pass");
   button.classList.toggle("priority", Boolean(selected && hasBall(selected) && button.dataset.action === "shot" && getPreferredAction(selected) === "shot"));
   });
+  renderQuickActionState();
 }
 
 function renderCards() {
   specialCardsEl.innerHTML = "";
+  if (quickSpecialCardsEl) {
+    quickSpecialCardsEl.innerHTML = "";
+  }
   state.cards[state.currentTeam].forEach(card => {
     const button = document.createElement("button");
     button.textContent = card.label;
@@ -750,20 +792,33 @@ function renderCards() {
     button.disabled = card.used;
     button.addEventListener("click", () => useSpecialCard(card.id));
     specialCardsEl.append(button);
+    if (quickSpecialCardsEl) {
+      const quickButton = document.createElement("button");
+      quickButton.type = "button";
+      quickButton.textContent = card.label;
+      quickButton.classList.toggle("used", card.used);
+      quickButton.disabled = card.used;
+      quickButton.addEventListener("click", () => {
+        closeQuickMenus();
+        useSpecialCard(card.id);
+      });
+      quickSpecialCardsEl.append(quickButton);
+    }
   });
 }
 
 function renderDuelCards() {
-  document.querySelectorAll(".duel-card").forEach(button => {
+  document.querySelectorAll(".duel-card, [data-quick-duel]").forEach(button => {
     if (state.pendingDispute?.localWaitingSecond) {
       button.classList.remove("active-card");
       return;
     }
+    const value = button.dataset.duel || button.dataset.quickDuel;
     const selectedCard = state.pendingDispute?.choiceRole === "holder" || state.pendingDispute?.humanChoiceRole === "holder"
       ? state.pendingDispute.holderCard
       : state.pendingDispute?.challengerCard;
     button.classList.toggle("active-card", Boolean(
-      state.pendingDispute && selectedCard === button.dataset.duel
+      state.pendingDispute && selectedCard === value
     ));
   });
 }
@@ -776,9 +831,10 @@ function renderShotCards() {
     && (state.mode === "local" || (state.mode === "ai" && state.pendingShot.attackingTeam === "red" && state.pendingShot.keeperTeam === "blue"))
   );
 
-  document.querySelectorAll("[data-shot]").forEach(button => {
+  document.querySelectorAll("[data-shot], [data-quick-shot]").forEach(button => {
+    const value = button.dataset.shot || button.dataset.quickShot;
     button.classList.toggle("active-card", Boolean(
-      state.pendingShot && !hidePendingShotChoice && state.pendingShot.shotCard === button.dataset.shot
+      state.pendingShot && !hidePendingShotChoice && state.pendingShot.shotCard === value
     ));
     button.title = state.pendingShot
       ? state.pendingShot.shotCard
@@ -3448,6 +3504,49 @@ document.querySelectorAll("[data-shot]").forEach(button => {
   button.addEventListener("click", () => {
     chooseShotCard(button.dataset.shot);
   });
+});
+
+quickControlsEl?.addEventListener("click", event => {
+  const toggle = event.target.closest("[data-quick-menu]");
+  const action = event.target.closest("[data-quick-action]");
+  const duel = event.target.closest("[data-quick-duel]");
+  const shot = event.target.closest("[data-quick-shot]");
+  const endTurnButton = event.target.closest("[data-quick-end-turn]");
+
+  if (toggle) {
+    toggleQuickMenu(toggle.dataset.quickMenu);
+    return;
+  }
+
+  if (action) {
+    const sourceButton = document.querySelector(`[data-action="${action.dataset.quickAction}"]`);
+    sourceButton?.click();
+    closeQuickMenus();
+    return;
+  }
+
+  if (duel) {
+    chooseDuelCard(duel.dataset.quickDuel);
+    closeQuickMenus();
+    return;
+  }
+
+  if (shot) {
+    chooseShotCard(shot.dataset.quickShot);
+    closeQuickMenus();
+    return;
+  }
+
+  if (endTurnButton) {
+    endTurn();
+    closeQuickMenus();
+  }
+});
+
+document.addEventListener("click", event => {
+  if (!quickControlsEl || !quickControlsEl.classList.contains("visible")) return;
+  if (event.target.closest("#quickControls")) return;
+  closeQuickMenus();
 });
 
 setInterval(() => {
