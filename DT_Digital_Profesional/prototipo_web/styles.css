@@ -190,12 +190,12 @@ body:not(.show-language-switch) .language-switch {
 
 .style-copy {
   position: absolute;
-  top: 7%;
-  left: 8%;
-  right: 8%;
+  top: 8%;
+  left: 7%;
+  right: 7%;
   display: grid;
   justify-items: center;
-  gap: 20px;
+  gap: 24px;
   color: #f6f3e9;
   text-align: center;
   text-transform: uppercase;
@@ -204,35 +204,37 @@ body:not(.show-language-switch) .language-switch {
 }
 
 .style-logo {
-  font-size: clamp(82px, 12vw, 118px);
+  font-size: clamp(76px, 10.5vw, 108px);
   line-height: 0.86;
   letter-spacing: 0;
 }
 
 .style-copy p {
   margin: 0;
-  font-size: clamp(23px, 3.4vw, 31px);
+  font-size: clamp(20px, 2.75vw, 26px);
   font-weight: 800;
+  line-height: 1.08;
+  max-width: 640px;
 }
 
 .style-actions {
   position: absolute;
-  left: 12%;
-  right: 12%;
-  top: 41%;
-  bottom: 15%;
+  left: 12.5%;
+  right: 12.5%;
+  top: 43.5%;
+  bottom: 14%;
   display: grid;
   grid-template-rows: 1fr 1fr;
-  gap: 8%;
+  gap: 7%;
 }
 
 .style-actions button {
   display: grid;
-  grid-template-columns: 104px 1fr;
+  grid-template-columns: 88px 1fr;
   align-items: center;
-  gap: 20px;
-  min-height: 104px;
-  padding: 16px 24px;
+  gap: 18px;
+  min-height: 94px;
+  padding: 14px 24px;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 18px;
   color: #fffdf2;
@@ -256,21 +258,22 @@ body:not(.show-language-switch) .language-switch {
 }
 
 .style-actions strong {
-  font-size: clamp(30px, 4.2vw, 42px);
+  font-size: clamp(28px, 3.75vw, 38px);
   line-height: 1;
   text-transform: uppercase;
   text-shadow: 0 3px 0 rgba(0, 0, 0, 0.4);
 }
 
 .style-actions small {
-  margin-top: 10px;
-  font-size: clamp(16px, 2vw, 21px);
+  margin-top: 8px;
+  font-size: clamp(15px, 1.75vw, 19px);
   font-weight: 700;
+  line-height: 1.12;
 }
 
 .style-icon {
-  width: 84px;
-  height: 84px;
+  width: 74px;
+  height: 74px;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.32);
   position: relative;
@@ -2662,8 +2665,8 @@ dialog::backdrop {
   .style-actions {
     left: 8%;
     right: 8%;
-    top: 40%;
-    bottom: 11%;
+    top: 43%;
+    bottom: 12%;
     gap: 6%;
   }
 
@@ -2971,7 +2974,7 @@ dialog::backdrop {
   }
 
   .style-actions {
-    top: 39%;
+    top: 42%;
     bottom: 13%;
   }
 
