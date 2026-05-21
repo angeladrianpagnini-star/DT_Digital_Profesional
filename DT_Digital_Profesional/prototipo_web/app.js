@@ -75,6 +75,18 @@ const localP2TeamKeyEl = document.querySelector("#localP2TeamKey");
 const localP2CodeEl = document.querySelector("#localP2Code");
 const localP2AuthBtn = document.querySelector("#localP2AuthBtn");
 const localP2StatusEl = document.querySelector("#localP2Status");
+const competitionCodeInputEl = document.querySelector("#competitionCodeInput");
+const competitionStatusEl = document.querySelector("#competitionStatus");
+const resumeCompetitionBtn = document.querySelector("#resumeCompetitionBtn");
+const abandonCompetitionBtn = document.querySelector("#abandonCompetitionBtn");
+const matchEndDialog = document.querySelector("#matchEndDialog");
+const matchEndTitleEl = document.querySelector("#matchEndTitle");
+const matchEndTextEl = document.querySelector("#matchEndText");
+const competitionSummaryEl = document.querySelector("#competitionSummary");
+const restartMatchEndBtn = document.querySelector("#restartMatchEndBtn");
+const rematchHarderBtn = document.querySelector("#rematchHarderBtn");
+const continueCompetitionBtn = document.querySelector("#continueCompetitionBtn");
+const matchEndMenuBtn = document.querySelector("#matchEndMenuBtn");
 const createOnlineLinkBtn = document.querySelector("#createOnlineLinkBtn");
 const joinOnlineLinkEl = document.querySelector("#joinOnlineLink");
 const onlineStatusEl = document.querySelector("#onlineStatus");
@@ -109,6 +121,9 @@ const lockerTracks = ["assets/vestuario-motivacion.mp3", "assets/vestuario-areng
 const goalTracks = ["assets/gol-principal.mp3"];
 const oleTrack = "assets/ole.mp3";
 const whistleTrack = "assets/silbato.mp3";
+const competitionStorageKey = "dtDigitalCompetitionV1";
+const aiDifficultyOrder = ["easy", "medium", "hard"];
+const aiDifficultyLabels = { easy: "Facil", medium: "Medio", hard: "Dificil" };
 let keeperZones = {
   red: { x: 2, y: -1 },
   blue: { x: 2, y: 10 }
@@ -161,6 +176,7 @@ let referenceRole = null;
 let activeProfile = loadStoredProfile();
 let localSecondProfile = null;
 let lockerSettings = loadLockerSettings();
+let competitionState = loadCompetitionState();
 let audioState = {
   enabled: true,
   context: null,
@@ -413,12 +429,13 @@ function newGame() {
   };
   const redProfile = setupSelection.mode === "local" && localSecondProfile
     ? localSecondProfile
-    : { id: "ai-red", name: "Maquina", team: setupSelection.mode === "ai" ? "IA Roja" : "Rojo", rank: "Rival" };
+    : { id: "ai-red", name: "Maquina", team: setupSelection.mode === "ai" ? (currentCompetitionFixture()?.rival || "IA Roja") : "Rojo", rank: "Rival" };
   state = {
     config: selectedConfig,
     mode: setupSelection.mode,
     aiDifficulty: setupSelection.aiDifficulty,
     started: false,
+    finished: false,
     half: 1,
     currentTeam: "blue",
     score: { blue: 0, red: 0 },
@@ -2332,10 +2349,88 @@ function switchHalf() {
     return;
   }
 
+  finishMatch();
+}
+
+function getMatchOutcome() {
+  const blue = state.score.blue;
+  const red = state.score.red;
+  const winner = blue === red ? null : blue > red ? "blue" : "red";
+  return {
+    blue,
+    red,
+    winner,
+    winnerName: winner ? teamLabel(winner) : "Empate"
+  };
+}
+
+function finishMatch() {
   paused = true;
   state.clockRunning = false;
+  state.finished = true;
   playWhistle("end");
-  addLog("Fin del partido.");
+  const outcome = getMatchOutcome();
+  const resultText = outcome.winner
+    ? `Ganador: ${outcome.winnerName}.`
+    : "Resultado final: empate.";
+  const competitionMessage = recordCompetitionResult(outcome);
+  addLog(`Fin del encuentro. ${resultText}`);
+  render();
+  openMatchEndDialog(outcome, competitionMessage);
+}
+
+function nextAiDifficulty(current = setupSelection.aiDifficulty) {
+  const index = aiDifficultyOrder.indexOf(current);
+  return aiDifficultyOrder[Math.min(aiDifficultyOrder.length - 1, Math.max(0, index) + 1)];
+}
+
+function openMatchEndDialog(outcome, competitionMessage = "") {
+  if (!matchEndDialog) return;
+  matchEndTitleEl.textContent = outcome.winner ? `Gano ${outcome.winnerName}` : "Fin del encuentro: empate";
+  matchEndTextEl.textContent = `${teamLabel("blue")} ${outcome.blue} - ${outcome.red} ${teamLabel("red")}`;
+  const fixture = currentCompetitionFixture();
+  const canContinueCompetition = Boolean(competitionState?.active && !competitionState.completed && fixture);
+  competitionSummaryEl.classList.toggle("hidden", !competitionMessage);
+  competitionSummaryEl.innerHTML = competitionMessage ? buildCompetitionSummary(competitionMessage) : "";
+  rematchHarderBtn.classList.toggle("hidden", state.mode !== "ai");
+  continueCompetitionBtn.classList.toggle("hidden", !canContinueCompetition);
+  if (state.mode === "ai") {
+    const next = nextAiDifficulty(state.aiDifficulty);
+    rematchHarderBtn.textContent = `Revancha IA ${aiDifficultyLabels[next]}`;
+  }
+  matchEndDialog.showModal();
+}
+
+function buildCompetitionSummary(message) {
+  if (!competitionState?.active) return `<p>${message}</p>`;
+  const fixtures = competitionState.fixtures
+    .map(item => `<li>${item.label}: ${item.played ? `${competitionState.playerTeam} ${item.score} ${item.rival}` : `${competitionState.playerTeam} vs ${item.rival} (${aiDifficultyLabels[item.difficulty]})`}</li>`)
+    .join("");
+  const table = competitionState.type === "league"
+    ? `<div class="mini-table">${[...competitionState.table]
+        .sort((a, b) => b.pts - a.pts || (b.gf - b.gc) - (a.gf - a.gc))
+        .map(item => `<span>${item.team}</span><strong>${item.pts}</strong>`)
+        .join("")}</div>`
+    : "";
+  return `<p>${message}</p><p>Codigo: <strong>${competitionState.code}</strong></p><ol>${fixtures}</ol>${table}`;
+}
+
+function continueCompetitionMatch() {
+  const fixture = currentCompetitionFixture();
+  if (!fixture) return;
+  setupSelection.mode = "ai";
+  setupSelection.aiDifficulty = fixture.difficulty;
+  markSetupSelections();
+  if (matchEndDialog.open) matchEndDialog.close();
+  restartCurrentGame();
+}
+
+function rematchWithHarderAi() {
+  setupSelection.mode = "ai";
+  setupSelection.aiDifficulty = nextAiDifficulty(state.aiDifficulty);
+  markSetupSelections();
+  if (matchEndDialog.open) matchEndDialog.close();
+  restartCurrentGame();
 }
 
 function invertFieldSides() {
@@ -2352,6 +2447,7 @@ function invertFieldSides() {
 }
 
 function endTurn() {
+  if (state.finished) return;
   expireBlocksForTeam(state.currentTeam);
   state.extraActionAvailable = false;
   state.actionSpent = false;
@@ -2379,12 +2475,12 @@ function completeAction() {
 }
 
 function maybeRunAiTurn() {
-  if (state.mode !== "ai" || state.currentTeam !== "red" || state.pendingShot || state.pendingDispute || paused) return;
+  if (state.finished || state.mode !== "ai" || state.currentTeam !== "red" || state.pendingShot || state.pendingDispute || paused) return;
   setTimeout(runAiTurn, 600);
 }
 
 function runAiTurn() {
-  if (state.mode !== "ai" || state.currentTeam !== "red") return;
+  if (state.finished || state.mode !== "ai" || state.currentTeam !== "red") return;
   const previousPiece = selectedPieceId;
   const previousAction = selectedAction;
   const ballOwner = state.ball.ownerId ? getPieceById(state.ball.ownerId) : null;
@@ -2649,6 +2745,215 @@ function formatTime(seconds) {
 function formatVisibleMatchTime() {
   const visibleSeconds = Math.max(0, Math.ceil(state.realHalfSecondsRemaining));
   return formatTime(visibleSeconds);
+}
+
+function loadCompetitionState() {
+  try {
+    const data = JSON.parse(localStorage.getItem(competitionStorageKey) || "null");
+    return data && data.code ? data : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveCompetitionState() {
+  if (!competitionState) {
+    localStorage.removeItem(competitionStorageKey);
+    return;
+  }
+  localStorage.setItem(competitionStorageKey, JSON.stringify(competitionState));
+}
+
+function generateCompetitionCode(type) {
+  const prefix = type === "cup" ? "COPA" : "LIGA";
+  const stamp = Date.now().toString(36).toUpperCase().slice(-5);
+  const seed = Math.random().toString(36).slice(2, 5).toUpperCase();
+  return `DT-${prefix}-${stamp}${seed}`;
+}
+
+function makeCompetition(type) {
+  const playerTeam = activeProfile?.team || "Equipo DT";
+  const rivals = type === "cup"
+    ? [
+        { label: "Semifinal", rival: "IA Barrial", difficulty: "easy" },
+        { label: "Final", rival: "IA Campeona", difficulty: "medium" }
+      ]
+    : [
+        { label: "Fecha 1", rival: "IA Norte", difficulty: "easy" },
+        { label: "Fecha 2", rival: "IA Sur", difficulty: "medium" },
+        { label: "Fecha 3", rival: "IA Campeona", difficulty: "hard" }
+      ];
+  return {
+    active: type !== "friendly",
+    type,
+    code: generateCompetitionCode(type),
+    playerTeam,
+    matchIndex: 0,
+    eliminated: false,
+    champion: false,
+    completed: false,
+    fixtures: rivals.map(item => ({ ...item, played: false, score: null, result: null })),
+    table: [
+      { team: playerTeam, pts: 0, pj: 0, gf: 0, gc: 0 },
+      { team: "IA Norte", pts: 0, pj: 0, gf: 0, gc: 0 },
+      { team: "IA Sur", pts: 0, pj: 0, gf: 0, gc: 0 },
+      { team: "IA Campeona", pts: 0, pj: 0, gf: 0, gc: 0 }
+    ],
+    history: []
+  };
+}
+
+function currentCompetitionFixture() {
+  if (!competitionState?.active) return null;
+  return competitionState.fixtures[competitionState.matchIndex] || null;
+}
+
+function setCompetitionMode(type) {
+  if (type === "friendly") {
+    competitionState = null;
+    saveCompetitionState();
+    renderCompetitionPanel("Partido unico seleccionado.");
+    return;
+  }
+  if (!activeProfile) {
+    renderCompetitionPanel("Primero registra o activa un equipo para crear una competencia IA.");
+    return;
+  }
+  competitionState = makeCompetition(type);
+  setupSelection.mode = "ai";
+  setupSelection.aiDifficulty = currentCompetitionFixture()?.difficulty || "easy";
+  saveCompetitionState();
+  markSetupSelections();
+  renderCompetitionPanel(`${type === "cup" ? "Mini copa" : "Torneo liga"} creado. Codigo ${competitionState.code}.`);
+}
+
+function resumeCompetitionByCode() {
+  const code = competitionCodeInputEl.value.trim().toUpperCase();
+  const saved = loadCompetitionState();
+  if (!saved || saved.code.toUpperCase() !== code) {
+    renderCompetitionPanel("No se encontro una competencia guardada con ese codigo en este dispositivo.");
+    return;
+  }
+  competitionState = saved;
+  setupSelection.mode = "ai";
+  setupSelection.aiDifficulty = currentCompetitionFixture()?.difficulty || setupSelection.aiDifficulty;
+  saveCompetitionState();
+  markSetupSelections();
+  renderCompetitionPanel(`Competencia retomada: ${competitionState.code}.`);
+}
+
+function abandonCompetition() {
+  competitionState = null;
+  saveCompetitionState();
+  if (competitionCodeInputEl) competitionCodeInputEl.value = "";
+  renderCompetitionPanel("Competencia abandonada. Queda seleccionado partido unico.");
+}
+
+function updateTableLine(team, gf, gc) {
+  if (!competitionState?.table) return;
+  const line = competitionState.table.find(item => item.team === team);
+  if (!line) return;
+  line.pj += 1;
+  line.gf += gf;
+  line.gc += gc;
+  if (gf > gc) line.pts += 3;
+  else if (gf === gc) line.pts += 1;
+}
+
+function simulateLeagueRound() {
+  if (!competitionState || competitionState.type !== "league") return;
+  const rivals = competitionState.table.filter(item => item.team !== competitionState.playerTeam);
+  if (rivals.length < 2) return;
+  const a = rivals[competitionState.matchIndex % rivals.length];
+  const b = rivals[(competitionState.matchIndex + 1) % rivals.length];
+  const ga = 1 + Math.floor(Math.random() * 3);
+  const gb = Math.floor(Math.random() * 3);
+  updateTableLine(a.team, ga, gb);
+  updateTableLine(b.team, gb, ga);
+  competitionState.history.push(`${a.team} ${ga} - ${gb} ${b.team}`);
+}
+
+function recordCompetitionResult(outcome) {
+  const fixture = currentCompetitionFixture();
+  if (!competitionState?.active || !fixture || state.mode !== "ai") return "";
+  const playerWon = outcome.winner === "blue";
+  const playerLost = outcome.winner === "red";
+  const result = playerWon ? "win" : playerLost ? "loss" : "draw";
+  fixture.played = true;
+  fixture.score = `${outcome.blue} - ${outcome.red}`;
+  fixture.result = result;
+  competitionState.history.push(`${fixture.label}: ${competitionState.playerTeam} ${fixture.score} ${fixture.rival}`);
+
+  if (competitionState.type === "cup") {
+    if (!playerWon) {
+      competitionState.eliminated = true;
+      competitionState.completed = true;
+      saveCompetitionState();
+      return `Mini copa: quedaste eliminado en ${fixture.label}. Codigo ${competitionState.code}.`;
+    }
+    if (competitionState.matchIndex >= competitionState.fixtures.length - 1) {
+      competitionState.champion = true;
+      competitionState.completed = true;
+      saveCompetitionState();
+      return `Mini copa: campeon ${competitionState.playerTeam}. Codigo ${competitionState.code}.`;
+    }
+    competitionState.matchIndex += 1;
+    saveCompetitionState();
+    return `Mini copa: ganaste ${fixture.label}. Proxima instancia: ${currentCompetitionFixture().label}.`;
+  }
+
+  updateTableLine(competitionState.playerTeam, outcome.blue, outcome.red);
+  updateTableLine(fixture.rival, outcome.red, outcome.blue);
+  simulateLeagueRound();
+  competitionState.matchIndex += 1;
+  if (competitionState.matchIndex >= competitionState.fixtures.length) {
+    competitionState.completed = true;
+    const sorted = [...competitionState.table].sort((a, b) => b.pts - a.pts || (b.gf - b.gc) - (a.gf - a.gc));
+    competitionState.champion = sorted[0]?.team === competitionState.playerTeam;
+    saveCompetitionState();
+    return competitionState.champion
+      ? `Torneo liga: campeon ${competitionState.playerTeam}.`
+      : `Torneo liga finalizado. Campeon: ${sorted[0]?.team || "por definir"}.`;
+  }
+  saveCompetitionState();
+  return `Torneo liga: resultado cargado. Proxima fecha: ${currentCompetitionFixture().label}.`;
+}
+
+function renderCompetitionPanel(message = "") {
+  if (!competitionStatusEl) return;
+  document.querySelectorAll("[data-competition]").forEach(button => {
+    const selected = competitionState?.active ? competitionState.type : "friendly";
+    button.classList.toggle("selected", button.dataset.competition === selected);
+  });
+  if (!competitionState?.active) {
+    competitionStatusEl.textContent = message || "Partido unico seleccionado.";
+    return;
+  }
+  if (competitionCodeInputEl) competitionCodeInputEl.value = competitionState.code;
+  const fixture = currentCompetitionFixture();
+  const fixtureLines = competitionState.fixtures.map((item, index) => {
+    const mark = index === competitionState.matchIndex && !competitionState.completed ? ">" : "-";
+    const result = item.played ? ` ${item.score}` : ` vs ${item.rival} (${aiDifficultyLabels[item.difficulty]})`;
+    return `${mark} ${item.label}:${result}`;
+  });
+  const tableLines = competitionState.type === "league"
+    ? [...competitionState.table]
+        .sort((a, b) => b.pts - a.pts || (b.gf - b.gc) - (a.gf - a.gc))
+        .map(item => `${item.team}: ${item.pts} pts (${item.gf}-${item.gc})`)
+    : [];
+  const current = fixture && !competitionState.completed
+    ? `Proximo rival: ${fixture.rival}. Dificultad ${aiDifficultyLabels[fixture.difficulty]}.`
+    : competitionState.champion
+    ? "Competencia completada: campeon."
+    : competitionState.eliminated
+    ? "Competencia completada: eliminado."
+    : "Competencia completada.";
+  competitionStatusEl.innerHTML = `
+    <strong>${competitionState.type === "cup" ? "Mini copa 4" : "Torneo liga"} ${competitionState.code}</strong><br>
+    ${message || current}<br>
+    ${fixtureLines.join("<br>")}
+    ${tableLines.length ? `<br><br>${tableLines.join("<br>")}` : ""}
+  `;
 }
 
 function loadStoredProfile() {
@@ -3140,6 +3445,7 @@ function renderRegisteredProfiles() {
 
 function syncSetupUi() {
   syncProfileUi();
+  renderCompetitionPanel();
   const isOnline = setupSelection.mode === "online";
   const isLeague = setupSelection.mode === "league";
   const registeredCount = Object.keys(loadProfileRegistry()).length;
@@ -3191,6 +3497,10 @@ function startConfiguredGame(realMinutes) {
   if (setupSelection.mode === "league") {
     leagueStatusEl.textContent = "Liga requiere administrador, equipos registrados, formato y calendario antes de jugar.";
     return;
+  }
+  const fixture = currentCompetitionFixture();
+  if (setupSelection.mode === "ai" && fixture && !competitionState.completed) {
+    setupSelection.aiDifficulty = fixture.difficulty;
   }
   setupSelection.realMinutes = realMinutes;
   lineupEditing = false;
@@ -3254,6 +3564,7 @@ function startPreparedLineupGame() {
 
 function restartCurrentGame() {
   lineupEditing = false;
+  if (matchEndDialog?.open) matchEndDialog.close();
   newGame();
   state.started = true;
   paused = false;
@@ -3269,6 +3580,7 @@ function returnToSetupMenu() {
   timerLastTickAt = null;
   if (pauseDialog.open) pauseDialog.close();
   if (changeDialog.open) changeDialog.close();
+  if (matchEndDialog?.open) matchEndDialog.close();
   state.started = false;
   setupScreenEl.classList.remove("hidden");
   styleScreenEl.classList.add("hidden");
@@ -3284,6 +3596,7 @@ function returnToStyleSelection() {
   if (pauseDialog.open) pauseDialog.close();
   if (changeDialog.open) changeDialog.close();
   if (lockerDialog.open) lockerDialog.close();
+  if (matchEndDialog?.open) matchEndDialog.close();
   if (state) state.started = false;
   setupScreenEl.classList.remove("hidden");
   styleScreenEl.classList.remove("hidden");
@@ -3383,6 +3696,22 @@ document.querySelectorAll("[data-ai]").forEach(button => {
     document.querySelectorAll("[data-ai]").forEach(item => item.classList.toggle("selected", item === button));
   });
 });
+
+document.querySelectorAll("[data-competition]").forEach(button => {
+  button.addEventListener("click", () => {
+    setCompetitionMode(button.dataset.competition);
+  });
+});
+
+resumeCompetitionBtn?.addEventListener("click", resumeCompetitionByCode);
+abandonCompetitionBtn?.addEventListener("click", abandonCompetition);
+restartMatchEndBtn?.addEventListener("click", () => {
+  if (matchEndDialog.open) matchEndDialog.close();
+  restartCurrentGame();
+});
+rematchHarderBtn?.addEventListener("click", rematchWithHarderAi);
+continueCompetitionBtn?.addEventListener("click", continueCompetitionMatch);
+matchEndMenuBtn?.addEventListener("click", returnToSetupMenu);
 
 document.querySelectorAll("[data-formation]").forEach(button => {
   button.addEventListener("click", () => {

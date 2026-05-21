@@ -130,6 +130,24 @@
           <button data-ai="medium">Medio</button>
           <button data-ai="hard">Dificil</button>
         </div>
+        <section id="competitionPanel" class="setup-module">
+          <h2>Competencia IA</h2>
+          <p class="setup-note">Opcional para jugar contra la maquina con continuidad, dificultad progresiva y codigo de competencia.</p>
+          <div class="setup-options compact">
+            <button data-competition="friendly">Partido unico</button>
+            <button data-competition="cup">Mini copa 4</button>
+            <button data-competition="league">Torneo liga</button>
+          </div>
+          <div class="login-grid">
+            <label>
+              Codigo competencia
+              <input id="competitionCodeInput" type="text" placeholder="DT-COPA-...">
+            </label>
+            <button id="resumeCompetitionBtn" type="button">Retomar</button>
+            <button id="abandonCompetitionBtn" type="button">Abandonar competencia</button>
+          </div>
+          <p id="competitionStatus" class="setup-status">Partido unico seleccionado.</p>
+        </section>
         <h2>Formacion</h2>
         <div class="setup-options compact">
           <button data-formation="f433">4-3-3</button>
@@ -537,6 +555,19 @@
       <p id="secretText">Carta elegida. Entrega el dispositivo al rival para que elija sin ver la carta anterior.</p>
       <div class="dialog-actions">
         <button id="secretContinueBtn">Continuar</button>
+      </div>
+    </dialog>
+
+    <dialog id="matchEndDialog" class="match-end-dialog">
+      <p class="eyebrow">Final del encuentro</p>
+      <h2 id="matchEndTitle">Fin del partido</h2>
+      <p id="matchEndText">Resultado final.</p>
+      <div id="competitionSummary" class="competition-summary hidden"></div>
+      <div class="dialog-actions">
+        <button id="restartMatchEndBtn" type="button">Reiniciar partido</button>
+        <button id="rematchHarderBtn" type="button">Revancha + dificultad</button>
+        <button id="continueCompetitionBtn" type="button">Continuar competencia</button>
+        <button id="matchEndMenuBtn" type="button">Menu</button>
       </div>
     </dialog>
 
