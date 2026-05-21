@@ -118,6 +118,8 @@ const tacticBoardEl = document.querySelector("#tacticBoard");
 const lockerBenchListEl = document.querySelector("#lockerBenchList");
 const lockerOutSelectEl = document.querySelector("#lockerOutSelect");
 const lockerInSelectEl = document.querySelector("#lockerInSelect");
+let duelRevealClearTimer = null;
+let shotRevealClearTimer = null;
 const lockerApplyChangeBtn = document.querySelector("#lockerApplyChangeBtn");
 
 let board = { width: 5, height: 10 };
@@ -1019,6 +1021,27 @@ function renderQuickRevealPanels() {
   }
 }
 
+function scheduleRevealClear(type) {
+  if (type === "duel") {
+    window.clearTimeout(duelRevealClearTimer);
+    duelRevealClearTimer = window.setTimeout(() => {
+      if (state.pendingDispute) return;
+      state.lastDuel = null;
+      renderDuelPanel();
+      renderQuickRevealPanels();
+    }, 2600);
+    return;
+  }
+
+  window.clearTimeout(shotRevealClearTimer);
+  shotRevealClearTimer = window.setTimeout(() => {
+    if (state.pendingShot) return;
+    state.lastShot = null;
+    renderShotPanel();
+    renderQuickRevealPanels();
+  }, 2600);
+}
+
 function textFor(key) {
   return uiText[currentLanguage]?.[key] || uiText.es[key] || key;
 }
@@ -1282,6 +1305,16 @@ function renderDuelPanel() {
   rivalCard.classList.toggle("revealed", Boolean(state.pendingDispute && state.pendingDispute.revealed));
 
   if (!state.pendingDispute) {
+    if (state.lastDuel) {
+      mineCard.classList.remove("hidden-card");
+      rivalCard.classList.remove("hidden-card");
+      rivalCard.classList.add("revealed");
+      duelMineEl.textContent = state.lastDuel.mineCard || state.lastDuel.challengerCard || "-";
+      duelRivalLabelEl.textContent = textFor("rivalFront");
+      duelRivalEl.textContent = state.lastDuel.rivalCard || state.lastDuel.holderCard || "?";
+      duelStatusEl.textContent = state.lastDuel.result || `Duelo: ${teamLabel(state.lastDuel.winnerTeam)} gana.`;
+      return;
+    }
     duelRivalLabelEl.textContent = textFor("rivalBack");
     duelMineEl.textContent = "-";
     duelRivalEl.textContent = "?";
@@ -1554,6 +1587,7 @@ function onKeeperClick(team) {
     };
     state.activeLongShot = false;
     showGameBanner("GOOOLLLL!!!", `Arco vacio. ${getGoalAudioText(selected.team)}`, "goal", 2200);
+    scheduleRevealClear("shot");
     resetAfterGoal(getOpponentTeam(selected.team));
     animateVisualMove(shotAnimation);
     return;
@@ -1599,6 +1633,7 @@ function chooseShotCard(card) {
     }
     renderShotCards();
     renderShotPanel();
+    renderQuickRevealPanels();
     renderHud();
     return;
   }
@@ -1609,6 +1644,7 @@ function chooseShotCard(card) {
       addLog("Arquero eligio carta de atajada tapada. Ahora elige carta de rebote.");
       renderShotCards();
       renderShotPanel();
+      renderQuickRevealPanels();
       renderHud();
       return;
     }
@@ -1617,6 +1653,7 @@ function chooseShotCard(card) {
   }
 
   renderShotPanel();
+  renderQuickRevealPanels();
   resolvePendingShot();
 }
 
@@ -1640,6 +1677,7 @@ function chooseDuelCard(card, disputeId = null) {
   addLog("Carta de disputa elegida.");
   renderDuelCards();
   renderDuelPanel();
+  renderQuickRevealPanels();
 
   if (state.mode === "local") {
     const missingRole = state.pendingDispute.holderCard ? "challenger" : "holder";
@@ -1648,6 +1686,7 @@ function chooseDuelCard(card, disputeId = null) {
       state.pendingDispute.localWaitingSecond = true;
       renderDuelCards();
       renderDuelPanel();
+      renderQuickRevealPanels();
       showSecretStep("Pasar dispositivo", "Carta elegida y tapada. Entrega el dispositivo al rival para que elija sin ver la carta anterior.");
       return;
     }
@@ -1727,8 +1766,11 @@ function resolvePendingDispute() {
   state.lastDuel = {
     challengerCard: dispute.challengerCard,
     holderCard: dispute.holderCard,
+    mineCard: dispute.humanChoiceRole === "holder" ? dispute.holderCard : dispute.challengerCard,
+    rivalCard: dispute.humanChoiceRole === "holder" ? dispute.challengerCard : dispute.holderCard,
     winnerTeam: winner.team,
-    loserLabel: pieceLabel(loser)
+    loserLabel: pieceLabel(loser),
+    result: `Duelo: ${teamLabel(winner.team)} gana (${dispute.challengerCard} vs ${dispute.holderCard}). ${pieceLabel(loser)} queda bloqueado un turno.`
   };
 
   const possessionChangedTeam = previousOwnerTeam && previousOwnerTeam !== winner.team;
@@ -1746,6 +1788,7 @@ function resolvePendingDispute() {
     state.kickoffPassRequired = false;
   state.extraActionAvailable = false;
   state.actionSpent = false;
+  scheduleRevealClear("duel");
   render();
   maybeRunAiTurn();
 }
@@ -1768,8 +1811,11 @@ function resolveSkillfulDispute() {
   state.lastDuel = {
     challengerCard: "JH",
     holderCard: "AUTO",
+    mineCard: "JH",
+    rivalCard: "AUTO",
     winnerTeam: winner.team,
-    loserLabel: pieceLabel(loser)
+    loserLabel: pieceLabel(loser),
+    result: `Jugada Habilidosa: ${teamLabel(winner.team)} gana automaticamente. ${pieceLabel(loser)} queda bloqueado un turno.`
   };
   const possessionChangedTeam = previousOwnerTeam && previousOwnerTeam !== winner.team;
   showGameBanner(
@@ -1787,6 +1833,7 @@ function resolveSkillfulDispute() {
   state.kickoffPassRequired = false;
   state.extraActionAvailable = false;
   state.actionSpent = false;
+  scheduleRevealClear("duel");
   render();
   maybeRunAiTurn();
 }
@@ -1825,6 +1872,7 @@ function resolvePendingShot() {
     selectedPieceId = keeper.id;
     selectedAction = "pass";
     state.turnSeconds = 15;
+    scheduleRevealClear("shot");
     render();
     maybeRunAiTurn();
     return;
@@ -1844,6 +1892,7 @@ function resolvePendingShot() {
     state.ball.y = rebound.y;
     state.pendingShot = null;
     state.activeLongShot = false;
+    scheduleRevealClear("shot");
     endTurn();
     return;
   }
@@ -1859,6 +1908,7 @@ function resolvePendingShot() {
   showGameBanner("GOOOLLLL!!!", goalText, "goal", 2200);
   state.pendingShot = null;
   state.activeLongShot = false;
+  scheduleRevealClear("shot");
   resetAfterGoal(shot.attackingTeam === "blue" ? "red" : "blue");
 }
 
@@ -2692,7 +2742,10 @@ function openMatchEndDialog(outcome, competitionMessage = "") {
   continueCompetitionBtn.classList.toggle("hidden", !canContinueCompetition);
   if (state.mode === "ai") {
     const next = nextAiDifficulty(state.aiDifficulty);
-    rematchHarderBtn.textContent = `Revancha IA ${aiDifficultyLabels[next]}`;
+    const isUpgrade = next !== state.aiDifficulty;
+    rematchHarderBtn.textContent = isUpgrade
+      ? `Revancha IA ${aiDifficultyLabels[next]} - sube nivel`
+      : `Revancha IA ${aiDifficultyLabels[next]}`;
   }
   matchEndDialog.showModal();
 }
