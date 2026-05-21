@@ -1,5 +1,6 @@
 const boardEl = document.querySelector("#board");
 const styleScreenEl = document.querySelector("#styleScreen");
+const languageSelectEl = document.querySelector("#languageSelect");
 const topKeeperEl = document.querySelector("#topKeeper");
 const bottomKeeperEl = document.querySelector("#bottomKeeper");
 const selectedPieceEl = document.querySelector("#selectedPiece");
@@ -120,6 +121,88 @@ const lockerInSelectEl = document.querySelector("#lockerInSelect");
 const lockerApplyChangeBtn = document.querySelector("#lockerApplyChangeBtn");
 
 let board = { width: 5, height: 10 };
+const languageStorageKey = "dtDigitalLanguage";
+let currentLanguage = localStorage.getItem(languageStorageKey) || "es";
+const uiText = {
+  es: {
+    language: "Idioma",
+    audio: "Audio",
+    soundOn: "SONIDO ON",
+    soundOff: "SONIDO",
+    firstHalf: "Primer tiempo",
+    secondHalf: "Segundo tiempo",
+    preview: "Previa",
+    final: "Final",
+    time: "Tiempo",
+    turn: "Turno",
+    piece: "Ficha",
+    squad: "Plantel",
+    move: "Mover",
+    moveBall: "Mover con balon",
+    pass: "Pase",
+    shot: "Remate",
+    endTurn: "Finalizar turno",
+    abilities: "Capacidades",
+    reference: "Referencia",
+    bench: "Banco",
+    history: "Historial",
+    specialCards: "Cartas especiales",
+    duelCards: "Cartas de disputa",
+    shotCards: "Cartas de remate / arquero"
+  },
+  en: {
+    language: "Language",
+    audio: "Audio",
+    soundOn: "SOUND ON",
+    soundOff: "SOUND",
+    firstHalf: "First half",
+    secondHalf: "Second half",
+    preview: "Preview",
+    final: "Final",
+    time: "Time",
+    turn: "Turn",
+    piece: "Piece",
+    squad: "Squad",
+    move: "Move",
+    moveBall: "Move with ball",
+    pass: "Pass",
+    shot: "Shoot",
+    endTurn: "End turn",
+    abilities: "Abilities",
+    reference: "Reference",
+    bench: "Bench",
+    history: "History",
+    specialCards: "Special cards",
+    duelCards: "Duel cards",
+    shotCards: "Shot / keeper cards"
+  },
+  pt: {
+    language: "Idioma",
+    audio: "Audio",
+    soundOn: "SOM ON",
+    soundOff: "SOM",
+    firstHalf: "Primeiro tempo",
+    secondHalf: "Segundo tempo",
+    preview: "Previa",
+    final: "Final",
+    time: "Tempo",
+    turn: "Turno",
+    piece: "Peca",
+    squad: "Elenco",
+    move: "Mover",
+    moveBall: "Mover com bola",
+    pass: "Passe",
+    shot: "Chute",
+    endTurn: "Finalizar turno",
+    abilities: "Capacidades",
+    reference: "Referencia",
+    bench: "Banco",
+    history: "Historico",
+    specialCards: "Cartas especiais",
+    duelCards: "Cartas de disputa",
+    shotCards: "Cartas de chute / goleiro"
+  }
+};
 const crowdTracks = ["assets/tribuna-estadio.mp3"];
 const lockerTracks = ["assets/vestuario-motivacion.mp3", "assets/vestuario-arenga.mp3"];
 const goalTracks = ["assets/gol-principal.mp3"];
@@ -825,6 +908,44 @@ function renderQuickRevealPanels() {
   }
 }
 
+function textFor(key) {
+  return uiText[currentLanguage]?.[key] || uiText.es[key] || key;
+}
+
+function halfAbbrev() {
+  if (lineupEditing) return "PRE";
+  if (state.finished) return "FIN";
+  return state.half === 1 ? "PT" : "ST";
+}
+
+function applyLanguage() {
+  if (languageSelectEl) languageSelectEl.value = currentLanguage;
+  document.querySelector(".language-switch span").textContent = textFor("language");
+  introAudioBtn?.querySelector("strong") && (introAudioBtn.querySelector("strong").textContent = textFor("audio"));
+  document.querySelector("[data-action='move']").textContent = textFor("move");
+  document.querySelector("[data-action='moveBall']").textContent = textFor("moveBall");
+  document.querySelector("[data-action='pass']").textContent = textFor("pass");
+  document.querySelector("[data-action='shot']").textContent = textFor("shot");
+  document.querySelector("#endTurnBtn").textContent = textFor("endTurn");
+  const leftHeaders = document.querySelectorAll(".left-panel h2");
+  if (leftHeaders[0]) leftHeaders[0].textContent = textFor("turn");
+  if (leftHeaders[1]) leftHeaders[1].textContent = textFor("history");
+  const selectedLabels = document.querySelectorAll(".left-panel .selected-box span");
+  if (selectedLabels[0]) selectedLabels[0].textContent = textFor("piece");
+  if (selectedLabels[1]) selectedLabels[1].textContent = textFor("squad");
+  const abilityLabels = document.querySelectorAll(".left-panel .ability-box > span");
+  if (abilityLabels[0]) abilityLabels[0].textContent = textFor("abilities");
+  if (abilityLabels[1]) abilityLabels[1].textContent = textFor("reference");
+  if (abilityLabels[2]) abilityLabels[2].textContent = textFor("bench");
+  document.querySelectorAll(".right-panel h2").forEach(header => {
+    if (header.textContent.includes("especiales") || header.textContent.includes("Special") || header.textContent.includes("especiais")) header.textContent = textFor("specialCards");
+    if (header.textContent.includes("disputa") || header.textContent.includes("Duel")) header.textContent = textFor("duelCards");
+    if (header.textContent.includes("remate") || header.textContent.includes("Shot") || header.textContent.includes("chute")) header.textContent = textFor("shotCards");
+  });
+  syncAudioButtons();
+  renderHud();
+}
+
 function renderHud() {
   const selected = getSelectedPiece();
   if (state.kickoffPassRequired) {
@@ -852,7 +973,7 @@ function renderHud() {
   teamBNameEl.textContent = teamLabel("red");
   turnLabelEl.textContent = `Turno: ${teamLabel(state.currentTeam)}`;
   scoreEl.textContent = `${state.score.blue} - ${state.score.red}`;
-  const halfText = state.half === 1 ? "Primer tiempo" : "Segundo tiempo";
+  const halfText = state.half === 1 ? textFor("firstHalf") : textFor("secondHalf");
   const timerText = formatVisibleMatchTime();
   const scoreText = `${state.score.blue} - ${state.score.red}`;
   halfLabelEl.textContent = halfText;
@@ -861,8 +982,8 @@ function renderHud() {
   if (floatingMatchHudEl) {
     const showFloatingHud = Boolean(state && setupScreenEl.classList.contains("hidden") && styleScreenEl.classList.contains("hidden"));
     floatingMatchHudEl.classList.toggle("hidden", !showFloatingHud);
-    floatingHalfEl.textContent = lineupEditing ? "Previa" : state.finished ? "Final" : halfText;
-    floatingScoreEl.textContent = scoreText;
+    floatingHalfEl.textContent = textFor("time");
+    floatingScoreEl.textContent = `${halfAbbrev()} ${scoreText}`;
     floatingTimerEl.textContent = timerText;
   }
   if (startPreparedBtn) {
@@ -1621,10 +1742,10 @@ function enableAudio() {
 
 function syncAudioButtons() {
   audioBtn.classList.toggle("active", audioState.enabled);
-  audioBtn.textContent = audioState.enabled ? "SONIDO ON" : "SONIDO";
+  audioBtn.textContent = audioState.enabled ? textFor("soundOn") : textFor("soundOff");
   [introAudioBtn, lockerAudioBtn].filter(Boolean).forEach(button => {
     button.classList.toggle("active", audioState.enabled);
-    button.querySelector("strong").textContent = audioState.enabled ? "Silencio" : "Audio";
+    button.querySelector("strong").textContent = audioState.enabled ? "Silencio" : textFor("audio");
     button.setAttribute("aria-label", audioState.enabled ? "Silenciar audio" : "Activar audio");
   });
 }
@@ -3958,6 +4079,12 @@ quickControlsEl?.addEventListener("click", event => {
   }
 });
 
+languageSelectEl?.addEventListener("change", () => {
+  currentLanguage = languageSelectEl.value;
+  localStorage.setItem(languageStorageKey, currentLanguage);
+  applyLanguage();
+});
+
 document.addEventListener("click", event => {
   if (!quickControlsEl || !quickControlsEl.classList.contains("visible")) return;
   if (event.target.closest("#quickControls")) return;
@@ -3993,6 +4120,7 @@ newGame();
 markSetupSelections();
 syncSetupUi();
 applyLockerSettings();
+applyLanguage();
 syncAudioButtons();
 switchAudioScene("menu");
 paused = true;

@@ -104,6 +104,37 @@ input {
   transform: translateY(-50%) rotate(-38deg);
 }
 
+.language-switch {
+  position: fixed;
+  top: 18px;
+  left: 18px;
+  z-index: 83;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: rgba(16, 22, 19, 0.88);
+  color: var(--muted);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.32);
+}
+
+.language-switch span {
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.language-switch select {
+  min-height: 26px;
+  border: 1px solid rgba(243, 187, 69, 0.62);
+  border-radius: 999px;
+  background: #0f1714;
+  color: var(--ink);
+  padding: 2px 8px;
+}
+
 .app {
   min-height: 100vh;
   padding: 16px;
@@ -400,9 +431,9 @@ h3 {
 
 .floating-match-hud {
   position: fixed;
-  top: 12px;
-  left: 92px;
-  right: 92px;
+  top: 16px;
+  left: 96px;
+  right: 96px;
   z-index: 82;
   display: flex;
   justify-content: space-between;
@@ -418,8 +449,8 @@ h3 {
 
 .floating-time-pill,
 .floating-match-hud strong {
-  min-height: 46px;
-  padding: 8px 14px;
+  min-height: 50px;
+  padding: 7px 16px;
   border: 2px solid rgba(246, 192, 65, 0.85);
   border-radius: 999px;
   background: rgba(15, 23, 20, 0.88);
@@ -428,9 +459,11 @@ h3 {
 }
 
 .floating-time-pill {
-  display: flex;
+  display: grid;
   align-items: center;
-  gap: 12px;
+  gap: 1px;
+  justify-items: center;
+  min-width: 118px;
 }
 
 .floating-match-hud span {
@@ -440,9 +473,9 @@ h3 {
 }
 
 .floating-match-hud strong {
-  min-width: 74px;
+  min-width: 112px;
   color: var(--line);
-  font-size: 24px;
+  font-size: 23px;
   line-height: 1;
   text-align: center;
   display: grid;
@@ -2453,6 +2486,17 @@ dialog::backdrop {
     font-size: 13px;
   }
 
+  .language-switch {
+    top: 10px;
+    left: 10px;
+    min-height: 34px;
+    padding: 5px 8px;
+  }
+
+  .language-switch span {
+    display: none;
+  }
+
   .style-screen {
     place-items: center;
     overflow: hidden;
@@ -2534,16 +2578,15 @@ dialog::backdrop {
   }
 
   .floating-time-pill {
-    flex-direction: column;
-    align-items: start;
     gap: 0;
     min-height: 42px;
+    min-width: 78px;
     padding: 6px 10px;
     border-width: 1px;
   }
 
   .floating-match-hud strong {
-    min-width: 58px;
+    min-width: 78px;
     min-height: 42px;
     padding: 6px 10px;
     border-width: 1px;

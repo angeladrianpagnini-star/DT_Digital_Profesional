@@ -7,6 +7,14 @@
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
+    <label class="language-switch" aria-label="Idioma">
+      <span>Idioma</span>
+      <select id="languageSelect">
+        <option value="es">ES</option>
+        <option value="en">EN</option>
+        <option value="pt">PT</option>
+      </select>
+    </label>
     <button id="introAudioBtn" class="intro-audio-btn" type="button" aria-label="Activar audio de presentacion">
       <span class="audio-icon" aria-hidden="true"></span>
       <strong>Audio</strong>
@@ -196,11 +204,11 @@
         <button id="pauseBtn" class="icon-btn" title="Pausar o salir">ESC</button>
       </section>
       <section id="floatingMatchHud" class="floating-match-hud hidden" aria-label="Marcador y tiempo de partido">
+        <strong id="floatingScore">PT 0 - 0</strong>
         <div class="floating-time-pill">
-          <span id="floatingHalf">Primer tiempo</span>
-          <span>Tiempo <b id="floatingTimer">05:00</b></span>
+          <span id="floatingHalf">Tiempo</span>
+          <span><b id="floatingTimer">05:00</b></span>
         </div>
-        <strong id="floatingScore">0 - 0</strong>
       </section>
 
       <section class="layout">
