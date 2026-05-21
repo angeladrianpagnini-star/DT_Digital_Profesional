@@ -401,25 +401,36 @@ h3 {
 .floating-match-hud {
   position: fixed;
   top: 12px;
+  left: 92px;
   right: 92px;
   z-index: 82;
-  display: grid;
-  grid-template-columns: auto auto auto;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 10px;
-  min-height: 46px;
-  padding: 8px 12px;
-  border: 2px solid rgba(246, 192, 65, 0.85);
-  border-radius: 999px;
-  background: rgba(15, 23, 20, 0.88);
+  gap: 12px;
   color: #edf3df;
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.36);
-  backdrop-filter: blur(8px);
   pointer-events: none;
 }
 
 .floating-match-hud.hidden {
   display: none;
+}
+
+.floating-time-pill,
+.floating-match-hud strong {
+  min-height: 46px;
+  padding: 8px 14px;
+  border: 2px solid rgba(246, 192, 65, 0.85);
+  border-radius: 999px;
+  background: rgba(15, 23, 20, 0.88);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.36);
+  backdrop-filter: blur(8px);
+}
+
+.floating-time-pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .floating-match-hud span {
@@ -434,6 +445,8 @@ h3 {
   font-size: 24px;
   line-height: 1;
   text-align: center;
+  display: grid;
+  place-items: center;
 }
 
 .floating-match-hud b {
@@ -2515,22 +2528,25 @@ dialog::backdrop {
 
   .floating-match-hud {
     top: 10px;
-    right: 10px;
-    grid-template-columns: auto auto;
-    gap: 4px 8px;
-    min-height: 42px;
-    max-width: calc(100vw - 20px);
-    padding: 7px 10px;
-    border-width: 1px;
+    left: 78px;
+    right: 78px;
+    gap: 8px;
   }
 
-  .floating-match-hud span:first-child {
-    grid-column: 1 / -1;
-    text-align: center;
+  .floating-time-pill {
+    flex-direction: column;
+    align-items: start;
+    gap: 0;
+    min-height: 42px;
+    padding: 6px 10px;
+    border-width: 1px;
   }
 
   .floating-match-hud strong {
     min-width: 58px;
+    min-height: 42px;
+    padding: 6px 10px;
+    border-width: 1px;
     font-size: 21px;
   }
 
