@@ -907,7 +907,7 @@ h3 {
 
 .stadium {
   display: grid;
-  grid-template-rows: 112px auto 92px;
+  grid-template-rows: 116px auto 116px;
   min-height: calc(100vh - 120px);
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -920,24 +920,20 @@ h3 {
     linear-gradient(#44514b, #1b2420);
 }
 
-.bottom-stands {
-  transform: rotate(180deg);
-}
-
 .ad-strip {
   height: 100%;
   display: grid;
   grid-template-columns: repeat(5, minmax(92px, 1fr));
-  gap: 8px;
+  gap: 10px;
   align-items: center;
-  padding: 10px 12px;
+  padding: 12px 18px;
 }
 
 .ad-strip img,
 .ad-placeholder {
   width: 100%;
-  height: 78px;
-  object-fit: cover;
+  height: 82px;
+  object-fit: contain;
   border: 1px solid rgba(255, 255, 255, 0.18);
   background: #111a16;
   box-shadow: inset 0 0 0 1px rgba(243, 187, 69, 0.08), 0 8px 18px rgba(0, 0, 0, 0.28);
@@ -2837,7 +2833,7 @@ dialog::backdrop {
 
   .stadium {
     order: 1;
-    grid-template-rows: 68px auto 38px;
+    grid-template-rows: 66px auto 66px;
     min-height: auto;
   }
 
