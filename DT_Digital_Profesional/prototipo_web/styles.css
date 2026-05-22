@@ -2924,16 +2924,16 @@ dialog::backdrop {
   }
 
   .pitch {
-    width: var(--board-width, 620px);
-    min-width: var(--board-width, 620px);
+    width: var(--mobile-board-width, var(--board-width, 620px));
+    min-width: var(--mobile-board-width, var(--board-width, 620px));
   }
 
   .board {
-    width: var(--board-width, 620px);
+    width: var(--mobile-board-width, var(--board-width, 620px));
   }
 
   .keeper-row {
-    width: var(--board-width, 620px);
+    width: var(--mobile-board-width, var(--board-width, 620px));
   }
 
   .piece.figure {
