@@ -482,11 +482,23 @@ function applyGameStyle(style) {
 }
 
 function centerFieldScroll() {
-  window.requestAnimationFrame(() => {
+  const center = () => {
     const wrap = document.querySelector(".table-wrap");
-    if (!wrap || wrap.scrollWidth <= wrap.clientWidth) return;
-    wrap.scrollLeft = Math.max(0, (wrap.scrollWidth - wrap.clientWidth) / 2);
-  });
+    if (wrap && wrap.scrollWidth > wrap.clientWidth) {
+      wrap.scrollLeft = Math.max(0, (wrap.scrollWidth - wrap.clientWidth) / 2);
+    }
+    if (window.matchMedia("(max-width: 900px)").matches) {
+      const pitch = document.querySelector(".pitch");
+      if (!pitch) return;
+      const rect = pitch.getBoundingClientRect();
+      const targetLeft = Math.max(0, window.scrollX + rect.left + rect.width / 2 - window.innerWidth / 2);
+      document.documentElement.scrollLeft = targetLeft;
+      document.body.scrollLeft = targetLeft;
+    }
+  };
+  window.requestAnimationFrame(center);
+  window.setTimeout(center, 80);
+  window.setTimeout(center, 260);
 }
 
 function scaleInitialPosition(x, y) {
@@ -4033,6 +4045,16 @@ startMatchBtn.addEventListener("click", () => {
 });
 
 prepareLineupBtn.addEventListener("click", prepareLineupOnField);
+
+window.addEventListener("orientationchange", () => {
+  window.setTimeout(centerFieldScroll, 280);
+});
+
+window.addEventListener("resize", () => {
+  if (setupScreen && setupScreen.hidden) {
+    window.setTimeout(centerFieldScroll, 120);
+  }
+});
 startPreparedBtn.addEventListener("click", startPreparedLineupGame);
 
 document.querySelectorAll("[data-game-style]").forEach(button => {
