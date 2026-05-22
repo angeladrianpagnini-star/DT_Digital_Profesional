@@ -701,13 +701,36 @@ h3 {
 
 .layout {
   display: grid;
-  grid-template-columns: 270px minmax(620px, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
   margin-top: 16px;
 }
 
 .right-panel {
   display: none;
+}
+
+.stadium {
+  order: 1;
+}
+
+.left-panel {
+  order: 2;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 14px;
+  min-height: auto;
+  align-items: start;
+}
+
+.left-panel h2:first-child,
+.left-panel .actions {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .panel {
@@ -717,7 +740,12 @@ h3 {
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.left-panel {
+  min-height: auto;
+}
+
 .turn-label {
+  grid-column: span 3;
   padding: 10px 12px;
   background: var(--panel-2);
   color: var(--line);
@@ -725,9 +753,10 @@ h3 {
 }
 
 .selected-box {
+  grid-column: span 3;
   display: grid;
   gap: 4px;
-  margin: 16px 0;
+  margin: 0;
   padding: 12px;
   background: #0f1714;
   border-left: 4px solid var(--line);
@@ -745,6 +774,15 @@ h3 {
   display: grid;
   gap: 8px;
   margin-bottom: 18px;
+}
+
+.left-panel .ability-box {
+  grid-column: span 4;
+}
+
+.left-panel > h2:not(:first-child),
+.left-panel .log {
+  grid-column: 1 / -1;
 }
 
 .play-card-stack {
@@ -2865,6 +2903,7 @@ dialog::backdrop {
 
   .left-panel {
     order: 2;
+    grid-template-columns: 1fr;
   }
 
   .right-panel {
@@ -2917,6 +2956,14 @@ dialog::backdrop {
   .role-buttons,
   .panel-bench {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .turn-label,
+  .selected-box,
+  .left-panel .ability-box,
+  .left-panel > h2:not(:first-child),
+  .left-panel .log {
+    grid-column: 1 / -1;
   }
 
   .play-card-stack {

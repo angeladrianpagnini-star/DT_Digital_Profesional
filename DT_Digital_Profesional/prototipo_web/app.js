@@ -478,7 +478,15 @@ function applyGameStyle(style) {
   document.documentElement.style.setProperty("--board-rows", board.height);
   document.documentElement.style.setProperty("--keeper-col", keeperZones.red.x + 1);
   document.documentElement.style.setProperty("--keeper-span", style === "intensity" ? 2 : 1);
-  document.documentElement.style.setProperty("--board-width", style === "intensity" ? "900px" : "620px");
+  document.documentElement.style.setProperty("--board-width", style === "intensity" ? "1040px" : "720px");
+}
+
+function centerFieldScroll() {
+  window.requestAnimationFrame(() => {
+    const wrap = document.querySelector(".table-wrap");
+    if (!wrap || wrap.scrollWidth <= wrap.clientWidth) return;
+    wrap.scrollLeft = Math.max(0, (wrap.scrollWidth - wrap.clientWidth) / 2);
+  });
 }
 
 function scaleInitialPosition(x, y) {
@@ -3867,6 +3875,7 @@ function startConfiguredGame(realMinutes) {
   switchAudioScene("match");
   markSetupSelections();
   render();
+  centerFieldScroll();
   maybeRunAiTurn();
 }
 
@@ -3895,8 +3904,10 @@ function prepareLineupOnField() {
   switchAudioScene("match");
   addLog("Modo alineacion: arrastra los jugadores antes de iniciar el partido.");
   render();
+  centerFieldScroll();
   window.setTimeout(() => {
     document.querySelector(".stadium")?.scrollIntoView({ block: "start", inline: "center" });
+    centerFieldScroll();
   }, 80);
 }
 
