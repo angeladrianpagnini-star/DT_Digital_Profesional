@@ -2709,7 +2709,7 @@ dialog::backdrop {
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 900px), (hover: none) and (pointer: coarse), (max-height: 620px) and (orientation: landscape) {
   body {
     overflow-x: hidden;
   }
@@ -2759,7 +2759,13 @@ dialog::backdrop {
     justify-items: center;
     width: 100%;
     max-width: 100%;
-    overflow-x: hidden;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .table-wrap::-webkit-scrollbar {
+    display: none;
   }
 
   .pitch {
@@ -2985,9 +2991,14 @@ dialog::backdrop {
     grid-template-columns: max-content;
     justify-content: center;
     justify-items: center;
-    overflow-x: hidden;
+    overflow-x: auto;
     padding: 10px;
+    scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
+  }
+
+  .table-wrap::-webkit-scrollbar {
+    display: none;
   }
 
   .pitch {

@@ -482,22 +482,24 @@ function applyGameStyle(style) {
   updateMobileFieldWidth();
 }
 
+function isMobileFieldLayout() {
+  return window.matchMedia("(max-width: 900px), (hover: none) and (pointer: coarse), (max-height: 620px) and (orientation: landscape)").matches;
+}
+
 function centerFieldScroll() {
   const center = () => {
-    const isMobile = window.matchMedia("(max-width: 900px)").matches;
+    const isMobile = isMobileFieldLayout();
     const wrap = document.querySelector(".table-wrap");
     const field = document.querySelector(".board") || document.querySelector(".pitch");
-    if (isMobile) {
-      if (wrap) wrap.scrollLeft = 0;
-      document.documentElement.scrollLeft = 0;
-      document.body.scrollLeft = 0;
-      return;
-    }
     if (wrap && field && wrap.scrollWidth > wrap.clientWidth) {
       const wrapRect = wrap.getBoundingClientRect();
       const fieldRect = field.getBoundingClientRect();
       const fieldCenter = wrap.scrollLeft + fieldRect.left - wrapRect.left + fieldRect.width / 2;
       wrap.scrollLeft = Math.max(0, fieldCenter - wrap.clientWidth / 2);
+    }
+    if (isMobile) {
+      document.documentElement.scrollLeft = 0;
+      document.body.scrollLeft = 0;
     }
   };
   window.requestAnimationFrame(center);
@@ -507,13 +509,16 @@ function centerFieldScroll() {
 }
 
 function updateMobileFieldWidth() {
-  const isMobile = window.matchMedia("(max-width: 900px)").matches;
+  const isMobile = isMobileFieldLayout();
   if (!isMobile) {
     document.documentElement.style.removeProperty("--mobile-board-width");
     return;
   }
-  const viewportWidth = Math.floor(window.visualViewport?.width || window.innerWidth);
-  const sideRoom = window.matchMedia("(orientation: landscape)").matches ? 220 : 28;
+  const viewportWidth = Math.floor(Math.min(
+    window.visualViewport?.width || window.innerWidth,
+    document.documentElement.clientWidth || window.innerWidth
+  ));
+  const sideRoom = window.matchMedia("(orientation: landscape)").matches ? 210 : 28;
   const width = Math.max(300, Math.min(parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--board-width")) || 720, viewportWidth - sideRoom));
   document.documentElement.style.setProperty("--mobile-board-width", `${width}px`);
 }
