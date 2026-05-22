@@ -483,21 +483,20 @@ function applyGameStyle(style) {
 
 function centerFieldScroll() {
   const center = () => {
+    const isMobile = window.matchMedia("(max-width: 900px)").matches;
     const wrap = document.querySelector(".table-wrap");
     const field = document.querySelector(".board") || document.querySelector(".pitch");
+    if (isMobile) {
+      if (wrap) wrap.scrollLeft = 0;
+      document.documentElement.scrollLeft = 0;
+      document.body.scrollLeft = 0;
+      return;
+    }
     if (wrap && field && wrap.scrollWidth > wrap.clientWidth) {
       const wrapRect = wrap.getBoundingClientRect();
       const fieldRect = field.getBoundingClientRect();
       const fieldCenter = wrap.scrollLeft + fieldRect.left - wrapRect.left + fieldRect.width / 2;
-      const mobileBias = window.matchMedia("(max-width: 900px)").matches ? 150 : 0;
-      wrap.scrollLeft = Math.max(0, fieldCenter - wrap.clientWidth / 2 + mobileBias);
-    }
-    if (window.matchMedia("(max-width: 900px)").matches) {
-      if (!field) return;
-      const rect = field.getBoundingClientRect();
-      const targetLeft = Math.max(0, window.scrollX + rect.left + rect.width / 2 - window.innerWidth / 2 + 150);
-      document.documentElement.scrollLeft = targetLeft;
-      document.body.scrollLeft = targetLeft;
+      wrap.scrollLeft = Math.max(0, fieldCenter - wrap.clientWidth / 2);
     }
   };
   window.requestAnimationFrame(center);
