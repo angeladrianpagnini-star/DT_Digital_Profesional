@@ -2709,6 +2709,73 @@ dialog::backdrop {
   }
 }
 
+@media (max-width: 900px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  .app,
+  .layout,
+  .stadium {
+    width: 100%;
+    max-width: 100vw;
+    min-width: 0;
+    overflow-x: hidden;
+  }
+
+  .stadium {
+    grid-template-rows: 66px auto 66px;
+    min-height: auto;
+  }
+
+  .ad-strip {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 6px;
+    padding: 6px;
+    overflow: hidden;
+  }
+
+  .ad-strip img,
+  .ad-placeholder {
+    min-width: 0;
+    height: 54px;
+  }
+
+  .ad-placeholder strong {
+    font-size: clamp(7px, 1.45vw, 12px);
+  }
+
+  .ad-placeholder span {
+    font-size: clamp(8px, 1.6vw, 13px);
+  }
+
+  .ad-placeholder small {
+    font-size: clamp(5px, 1.15vw, 8px);
+  }
+
+  .table-wrap {
+    grid-template-columns: max-content;
+    justify-content: center;
+    justify-items: center;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .pitch {
+    width: var(--mobile-board-width, var(--board-width, 620px));
+    min-width: var(--mobile-board-width, var(--board-width, 620px));
+  }
+
+  .board {
+    width: var(--mobile-board-width, var(--board-width, 620px));
+  }
+
+  .keeper-row {
+    width: var(--mobile-board-width, var(--board-width, 620px));
+  }
+}
+
 @media (max-width: 720px) {
   body {
     overflow-x: hidden;
@@ -2885,10 +2952,10 @@ dialog::backdrop {
   }
 
   .ad-strip {
-    grid-template-columns: repeat(5, minmax(112px, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 6px;
     padding: 6px;
-    overflow-x: auto;
+    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
   }
 

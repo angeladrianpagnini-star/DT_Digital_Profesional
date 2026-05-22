@@ -512,8 +512,9 @@ function updateMobileFieldWidth() {
     document.documentElement.style.removeProperty("--mobile-board-width");
     return;
   }
-  const sideRoom = window.matchMedia("(orientation: landscape)").matches ? 154 : 28;
-  const width = Math.max(300, Math.min(parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--board-width")) || 720, window.innerWidth - sideRoom));
+  const viewportWidth = Math.floor(window.visualViewport?.width || window.innerWidth);
+  const sideRoom = window.matchMedia("(orientation: landscape)").matches ? 220 : 28;
+  const width = Math.max(300, Math.min(parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--board-width")) || 720, viewportWidth - sideRoom));
   document.documentElement.style.setProperty("--mobile-board-width", `${width}px`);
 }
 
