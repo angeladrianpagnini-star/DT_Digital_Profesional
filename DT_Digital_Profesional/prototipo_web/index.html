@@ -41,6 +41,167 @@
               <small id="intensityDesc">Juego dinamico, capacidades ampliadas</small>
             </span>
           </button>
+          <button class="style-choice physical-choice" data-game-style="physical">
+            <span class="style-icon whistle-icon" aria-hidden="true"></span>
+            <span>
+              <strong id="physicalTitle">DT: Fisico</strong>
+              <small id="physicalDesc">Soporte para tablero real, reloj y competencia</small>
+            </span>
+          </button>
+        </div>
+      </div>
+    </section>
+    <section id="physicalScreen" class="physical-screen hidden">
+      <div class="physical-shell">
+        <header class="physical-top">
+          <div>
+            <p class="eyebrow">DT Fisico</p>
+            <h1>Soporte para juego fisico</h1>
+            <p>Registra equipos, crea desafios o competencias, define tiempos por periodo y carga el resultado del partido jugado en tablero real.</p>
+          </div>
+          <div class="physical-top-actions">
+            <button id="physicalBackBtn" type="button">Volver a estilos</button>
+            <button id="physicalShowMatchBtn" type="button">Ver reloj</button>
+          </div>
+        </header>
+        <div class="physical-grid">
+          <section id="physicalSetupPanel" class="physical-panel">
+            <h2>Registro</h2>
+            <p class="setup-note">Esta capa simula el registro local. En la version online estos datos pasaran a base de datos, validacion MFA y ranking global.</p>
+            <div class="physical-form">
+              <label>
+                DT / usuario
+                <input id="physicalUserName" type="text" placeholder="Nombre del DT">
+              </label>
+              <label>
+                Equipo unico
+                <input id="physicalTeamName" type="text" placeholder="Nombre del equipo">
+              </label>
+              <label>
+                Codigo MFA
+                <input id="physicalTeamCode" type="text" inputmode="numeric" placeholder="000000">
+              </label>
+              <button id="physicalRegisterTeamBtn" type="button">Registrar equipo</button>
+            </div>
+            <div class="physical-list-wrap">
+              <h3>Equipos registrados</h3>
+              <div id="physicalTeamList" class="physical-list"></div>
+            </div>
+            <h2>Veedor / arbitro</h2>
+            <div class="physical-form">
+              <label>
+                Nombre
+                <input id="physicalOfficialName" type="text" placeholder="Veedor o arbitro">
+              </label>
+              <label>
+                Rol
+                <select id="physicalOfficialRole">
+                  <option value="veedor">Veedor</option>
+                  <option value="arbitro">Arbitro</option>
+                  <option value="organizador">Organizador</option>
+                </select>
+              </label>
+              <label>
+                Codigo validacion
+                <input id="physicalOfficialCode" type="text" inputmode="numeric" placeholder="000000">
+              </label>
+              <button id="physicalRegisterOfficialBtn" type="button">Registrar veedor</button>
+            </div>
+            <div class="physical-list-wrap">
+              <h3>Autoridades</h3>
+              <div id="physicalOfficialList" class="physical-list"></div>
+            </div>
+          </section>
+          <section class="physical-panel">
+            <h2>Competencia</h2>
+            <div class="physical-form">
+              <label>
+                Nombre competencia
+                <input id="physicalCompetitionName" type="text" placeholder="Copa DT / Liga DT">
+              </label>
+              <label>
+                Tipo
+                <select id="physicalCompetitionType">
+                  <option value="challenge">Desafio 1 vs 1</option>
+                  <option value="league">Liga / tabla</option>
+                  <option value="cup">Copa / llave</option>
+                </select>
+              </label>
+              <label>
+                Codigo competencia
+                <input id="physicalCompetitionCode" type="text" placeholder="DTF-...">
+              </label>
+              <button id="physicalGenerateCodeBtn" type="button">Generar codigo</button>
+              <button id="physicalCreateCompetitionBtn" type="button">Crear / actualizar competencia</button>
+            </div>
+            <h3>Partido fisico</h3>
+            <div class="physical-form">
+              <label>
+                Equipo local
+                <select id="physicalHomeTeam"></select>
+              </label>
+              <label>
+                Equipo visitante
+                <select id="physicalAwayTeam"></select>
+              </label>
+              <label>
+                Veedor
+                <select id="physicalObserver"></select>
+              </label>
+            </div>
+            <div class="physical-duration" aria-label="Duracion por tiempo">
+              <button data-physical-duration="15" type="button">15 minutos</button>
+              <button data-physical-duration="30" type="button">30 minutos</button>
+              <button data-physical-duration="45" type="button">45 minutos</button>
+            </div>
+            <div class="physical-actions">
+              <button id="physicalPrepareMatchBtn" type="button">Preparar reloj del partido</button>
+            </div>
+            <p id="physicalStatus" class="setup-status">Registra al menos dos equipos para preparar un partido fisico.</p>
+            <div id="physicalStandings" class="physical-standings"></div>
+          </section>
+          <section id="physicalMatchPanel" class="physical-panel physical-match-panel hidden">
+            <div class="physical-match-head">
+              <div>
+                <p class="eyebrow">Acta del partido</p>
+                <h2 id="physicalMatchTitle">Partido fisico</h2>
+              </div>
+              <strong id="physicalCompetitionBadge">Sin competencia</strong>
+            </div>
+            <div class="physical-scoreboard">
+              <button id="physicalGoalHomeBtn" class="physical-team-score" type="button">
+                <span id="physicalScoreHomeName">Local</span>
+                <strong id="physicalScoreHome">0</strong>
+                <small>Gol local</small>
+              </button>
+              <div class="physical-clock">
+                <span id="physicalTimerLabel">Primer tiempo</span>
+                <strong id="physicalTimer">15:00</strong>
+              </div>
+              <button id="physicalGoalAwayBtn" class="physical-team-score" type="button">
+                <span id="physicalScoreAwayName">Visitante</span>
+                <strong id="physicalScoreAway">0</strong>
+                <small>Gol visitante</small>
+              </button>
+            </div>
+            <div class="physical-actions">
+              <button id="physicalStartTimerBtn" type="button">Iniciar / reanudar</button>
+              <button id="physicalPauseTimerBtn" type="button">Pausar</button>
+              <button id="physicalHalfBtn" type="button">Cambiar tiempo</button>
+              <button id="physicalFinishBtn" type="button">Finalizar y guardar</button>
+              <button id="physicalNewMatchBtn" type="button">Nuevo partido</button>
+            </div>
+            <div class="physical-log-grid">
+              <div>
+                <h3>Acta / eventos</h3>
+                <ol id="physicalMatchLog" class="physical-match-log"></ol>
+              </div>
+              <div>
+                <h3>Estado</h3>
+                <p id="physicalMatchStatus" class="setup-status">Reloj preparado.</p>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </section>

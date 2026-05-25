@@ -43,6 +43,49 @@ const teamANameEl = document.querySelector("#teamAName");
 const teamBNameEl = document.querySelector("#teamBName");
 const pauseDialog = document.querySelector("#pauseDialog");
 const setupScreenEl = document.querySelector("#setupScreen");
+const physicalScreenEl = document.querySelector("#physicalScreen");
+const physicalBackBtn = document.querySelector("#physicalBackBtn");
+const physicalShowMatchBtn = document.querySelector("#physicalShowMatchBtn");
+const physicalSetupPanelEl = document.querySelector("#physicalSetupPanel");
+const physicalMatchPanelEl = document.querySelector("#physicalMatchPanel");
+const physicalUserNameEl = document.querySelector("#physicalUserName");
+const physicalTeamNameEl = document.querySelector("#physicalTeamName");
+const physicalTeamCodeEl = document.querySelector("#physicalTeamCode");
+const physicalRegisterTeamBtn = document.querySelector("#physicalRegisterTeamBtn");
+const physicalTeamListEl = document.querySelector("#physicalTeamList");
+const physicalOfficialNameEl = document.querySelector("#physicalOfficialName");
+const physicalOfficialRoleEl = document.querySelector("#physicalOfficialRole");
+const physicalOfficialCodeEl = document.querySelector("#physicalOfficialCode");
+const physicalRegisterOfficialBtn = document.querySelector("#physicalRegisterOfficialBtn");
+const physicalOfficialListEl = document.querySelector("#physicalOfficialList");
+const physicalCompetitionNameEl = document.querySelector("#physicalCompetitionName");
+const physicalCompetitionTypeEl = document.querySelector("#physicalCompetitionType");
+const physicalCompetitionCodeEl = document.querySelector("#physicalCompetitionCode");
+const physicalGenerateCodeBtn = document.querySelector("#physicalGenerateCodeBtn");
+const physicalCreateCompetitionBtn = document.querySelector("#physicalCreateCompetitionBtn");
+const physicalHomeTeamEl = document.querySelector("#physicalHomeTeam");
+const physicalAwayTeamEl = document.querySelector("#physicalAwayTeam");
+const physicalObserverEl = document.querySelector("#physicalObserver");
+const physicalPrepareMatchBtn = document.querySelector("#physicalPrepareMatchBtn");
+const physicalStatusEl = document.querySelector("#physicalStatus");
+const physicalStandingsEl = document.querySelector("#physicalStandings");
+const physicalMatchTitleEl = document.querySelector("#physicalMatchTitle");
+const physicalCompetitionBadgeEl = document.querySelector("#physicalCompetitionBadge");
+const physicalScoreHomeNameEl = document.querySelector("#physicalScoreHomeName");
+const physicalScoreAwayNameEl = document.querySelector("#physicalScoreAwayName");
+const physicalScoreHomeEl = document.querySelector("#physicalScoreHome");
+const physicalScoreAwayEl = document.querySelector("#physicalScoreAway");
+const physicalTimerLabelEl = document.querySelector("#physicalTimerLabel");
+const physicalTimerEl = document.querySelector("#physicalTimer");
+const physicalGoalHomeBtn = document.querySelector("#physicalGoalHomeBtn");
+const physicalGoalAwayBtn = document.querySelector("#physicalGoalAwayBtn");
+const physicalStartTimerBtn = document.querySelector("#physicalStartTimerBtn");
+const physicalPauseTimerBtn = document.querySelector("#physicalPauseTimerBtn");
+const physicalHalfBtn = document.querySelector("#physicalHalfBtn");
+const physicalFinishBtn = document.querySelector("#physicalFinishBtn");
+const physicalNewMatchBtn = document.querySelector("#physicalNewMatchBtn");
+const physicalMatchLogEl = document.querySelector("#physicalMatchLog");
+const physicalMatchStatusEl = document.querySelector("#physicalMatchStatus");
 const changeDialog = document.querySelector("#changeDialog");
 const secretDialog = document.querySelector("#secretDialog");
 const secretTitleEl = document.querySelector("#secretTitle");
@@ -180,7 +223,9 @@ const uiText = {
     strategyTitle: "DT: Estratega",
     strategyDesc: "Juego tactico, movimientos estandar",
     intensityTitle: "DT: Intensidad",
-    intensityDesc: "Juego dinamico, capacidades ampliadas"
+    intensityDesc: "Juego dinamico, capacidades ampliadas",
+    physicalTitle: "DT: Fisico",
+    physicalDesc: "Soporte para tablero real, reloj y competencia"
   },
   en: {
     language: "Language",
@@ -236,7 +281,9 @@ const uiText = {
     strategyTitle: "DT: Strategy",
     strategyDesc: "Tactical game, standard moves",
     intensityTitle: "DT: Intensity",
-    intensityDesc: "Dynamic game, expanded abilities"
+    intensityDesc: "Dynamic game, expanded abilities",
+    physicalTitle: "DT: Physical",
+    physicalDesc: "Real board support, clock and competition"
   },
   pt: {
     language: "Idioma",
@@ -292,7 +339,9 @@ const uiText = {
     strategyTitle: "DT: Estrategia",
     strategyDesc: "Jogo tatico, movimentos padrao",
     intensityTitle: "DT: Intensidade",
-    intensityDesc: "Jogo dinamico, capacidades ampliadas"
+    intensityDesc: "Jogo dinamico, capacidades ampliadas",
+    physicalTitle: "DT: Fisico",
+    physicalDesc: "Suporte para tabuleiro real, relogio e competicao"
   }
 };
 const crowdTracks = ["assets/tribuna-estadio.mp3"];
@@ -301,6 +350,7 @@ const goalTracks = ["assets/gol-principal.mp3"];
 const oleTrack = "assets/ole.mp3";
 const whistleTrack = "assets/silbato.mp3";
 const competitionStorageKey = "dtDigitalCompetitionV1";
+const physicalSupportStorageKey = "dtPhysicalSupportV1";
 const aiDifficultyOrder = ["easy", "medium", "hard"];
 const aiDifficultyLabels = { easy: "Facil", medium: "Medio", hard: "Dificil" };
 let keeperZones = {
@@ -356,6 +406,8 @@ let activeProfile = loadStoredProfile();
 let localSecondProfile = null;
 let lockerSettings = loadLockerSettings();
 let competitionState = loadCompetitionState();
+let physicalSupportState = loadPhysicalSupportState();
+let physicalTimerInterval = null;
 let audioState = {
   enabled: true,
   context: null,
@@ -480,6 +532,485 @@ function applyGameStyle(style) {
   document.documentElement.style.setProperty("--keeper-span", style === "intensity" ? 2 : 1);
   document.documentElement.style.setProperty("--board-width", style === "intensity" ? "1040px" : "720px");
   updateMobileFieldWidth();
+}
+
+function defaultPhysicalSupportState() {
+  return {
+    teams: [],
+    officials: [],
+    competitions: [],
+    activeCompetitionId: null,
+    activeMatch: null,
+    selectedDuration: 15
+  };
+}
+
+function loadPhysicalSupportState() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(physicalSupportStorageKey) || "null");
+    return parsed && Array.isArray(parsed.teams)
+      ? { ...defaultPhysicalSupportState(), ...parsed }
+      : defaultPhysicalSupportState();
+  } catch {
+    return defaultPhysicalSupportState();
+  }
+}
+
+function savePhysicalSupportState() {
+  localStorage.setItem(physicalSupportStorageKey, JSON.stringify(physicalSupportState));
+}
+
+function makePhysicalCode(prefix = "DTF") {
+  return `${prefix}-${Date.now().toString(36).slice(-4).toUpperCase()}${Math.random().toString(36).slice(2, 5).toUpperCase()}`;
+}
+
+function physicalTeamById(id) {
+  return physicalSupportState.teams.find(team => team.id === id);
+}
+
+function physicalOfficialById(id) {
+  return physicalSupportState.officials.find(official => official.id === id);
+}
+
+function activePhysicalCompetition() {
+  return physicalSupportState.competitions.find(competition => competition.id === physicalSupportState.activeCompetitionId) || null;
+}
+
+function formatPhysicalClock(seconds) {
+  const total = Math.max(0, Math.ceil(seconds || 0));
+  const minutes = Math.floor(total / 60).toString().padStart(2, "0");
+  const rest = (total % 60).toString().padStart(2, "0");
+  return `${minutes}:${rest}`;
+}
+
+function physicalHalfLabel(match = physicalSupportState.activeMatch) {
+  if (!match) return "Primer tiempo";
+  return match.half === 1 ? "Primer tiempo" : "Segundo tiempo";
+}
+
+function updatePhysicalDurationButtons() {
+  document.querySelectorAll("[data-physical-duration]").forEach(button => {
+    button.classList.toggle("selected", Number(button.dataset.physicalDuration) === physicalSupportState.selectedDuration);
+  });
+}
+
+function fillPhysicalSelect(selectEl, items, placeholder) {
+  if (!selectEl) return;
+  const selected = selectEl.value;
+  selectEl.innerHTML = "";
+  const empty = document.createElement("option");
+  empty.value = "";
+  empty.textContent = placeholder;
+  selectEl.append(empty);
+  items.forEach(item => {
+    const option = document.createElement("option");
+    option.value = item.id;
+    option.textContent = item.team || `${item.name} (${item.role})`;
+    selectEl.append(option);
+  });
+  if ([...selectEl.options].some(option => option.value === selected)) {
+    selectEl.value = selected;
+  }
+}
+
+function renderPhysicalTeamList() {
+  if (!physicalTeamListEl) return;
+  physicalTeamListEl.innerHTML = "";
+  physicalSupportState.teams.forEach(team => {
+    const item = document.createElement("div");
+    item.className = "physical-list-item";
+    const label = document.createElement("strong");
+    label.textContent = team.team;
+    const detail = document.createElement("span");
+    detail.textContent = `${team.user} / ID ${team.id}`;
+    item.append(label, detail);
+    physicalTeamListEl.append(item);
+  });
+}
+
+function renderPhysicalOfficialList() {
+  if (!physicalOfficialListEl) return;
+  physicalOfficialListEl.innerHTML = "";
+  physicalSupportState.officials.forEach(official => {
+    const item = document.createElement("div");
+    item.className = "physical-list-item";
+    const label = document.createElement("strong");
+    label.textContent = official.name;
+    const detail = document.createElement("span");
+    detail.textContent = `${official.role} / validado`;
+    item.append(label, detail);
+    physicalOfficialListEl.append(item);
+  });
+}
+
+function renderPhysicalStandings() {
+  if (!physicalStandingsEl) return;
+  physicalStandingsEl.innerHTML = "";
+  const competition = activePhysicalCompetition();
+  if (!competition) {
+    physicalStandingsEl.textContent = "Crea una competencia para ver tabla, actas y codigo.";
+    return;
+  }
+  const header = document.createElement("div");
+  header.className = "physical-standing-row";
+  const title = document.createElement("strong");
+  title.textContent = `${competition.name} / ${competition.code}`;
+  const mode = document.createElement("span");
+  mode.textContent = competition.type === "league" ? "Liga" : competition.type === "cup" ? "Copa" : "Desafio";
+  header.append(title, mode);
+  physicalStandingsEl.append(header);
+  const rows = Object.values(competition.standings || {}).sort((a, b) => (b.points - a.points) || (b.goalDiff - a.goalDiff));
+  if (!rows.length) {
+    const empty = document.createElement("div");
+    empty.className = "physical-standing-row";
+    empty.textContent = "Sin equipos cargados en la tabla.";
+    physicalStandingsEl.append(empty);
+    return;
+  }
+  rows.forEach(row => {
+    const item = document.createElement("div");
+    item.className = "physical-standing-row";
+    const label = document.createElement("strong");
+    label.textContent = row.team;
+    const detail = document.createElement("span");
+    detail.textContent = `PJ ${row.played} / G ${row.won} / E ${row.drawn} / P ${row.lost} / DG ${row.goalDiff} / Pts ${row.points}`;
+    item.append(label, detail);
+    physicalStandingsEl.append(item);
+  });
+}
+
+function renderPhysicalOptions() {
+  fillPhysicalSelect(physicalHomeTeamEl, physicalSupportState.teams, "Elegir local");
+  fillPhysicalSelect(physicalAwayTeamEl, physicalSupportState.teams, "Elegir visitante");
+  fillPhysicalSelect(physicalObserverEl, physicalSupportState.officials, "Sin veedor asignado");
+  updatePhysicalDurationButtons();
+}
+
+function renderPhysicalMatch() {
+  const match = physicalSupportState.activeMatch;
+  if (!match) {
+    physicalMatchPanelEl?.classList.add("hidden");
+    return;
+  }
+  const home = physicalTeamById(match.homeTeamId);
+  const away = physicalTeamById(match.awayTeamId);
+  const competition = activePhysicalCompetition();
+  physicalMatchPanelEl?.classList.remove("hidden");
+  if (physicalMatchTitleEl) physicalMatchTitleEl.textContent = `${home?.team || "Local"} vs ${away?.team || "Visitante"}`;
+  if (physicalCompetitionBadgeEl) physicalCompetitionBadgeEl.textContent = competition ? `${competition.name} / ${competition.code}` : "Desafio fisico";
+  if (physicalScoreHomeNameEl) physicalScoreHomeNameEl.textContent = home?.team || "Local";
+  if (physicalScoreAwayNameEl) physicalScoreAwayNameEl.textContent = away?.team || "Visitante";
+  if (physicalScoreHomeEl) physicalScoreHomeEl.textContent = match.score.home;
+  if (physicalScoreAwayEl) physicalScoreAwayEl.textContent = match.score.away;
+  if (physicalTimerLabelEl) physicalTimerLabelEl.textContent = physicalHalfLabel(match);
+  if (physicalTimerEl) physicalTimerEl.textContent = formatPhysicalClock(match.remainingSeconds);
+  if (physicalMatchStatusEl) {
+    const official = physicalOfficialById(match.observerId);
+    physicalMatchStatusEl.textContent = match.finished
+      ? "Partido finalizado y guardado en el acta local."
+      : `${match.running ? "Reloj corriendo" : "Reloj pausado"}${official ? `. Veedor: ${official.name}` : ". Sin veedor asignado."}`;
+  }
+  if (physicalMatchLogEl) {
+    physicalMatchLogEl.innerHTML = "";
+    match.events.forEach(event => {
+      const li = document.createElement("li");
+      li.textContent = event;
+      physicalMatchLogEl.append(li);
+    });
+  }
+}
+
+function renderPhysicalSupport() {
+  renderPhysicalTeamList();
+  renderPhysicalOfficialList();
+  renderPhysicalOptions();
+  renderPhysicalStandings();
+  renderPhysicalMatch();
+}
+
+function registerPhysicalTeam() {
+  const team = physicalTeamNameEl?.value.trim();
+  const user = physicalUserNameEl?.value.trim();
+  const code = physicalTeamCodeEl?.value.trim();
+  if (!team || !user || !code) {
+    if (physicalStatusEl) physicalStatusEl.textContent = "Completa DT, equipo unico y MFA para registrar.";
+    return;
+  }
+  const existing = physicalSupportState.teams.find(item => item.team.toLowerCase() === team.toLowerCase());
+  const record = {
+    id: existing?.id || makePhysicalCode("EQ"),
+    team,
+    user,
+    code,
+    createdAt: existing?.createdAt || new Date().toISOString()
+  };
+  if (existing) {
+    Object.assign(existing, record);
+  } else {
+    physicalSupportState.teams.push(record);
+  }
+  savePhysicalSupportState();
+  if (physicalStatusEl) physicalStatusEl.textContent = `${team} queda registrado para desafios fisicos y competencias.`;
+  physicalTeamNameEl.value = "";
+  physicalUserNameEl.value = "";
+  physicalTeamCodeEl.value = "";
+  renderPhysicalSupport();
+}
+
+function registerPhysicalOfficial() {
+  const name = physicalOfficialNameEl?.value.trim();
+  const role = physicalOfficialRoleEl?.value || "veedor";
+  const code = physicalOfficialCodeEl?.value.trim();
+  if (!name || !code) {
+    if (physicalStatusEl) physicalStatusEl.textContent = "Completa nombre y codigo para validar al veedor/arbitro.";
+    return;
+  }
+  const record = {
+    id: makePhysicalCode("VE"),
+    name,
+    role,
+    code,
+    validated: true,
+    createdAt: new Date().toISOString()
+  };
+  physicalSupportState.officials.push(record);
+  savePhysicalSupportState();
+  if (physicalStatusEl) physicalStatusEl.textContent = `${name} queda registrado como ${role} validado para cargar actas.`;
+  physicalOfficialNameEl.value = "";
+  physicalOfficialCodeEl.value = "";
+  renderPhysicalSupport();
+}
+
+function createPhysicalCompetition() {
+  const name = physicalCompetitionNameEl?.value.trim() || "Competencia DT Fisico";
+  const type = physicalCompetitionTypeEl?.value || "challenge";
+  const code = physicalCompetitionCodeEl?.value.trim() || makePhysicalCode("COMP");
+  const existing = physicalSupportState.competitions.find(item => item.code.toLowerCase() === code.toLowerCase());
+  const standings = {};
+  physicalSupportState.teams.forEach(team => {
+    standings[team.id] = existing?.standings?.[team.id] || {
+      team: team.team,
+      played: 0,
+      won: 0,
+      drawn: 0,
+      lost: 0,
+      goalsFor: 0,
+      goalsAgainst: 0,
+      goalDiff: 0,
+      points: 0
+    };
+  });
+  const record = {
+    id: existing?.id || makePhysicalCode("CP"),
+    name,
+    type,
+    code,
+    standings,
+    matches: existing?.matches || [],
+    createdAt: existing?.createdAt || new Date().toISOString()
+  };
+  if (existing) Object.assign(existing, record);
+  else physicalSupportState.competitions.push(record);
+  physicalSupportState.activeCompetitionId = record.id;
+  if (physicalCompetitionCodeEl) physicalCompetitionCodeEl.value = record.code;
+  savePhysicalSupportState();
+  if (physicalStatusEl) physicalStatusEl.textContent = `${name} creada. Codigo para retomar/cargar desde otro dispositivo: ${record.code}.`;
+  renderPhysicalSupport();
+}
+
+function preparePhysicalMatch() {
+  const homeTeamId = physicalHomeTeamEl?.value;
+  const awayTeamId = physicalAwayTeamEl?.value;
+  if (!homeTeamId || !awayTeamId || homeTeamId === awayTeamId) {
+    if (physicalStatusEl) physicalStatusEl.textContent = "Elegí dos equipos distintos para preparar el partido.";
+    return;
+  }
+  if (!activePhysicalCompetition()) createPhysicalCompetition();
+  const home = physicalTeamById(homeTeamId);
+  const away = physicalTeamById(awayTeamId);
+  const duration = physicalSupportState.selectedDuration || 15;
+  physicalSupportState.activeMatch = {
+    id: makePhysicalCode("PAR"),
+    competitionId: physicalSupportState.activeCompetitionId,
+    homeTeamId,
+    awayTeamId,
+    observerId: physicalObserverEl?.value || "",
+    durationMinutes: duration,
+    half: 1,
+    remainingSeconds: duration * 60,
+    running: false,
+    finished: false,
+    score: { home: 0, away: 0 },
+    events: [`Acta creada: ${home?.team || "Local"} vs ${away?.team || "Visitante"}. Duracion ${duration} minutos por tiempo.`],
+    savedResult: false
+  };
+  savePhysicalSupportState();
+  if (physicalStatusEl) physicalStatusEl.textContent = "Reloj de partido preparado. Inicia cuando el arbitro/veedor lo indique.";
+  renderPhysicalSupport();
+  physicalMatchPanelEl?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function addPhysicalEvent(text) {
+  const match = physicalSupportState.activeMatch;
+  if (!match) return;
+  match.events.unshift(`${physicalHalfLabel(match)} ${formatPhysicalClock(match.remainingSeconds)} - ${text}`);
+  savePhysicalSupportState();
+  renderPhysicalMatch();
+}
+
+function addPhysicalGoal(side) {
+  const match = physicalSupportState.activeMatch;
+  if (!match || match.finished) return;
+  const home = physicalTeamById(match.homeTeamId);
+  const away = physicalTeamById(match.awayTeamId);
+  match.score[side] += 1;
+  const teamName = side === "home" ? home?.team : away?.team;
+  addPhysicalEvent(`Gol de ${teamName || "equipo"}. Resultado ${match.score.home}-${match.score.away}.`);
+}
+
+function startPhysicalTimer() {
+  const match = physicalSupportState.activeMatch;
+  if (!match || match.finished) return;
+  match.running = true;
+  addPhysicalEvent("Se reanuda el reloj.");
+  runPhysicalTimerLoop();
+}
+
+function pausePhysicalTimer() {
+  const match = physicalSupportState.activeMatch;
+  if (!match || match.finished) return;
+  match.running = false;
+  addPhysicalEvent("Reloj pausado por cambio, consulta o carga de acta.");
+  stopPhysicalTimerLoop();
+}
+
+function runPhysicalTimerLoop() {
+  stopPhysicalTimerLoop();
+  physicalTimerInterval = window.setInterval(() => {
+    const match = physicalSupportState.activeMatch;
+    if (!match || !match.running || match.finished) {
+      stopPhysicalTimerLoop();
+      return;
+    }
+    match.remainingSeconds = Math.max(0, match.remainingSeconds - 1);
+    if (match.remainingSeconds <= 0) {
+      match.running = false;
+      match.events.unshift(match.half === 1 ? "Fin del primer tiempo." : "Fin del partido.");
+      if (match.half === 2) finishPhysicalMatch();
+      else savePhysicalSupportState();
+      stopPhysicalTimerLoop();
+    } else {
+      savePhysicalSupportState();
+    }
+    renderPhysicalMatch();
+  }, 1000);
+}
+
+function stopPhysicalTimerLoop() {
+  if (physicalTimerInterval) {
+    clearInterval(physicalTimerInterval);
+    physicalTimerInterval = null;
+  }
+}
+
+function changePhysicalHalf() {
+  const match = physicalSupportState.activeMatch;
+  if (!match || match.finished) return;
+  if (match.half === 1) {
+    match.half = 2;
+    match.remainingSeconds = match.durationMinutes * 60;
+    match.running = false;
+    match.events.unshift("Comienza preparacion del segundo tiempo. Cambios permitidos con reloj detenido.");
+    savePhysicalSupportState();
+    stopPhysicalTimerLoop();
+    renderPhysicalMatch();
+    return;
+  }
+  finishPhysicalMatch();
+}
+
+function updatePhysicalStandingRow(row, goalsFor, goalsAgainst) {
+  row.played += 1;
+  row.goalsFor += goalsFor;
+  row.goalsAgainst += goalsAgainst;
+  row.goalDiff = row.goalsFor - row.goalsAgainst;
+  if (goalsFor > goalsAgainst) {
+    row.won += 1;
+    row.points += 3;
+  } else if (goalsFor === goalsAgainst) {
+    row.drawn += 1;
+    row.points += 1;
+  } else {
+    row.lost += 1;
+  }
+}
+
+function finishPhysicalMatch() {
+  const match = physicalSupportState.activeMatch;
+  if (!match || match.finished && match.savedResult) return;
+  match.running = false;
+  match.finished = true;
+  const competition = activePhysicalCompetition();
+  const home = physicalTeamById(match.homeTeamId);
+  const away = physicalTeamById(match.awayTeamId);
+  if (competition && !match.savedResult) {
+    competition.standings[match.homeTeamId] ||= { team: home?.team || "Local", played: 0, won: 0, drawn: 0, lost: 0, goalsFor: 0, goalsAgainst: 0, goalDiff: 0, points: 0 };
+    competition.standings[match.awayTeamId] ||= { team: away?.team || "Visitante", played: 0, won: 0, drawn: 0, lost: 0, goalsFor: 0, goalsAgainst: 0, goalDiff: 0, points: 0 };
+    updatePhysicalStandingRow(competition.standings[match.homeTeamId], match.score.home, match.score.away);
+    updatePhysicalStandingRow(competition.standings[match.awayTeamId], match.score.away, match.score.home);
+    competition.matches.unshift({
+      id: match.id,
+      home: home?.team || "Local",
+      away: away?.team || "Visitante",
+      score: `${match.score.home}-${match.score.away}`,
+      observer: physicalOfficialById(match.observerId)?.name || "Sin veedor",
+      date: new Date().toISOString()
+    });
+    match.savedResult = true;
+  }
+  const result = match.score.home === match.score.away
+    ? "Empate"
+    : `Ganador: ${match.score.home > match.score.away ? home?.team : away?.team}`;
+  match.events.unshift(`Final del encuentro. ${result}. Resultado ${home?.team || "Local"} ${match.score.home}-${match.score.away} ${away?.team || "Visitante"}.`);
+  savePhysicalSupportState();
+  stopPhysicalTimerLoop();
+  renderPhysicalSupport();
+}
+
+function resetPhysicalMatch() {
+  stopPhysicalTimerLoop();
+  physicalSupportState.activeMatch = null;
+  savePhysicalSupportState();
+  renderPhysicalSupport();
+  physicalSetupPanelEl?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function openPhysicalSupport() {
+  paused = true;
+  stopPhysicalTimerLoop();
+  if (physicalSupportState.activeMatch) {
+    physicalSupportState.activeMatch.running = false;
+    savePhysicalSupportState();
+  }
+  styleScreenEl.classList.add("hidden");
+  setupScreenEl.classList.add("hidden");
+  physicalScreenEl?.classList.remove("hidden");
+  syncScreenChrome();
+  switchAudioScene("menu");
+  renderPhysicalSupport();
+}
+
+function closePhysicalSupport() {
+  stopPhysicalTimerLoop();
+  if (physicalSupportState.activeMatch) {
+    physicalSupportState.activeMatch.running = false;
+    savePhysicalSupportState();
+  }
+  physicalScreenEl?.classList.add("hidden");
+  styleScreenEl.classList.remove("hidden");
+  setupScreenEl.classList.remove("hidden");
+  syncScreenChrome();
+  switchAudioScene("menu");
 }
 
 function isMobileFieldLayout() {
@@ -1121,6 +1652,8 @@ function applyLanguage() {
   document.querySelector("#strategyDesc").textContent = textFor("strategyDesc");
   document.querySelector("#intensityTitle").textContent = textFor("intensityTitle");
   document.querySelector("#intensityDesc").textContent = textFor("intensityDesc");
+  document.querySelector("#physicalTitle").textContent = textFor("physicalTitle");
+  document.querySelector("#physicalDesc").textContent = textFor("physicalDesc");
   introAudioBtn?.querySelector("strong") && (introAudioBtn.querySelector("strong").textContent = textFor("audio"));
   document.querySelector("[data-action='move']").textContent = textFor("move");
   document.querySelector("[data-action='moveBall']").textContent = textFor("moveBall");
@@ -3979,6 +4512,7 @@ function returnToSetupMenu() {
   if (changeDialog.open) changeDialog.close();
   if (matchEndDialog?.open) matchEndDialog.close();
   state.started = false;
+  physicalScreenEl?.classList.add("hidden");
   setupScreenEl.classList.remove("hidden");
   styleScreenEl.classList.add("hidden");
   syncScreenChrome();
@@ -3996,6 +4530,7 @@ function returnToStyleSelection() {
   if (lockerDialog.open) lockerDialog.close();
   if (matchEndDialog?.open) matchEndDialog.close();
   if (state) state.started = false;
+  physicalScreenEl?.classList.add("hidden");
   setupScreenEl.classList.remove("hidden");
   styleScreenEl.classList.remove("hidden");
   syncScreenChrome();
@@ -4083,10 +4618,16 @@ startPreparedBtn.addEventListener("click", startPreparedLineupGame);
 
 document.querySelectorAll("[data-game-style]").forEach(button => {
   button.addEventListener("click", () => {
+    if (button.dataset.gameStyle === "physical") {
+      document.querySelectorAll("[data-game-style]").forEach(item => item.classList.toggle("selected", item === button));
+      openPhysicalSupport();
+      return;
+    }
     applyGameStyle(button.dataset.gameStyle);
     newGame();
     markSetupSelections();
     styleScreenEl.classList.add("hidden");
+    physicalScreenEl?.classList.add("hidden");
     syncScreenChrome();
     switchAudioScene("menu");
     const styleName = setupSelection.gameStyle === "intensity" ? "DT Intensidad" : "DT Estratega";
@@ -4277,6 +4818,37 @@ document.querySelector("#changeStyleBtn").addEventListener("click", () => {
 });
 
 styleBackBtn.addEventListener("click", returnToStyleSelection);
+physicalBackBtn?.addEventListener("click", closePhysicalSupport);
+physicalShowMatchBtn?.addEventListener("click", () => {
+  if (physicalSupportState.activeMatch) {
+    physicalMatchPanelEl?.classList.remove("hidden");
+    physicalMatchPanelEl?.scrollIntoView({ behavior: "smooth", block: "start" });
+  } else if (physicalStatusEl) {
+    physicalStatusEl.textContent = "Todavia no hay un reloj preparado. Registra equipos y prepara el partido.";
+  }
+});
+physicalRegisterTeamBtn?.addEventListener("click", registerPhysicalTeam);
+physicalRegisterOfficialBtn?.addEventListener("click", registerPhysicalOfficial);
+physicalGenerateCodeBtn?.addEventListener("click", () => {
+  if (physicalCompetitionCodeEl) physicalCompetitionCodeEl.value = makePhysicalCode("COMP");
+});
+physicalCreateCompetitionBtn?.addEventListener("click", createPhysicalCompetition);
+physicalPrepareMatchBtn?.addEventListener("click", preparePhysicalMatch);
+document.querySelectorAll("[data-physical-duration]").forEach(button => {
+  button.addEventListener("click", () => {
+    physicalSupportState.selectedDuration = Number(button.dataset.physicalDuration);
+    savePhysicalSupportState();
+    updatePhysicalDurationButtons();
+    if (physicalStatusEl) physicalStatusEl.textContent = `Duracion fisica seleccionada: ${physicalSupportState.selectedDuration} minutos por tiempo.`;
+  });
+});
+physicalGoalHomeBtn?.addEventListener("click", () => addPhysicalGoal("home"));
+physicalGoalAwayBtn?.addEventListener("click", () => addPhysicalGoal("away"));
+physicalStartTimerBtn?.addEventListener("click", startPhysicalTimer);
+physicalPauseTimerBtn?.addEventListener("click", pausePhysicalTimer);
+physicalHalfBtn?.addEventListener("click", changePhysicalHalf);
+physicalFinishBtn?.addEventListener("click", finishPhysicalMatch);
+physicalNewMatchBtn?.addEventListener("click", resetPhysicalMatch);
 
 document.querySelector("#makeChangeBtn").addEventListener("click", () => {
   addLog("Cambio registrado como pendiente para implementar interfaz de sustituciones.");
@@ -4393,6 +4965,7 @@ syncSetupUi();
 applyLockerSettings();
 syncScreenChrome();
 applyLanguage();
+renderPhysicalSupport();
 syncAudioButtons();
 switchAudioScene("menu");
 paused = true;
