@@ -238,6 +238,11 @@ const uiText = {
     duelRevealTitle: "Disputa",
     duelRevealWaiting: "Tu carta queda visible. La rival sigue tapada...",
     duelRevealShown: "Duelo revelado: {mine} vs {rival}.",
+    shotRevealTitle: "Remate / arquero",
+    shotRevealWaitingShooter: "Tu remate queda visible. La carta del arquero sigue tapada...",
+    shotRevealWaitingKeeper: "Tu carta de arquero queda visible. El remate sigue tapado...",
+    shotRevealShown: "Remate revelado: {shot} vs arquero {keeper}.",
+    shotRevealLongShown: "Remate revelado: {shot} vs arquero {keeper} / rebote {rebound}.",
     shooterBack: "Dorso rematador",
     shooterFront: "Frente rematador",
     keeperBack: "Dorso arquero",
@@ -299,6 +304,11 @@ const uiText = {
     duelRevealTitle: "Duel",
     duelRevealWaiting: "Your card is visible. The rival card stays hidden...",
     duelRevealShown: "Duel revealed: {mine} vs {rival}.",
+    shotRevealTitle: "Shot / keeper",
+    shotRevealWaitingShooter: "Your shot card is visible. The keeper card stays hidden...",
+    shotRevealWaitingKeeper: "Your keeper card is visible. The shot stays hidden...",
+    shotRevealShown: "Shot revealed: {shot} vs keeper {keeper}.",
+    shotRevealLongShown: "Shot revealed: {shot} vs keeper {keeper} / rebound {rebound}.",
     shooterBack: "Shooter back",
     shooterFront: "Shooter front",
     keeperBack: "Keeper back",
@@ -360,6 +370,11 @@ const uiText = {
     duelRevealTitle: "Disputa",
     duelRevealWaiting: "Sua carta fica visivel. A carta rival segue tapada...",
     duelRevealShown: "Duelo revelado: {mine} vs {rival}.",
+    shotRevealTitle: "Chute / goleiro",
+    shotRevealWaitingShooter: "Sua carta de chute fica visivel. A carta do goleiro segue tapada...",
+    shotRevealWaitingKeeper: "Sua carta de goleiro fica visivel. O chute segue tapado...",
+    shotRevealShown: "Chute revelado: {shot} vs goleiro {keeper}.",
+    shotRevealLongShown: "Chute revelado: {shot} vs goleiro {keeper} / rebote {rebound}.",
     shooterBack: "Verso atacante",
     shooterFront: "Frente atacante",
     keeperBack: "Verso goleiro",
@@ -2724,6 +2739,60 @@ function showDuelRevealOverlay(dispute, revealed = false, options = {}) {
   duelRevealOverlayEl.setAttribute("aria-hidden", "false");
 }
 
+function getShotRevealRole(shot) {
+  const aiShooterVsHuman = state.mode === "ai" && shot.attackingTeam === "red" && shot.keeperTeam === "blue";
+  return aiShooterVsHuman ? "keeper" : "shooter";
+}
+
+function getKeeperRevealValue(shot) {
+  if (!shot.longDistance) return shot.keeperCard || "?";
+  if (!shot.reboundCard) return shot.keeperCard ? `${shot.keeperCard} / ?` : "? / ?";
+  return `${shot.keeperCard || "?"} / ${shot.reboundCard}`;
+}
+
+function getShotRevealText(shot) {
+  if (shot.longDistance) {
+    return textTemplate("shotRevealLongShown", {
+      shot: shot.shotCard || "-",
+      keeper: shot.keeperCard || "?",
+      rebound: shot.reboundCard || "?"
+    });
+  }
+  return textTemplate("shotRevealShown", {
+    shot: shot.shotCard || "-",
+    keeper: shot.keeperCard || "?"
+  });
+}
+
+function showShotRevealOverlay(shot, revealed = false, options = {}) {
+  if (!duelRevealOverlayEl || !shot) return;
+  window.clearTimeout(duelRevealOverlayTimer);
+  const role = options.role || getShotRevealRole(shot);
+  const keeperValue = getKeeperRevealValue(shot);
+  const mineValue = role === "keeper" ? keeperValue : (shot.shotCard || "-");
+  const rivalValue = role === "keeper" ? (shot.shotCard || "?") : keeperValue;
+  const mineLabel = role === "keeper" ? textFor("keeperFront") : textFor("shooterFront");
+  const rivalFront = role === "keeper" ? textFor("shooterFront") : textFor("keeperFront");
+  const rivalBack = role === "keeper" ? textFor("shooterBack") : textFor("keeperBack");
+
+  if (duelRevealTitleEl) duelRevealTitleEl.textContent = textFor("shotRevealTitle").toUpperCase();
+  if (duelRevealMineLabelEl) duelRevealMineLabelEl.textContent = mineLabel;
+  if (duelRevealRivalLabelEl) duelRevealRivalLabelEl.textContent = revealed ? rivalFront : rivalBack;
+  if (duelRevealMineEl) duelRevealMineEl.textContent = mineValue || "-";
+  if (duelRevealRivalEl) duelRevealRivalEl.textContent = revealed ? (rivalValue || "?") : "?";
+  duelRevealMineCardEl?.classList.remove("hidden-card");
+  duelRevealRivalCardEl?.classList.toggle("hidden-card", !revealed);
+  pulseRevealCard(duelRevealMineCardEl, Boolean(mineValue));
+  pulseRevealCard(duelRevealRivalCardEl, revealed && Boolean(rivalValue));
+  if (duelRevealTextEl) {
+    duelRevealTextEl.textContent = revealed
+      ? getShotRevealText(shot)
+      : textFor(role === "keeper" ? "shotRevealWaitingKeeper" : "shotRevealWaitingShooter");
+  }
+  duelRevealOverlayEl.classList.remove("hidden");
+  duelRevealOverlayEl.setAttribute("aria-hidden", "false");
+}
+
 function hideDuelRevealOverlay(delay = 0) {
   if (!duelRevealOverlayEl) return;
   window.clearTimeout(duelRevealOverlayTimer);
@@ -2772,6 +2841,26 @@ function revealDisputeThenResolve(disputeId, revealRole = null) {
       resolvePendingDispute();
     }, 1900);
   }, 800);
+}
+
+function revealShotThenResolve(shotRef, revealRole = null) {
+  if (!shotRef) return;
+  shotRef.revealing = true;
+  const role = revealRole || getShotRevealRole(shotRef);
+  showShotRevealOverlay(shotRef, false, { role });
+  window.setTimeout(() => {
+    if (!state.pendingShot || state.pendingShot !== shotRef) return;
+    renderShotCards();
+    renderShotPanel();
+    renderQuickRevealPanels();
+    showShotRevealOverlay(shotRef, true, { role });
+
+    window.setTimeout(() => {
+      if (!state.pendingShot || state.pendingShot !== shotRef) return;
+      hideDuelRevealOverlay(250);
+      resolvePendingShot();
+    }, 1900);
+  }, 850);
 }
 
 function textFor(key) {
@@ -3560,6 +3649,7 @@ function chooseShotCard(card) {
     addLog(`Carta de remate/arquero seleccionada: ${card}.`);
     return;
   }
+  if (state.pendingShot.revealing) return;
 
   if (!state.pendingShot.shotCard) {
     state.pendingShot.shotCard = card;
@@ -3567,6 +3657,9 @@ function chooseShotCard(card) {
     addLog(state.pendingShot.longDistance
       ? "Rematador eligio carta tapada. Arquero elige carta de atajada directa."
       : "Rematador eligio carta tapada. Ahora el arquero elige 1-4.");
+    if (state.mode === "ai" && state.pendingShot.keeperTeam === "red") {
+      showShotRevealOverlay(state.pendingShot, false, { role: "shooter" });
+    }
     if (state.mode === "ai" && state.pendingShot.keeperTeam === "red") {
       setTimeout(() => {
         chooseShotCard(randomShotCard());
@@ -3597,9 +3690,9 @@ function chooseShotCard(card) {
     state.pendingShot.reboundCard = card;
   }
 
-  renderShotPanel();
-  renderQuickRevealPanels();
-  resolvePendingShot();
+  renderShotCards();
+  renderHud();
+  revealShotThenResolve(state.pendingShot, getShotRevealRole(state.pendingShot));
 }
 
 function chooseDuelCard(card, disputeId = null) {
