@@ -34,6 +34,15 @@ const duelRivalEl = document.querySelector("#duelRival");
 const duelRivalLabelEl = document.querySelector("#duelRivalLabel");
 const duelStatusEl = document.querySelector("#duelStatus");
 const duelPanelEl = document.querySelector("#duelPanel");
+const duelRevealOverlayEl = document.querySelector("#duelRevealOverlay");
+const duelRevealTitleEl = document.querySelector("#duelRevealTitle");
+const duelRevealMineCardEl = document.querySelector("#duelRevealMineCard");
+const duelRevealMineLabelEl = document.querySelector("#duelRevealMineLabel");
+const duelRevealMineEl = document.querySelector("#duelRevealMine");
+const duelRevealRivalCardEl = document.querySelector("#duelRevealRivalCard");
+const duelRevealRivalLabelEl = document.querySelector("#duelRevealRivalLabel");
+const duelRevealRivalEl = document.querySelector("#duelRevealRival");
+const duelRevealTextEl = document.querySelector("#duelRevealText");
 const shotMineEl = document.querySelector("#shotMine");
 const shotMineLabelEl = document.querySelector("#shotMineLabel");
 const shotRivalEl = document.querySelector("#shotRival");
@@ -175,6 +184,7 @@ const lockerBenchListEl = document.querySelector("#lockerBenchList");
 const lockerOutSelectEl = document.querySelector("#lockerOutSelect");
 const lockerInSelectEl = document.querySelector("#lockerInSelect");
 let duelRevealClearTimer = null;
+let duelRevealOverlayTimer = null;
 let shotRevealClearTimer = null;
 const lockerApplyChangeBtn = document.querySelector("#lockerApplyChangeBtn");
 
@@ -225,6 +235,9 @@ const uiText = {
     ownFront: "Frente propio",
     rivalBack: "Dorso rival",
     rivalFront: "Frente rival",
+    duelRevealTitle: "Disputa",
+    duelRevealWaiting: "Tu carta queda visible. La rival sigue tapada...",
+    duelRevealShown: "Duelo revelado: {mine} vs {rival}.",
     shooterBack: "Dorso rematador",
     shooterFront: "Frente rematador",
     keeperBack: "Dorso arquero",
@@ -283,6 +296,9 @@ const uiText = {
     ownFront: "Your front",
     rivalBack: "Rival back",
     rivalFront: "Rival front",
+    duelRevealTitle: "Duel",
+    duelRevealWaiting: "Your card is visible. The rival card stays hidden...",
+    duelRevealShown: "Duel revealed: {mine} vs {rival}.",
     shooterBack: "Shooter back",
     shooterFront: "Shooter front",
     keeperBack: "Keeper back",
@@ -341,6 +357,9 @@ const uiText = {
     ownFront: "Frente proprio",
     rivalBack: "Verso rival",
     rivalFront: "Frente rival",
+    duelRevealTitle: "Disputa",
+    duelRevealWaiting: "Sua carta fica visivel. A carta rival segue tapada...",
+    duelRevealShown: "Duelo revelado: {mine} vs {rival}.",
     shooterBack: "Verso atacante",
     shooterFront: "Frente atacante",
     keeperBack: "Verso goleiro",
@@ -2662,6 +2681,60 @@ function renderQuickRevealPanels() {
   }
 }
 
+function getDisputeCardsForRole(dispute, role = null) {
+  const activeRole = role || dispute.choiceRole || dispute.humanChoiceRole;
+  const activeIsHolder = activeRole === "holder";
+  return {
+    mine: activeIsHolder ? dispute.holderCard : dispute.challengerCard,
+    rival: activeIsHolder ? dispute.challengerCard : dispute.holderCard
+  };
+}
+
+function pulseRevealCard(cardEl, revealed) {
+  if (!cardEl) return;
+  cardEl.classList.remove("revealed");
+  if (!revealed) return;
+  void cardEl.offsetWidth;
+  cardEl.classList.add("revealed");
+}
+
+function showDuelRevealOverlay(dispute, revealed = false, options = {}) {
+  if (!duelRevealOverlayEl || !dispute) return;
+  window.clearTimeout(duelRevealOverlayTimer);
+  const { mine, rival } = getDisputeCardsForRole(dispute, options.role);
+  const hideMine = Boolean(options.hideMine);
+  const mineValue = hideMine ? "?" : (mine || "-");
+  const rivalValue = revealed ? (rival || "?") : "?";
+
+  if (duelRevealTitleEl) duelRevealTitleEl.textContent = textFor("duelRevealTitle").toUpperCase();
+  if (duelRevealMineLabelEl) duelRevealMineLabelEl.textContent = hideMine ? textFor("rivalBack") : textFor("ownFront");
+  if (duelRevealRivalLabelEl) duelRevealRivalLabelEl.textContent = revealed ? textFor("rivalFront") : textFor("rivalBack");
+  if (duelRevealMineEl) duelRevealMineEl.textContent = mineValue;
+  if (duelRevealRivalEl) duelRevealRivalEl.textContent = rivalValue;
+  duelRevealMineCardEl?.classList.toggle("hidden-card", hideMine);
+  duelRevealRivalCardEl?.classList.toggle("hidden-card", !revealed);
+  pulseRevealCard(duelRevealMineCardEl, !hideMine && Boolean(mine));
+  pulseRevealCard(duelRevealRivalCardEl, revealed && Boolean(rival));
+  if (duelRevealTextEl) {
+    duelRevealTextEl.textContent = revealed
+      ? textTemplate("duelRevealShown", { mine: mine || "-", rival: rival || "?" })
+      : textFor("duelRevealWaiting");
+  }
+  duelRevealOverlayEl.classList.remove("hidden");
+  duelRevealOverlayEl.setAttribute("aria-hidden", "false");
+}
+
+function hideDuelRevealOverlay(delay = 0) {
+  if (!duelRevealOverlayEl) return;
+  window.clearTimeout(duelRevealOverlayTimer);
+  duelRevealOverlayTimer = window.setTimeout(() => {
+    duelRevealOverlayEl.classList.add("hidden");
+    duelRevealOverlayEl.setAttribute("aria-hidden", "true");
+    duelRevealMineCardEl?.classList.remove("revealed");
+    duelRevealRivalCardEl?.classList.remove("revealed");
+  }, delay);
+}
+
 function scheduleRevealClear(type) {
   if (type === "duel") {
     window.clearTimeout(duelRevealClearTimer);
@@ -2683,7 +2756,7 @@ function scheduleRevealClear(type) {
   }, 2600);
 }
 
-function revealDisputeThenResolve(disputeId) {
+function revealDisputeThenResolve(disputeId, revealRole = null) {
   window.setTimeout(() => {
     const dispute = state.pendingDispute;
     if (!dispute || dispute.id !== disputeId) return;
@@ -2691,12 +2764,14 @@ function revealDisputeThenResolve(disputeId) {
     renderDuelCards();
     renderDuelPanel();
     renderQuickRevealPanels();
+    showDuelRevealOverlay(dispute, true, { role: revealRole || dispute.humanChoiceRole });
 
     window.setTimeout(() => {
       if (!state.pendingDispute || state.pendingDispute.id !== disputeId) return;
+      hideDuelRevealOverlay(250);
       resolvePendingDispute();
-    }, 1400);
-  }, 650);
+    }, 1900);
+  }, 800);
 }
 
 function textFor(key) {
@@ -3535,6 +3610,7 @@ function chooseDuelCard(card, disputeId = null) {
 
   if (disputeId !== null && state.pendingDispute.id !== disputeId) return;
   const choiceRole = state.pendingDispute.choiceRole || state.pendingDispute.humanChoiceRole;
+  const revealRole = choiceRole;
   const humanIsHolder = choiceRole === "holder";
   if (humanIsHolder ? state.pendingDispute.holderCard : state.pendingDispute.challengerCard) return;
 
@@ -3548,6 +3624,9 @@ function chooseDuelCard(card, disputeId = null) {
   renderDuelCards();
   renderDuelPanel();
   renderQuickRevealPanels();
+  if (state.mode !== "local") {
+    showDuelRevealOverlay(state.pendingDispute, false, { role: revealRole });
+  }
 
   if (state.mode === "local") {
     const missingRole = state.pendingDispute.holderCard ? "challenger" : "holder";
@@ -3557,16 +3636,18 @@ function chooseDuelCard(card, disputeId = null) {
       renderDuelCards();
       renderDuelPanel();
       renderQuickRevealPanels();
+      hideDuelRevealOverlay();
       showSecretStep("Pasar dispositivo", "Carta elegida y tapada. Entrega el dispositivo al rival para que elija sin ver la carta anterior.");
       return;
     }
     state.pendingDispute.localWaitingSecond = false;
     addLog("Ambas cartas de disputa fueron elegidas. Se revelan juntas.");
-    revealDisputeThenResolve(activeDisputeId);
+    showDuelRevealOverlay(state.pendingDispute, false, { role: state.pendingDispute.humanChoiceRole });
+    revealDisputeThenResolve(activeDisputeId, state.pendingDispute.humanChoiceRole);
     return;
   }
 
-  revealDisputeThenResolve(activeDisputeId);
+  revealDisputeThenResolve(activeDisputeId, revealRole);
 }
 
 function startDisputeAt(x, y, movedPieceId) {

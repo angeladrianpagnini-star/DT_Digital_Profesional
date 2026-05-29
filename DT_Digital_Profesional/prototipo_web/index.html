@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>DT Digital - Prototipo</title>
-    <link rel="stylesheet" href="styles.css?v=20260529-1">
+    <link rel="stylesheet" href="styles.css?v=20260529-4">
   </head>
   <body>
     <label class="language-switch" aria-label="Idioma">
@@ -636,6 +636,24 @@
       </div>
     </nav>
 
+    <div id="duelRevealOverlay" class="duel-reveal-overlay hidden" aria-hidden="true">
+      <div class="duel-reveal-box">
+        <div id="duelRevealTitle" class="duel-reveal-title">DISPUTA</div>
+        <div class="duel-reveal-cards">
+          <div id="duelRevealMineCard" class="duel-reveal-card mine">
+            <span id="duelRevealMineLabel">Tu carta</span>
+            <strong id="duelRevealMine">-</strong>
+          </div>
+          <div class="duel-reveal-vs">VS</div>
+          <div id="duelRevealRivalCard" class="duel-reveal-card rival hidden-card">
+            <span id="duelRevealRivalLabel">Dorso rival</span>
+            <strong id="duelRevealRival">?</strong>
+          </div>
+        </div>
+        <p id="duelRevealText">La carta rival esta tapada.</p>
+      </div>
+    </div>
+
     <div id="gameBanner" class="game-banner hidden" aria-live="polite">
       <div class="game-banner-card">
         <strong id="gameBannerTitle">GOOOLLLL!!!</strong>
@@ -834,6 +852,6 @@
       </div>
     </dialog>
 
-    <script src="app.js?v=20260529-1"></script>
+    <script src="app.js?v=20260529-4"></script>
   </body>
 </html>
