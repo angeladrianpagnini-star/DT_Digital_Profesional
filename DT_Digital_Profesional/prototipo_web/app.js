@@ -2683,6 +2683,22 @@ function scheduleRevealClear(type) {
   }, 2600);
 }
 
+function revealDisputeThenResolve(disputeId) {
+  window.setTimeout(() => {
+    const dispute = state.pendingDispute;
+    if (!dispute || dispute.id !== disputeId) return;
+    dispute.revealed = true;
+    renderDuelCards();
+    renderDuelPanel();
+    renderQuickRevealPanels();
+
+    window.setTimeout(() => {
+      if (!state.pendingDispute || state.pendingDispute.id !== disputeId) return;
+      resolvePendingDispute();
+    }, 1400);
+  }, 650);
+}
+
 function textFor(key) {
   return uiText[currentLanguage]?.[key] || uiText.es[key] || key;
 }
@@ -3146,7 +3162,7 @@ function getShotPrompt() {
 }
 
 function renderDuelPanel() {
-  duelPanelEl.classList.toggle("collapsed", !state.pendingDispute);
+  duelPanelEl.classList.toggle("collapsed", !state.pendingDispute && !state.lastDuel);
   const mineCard = duelMineEl.closest(".duel-card-preview");
   const rivalCard = duelRivalEl.closest(".duel-card-preview");
   mineCard.querySelector("span").textContent = textFor("ownFront");
@@ -3185,6 +3201,10 @@ function renderDuelPanel() {
     duelStatusEl.textContent = humanCard
       ? "Segunda carta elegida. Revelando duelo..."
       : "Segundo jugador: elegi A, B, C o D. La primera carta esta tapada.";
+    return;
+  }
+  if (state.pendingDispute.revealed) {
+    duelStatusEl.textContent = `Duelo revelado: ${humanCard || "-"} vs ${rivalCardValue || "?"}.`;
     return;
   }
   duelStatusEl.textContent = humanCard
@@ -3542,19 +3562,11 @@ function chooseDuelCard(card, disputeId = null) {
     }
     state.pendingDispute.localWaitingSecond = false;
     addLog("Ambas cartas de disputa fueron elegidas. Se revelan juntas.");
-    setTimeout(() => {
-      if (!state.pendingDispute || state.pendingDispute.id !== activeDisputeId) return;
-      state.pendingDispute.revealed = true;
-      resolvePendingDispute();
-    }, 650);
+    revealDisputeThenResolve(activeDisputeId);
     return;
   }
 
-  setTimeout(() => {
-    if (!state.pendingDispute || state.pendingDispute.id !== activeDisputeId) return;
-    state.pendingDispute.revealed = true;
-    resolvePendingDispute();
-  }, 650);
+  revealDisputeThenResolve(activeDisputeId);
 }
 
 function startDisputeAt(x, y, movedPieceId) {
