@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>DT Digital - Prototipo</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=20260528-2">
   </head>
   <body>
     <label class="language-switch" aria-label="Idioma">
@@ -81,8 +81,18 @@
                 Codigo MFA
                 <input id="physicalTeamCode" type="text" inputmode="numeric" placeholder="000000">
               </label>
+              <label>
+                Metodo de identidad
+                <select id="physicalTeamAuthMethod">
+                  <option value="mfa">Codigo MFA</option>
+                  <option value="fingerprint">Huella digital</option>
+                  <option value="face">Reconocimiento de rostro</option>
+                </select>
+              </label>
+              <button id="physicalTeamAuthBtn" type="button">Validar identidad</button>
               <button id="physicalRegisterTeamBtn" type="button">Registrar equipo</button>
             </div>
+            <p id="physicalTeamAuthStatus" class="setup-status">Identidad del DT pendiente de validar.</p>
             <div class="physical-list-wrap">
               <h3>Equipos registrados</h3>
               <div id="physicalTeamList" class="physical-list"></div>
@@ -105,8 +115,18 @@
                 Codigo validacion
                 <input id="physicalOfficialCode" type="text" inputmode="numeric" placeholder="000000">
               </label>
+              <label>
+                Metodo de identidad
+                <select id="physicalOfficialAuthMethod">
+                  <option value="mfa">Codigo MFA</option>
+                  <option value="fingerprint">Huella digital</option>
+                  <option value="face">Reconocimiento de rostro</option>
+                </select>
+              </label>
+              <button id="physicalOfficialAuthBtn" type="button">Validar autoridad</button>
               <button id="physicalRegisterOfficialBtn" type="button">Registrar veedor</button>
             </div>
+            <p id="physicalOfficialAuthStatus" class="setup-status">Autoridad pendiente de validar.</p>
             <div class="physical-list-wrap">
               <h3>Autoridades</h3>
               <div id="physicalOfficialList" class="physical-list"></div>
@@ -134,6 +154,19 @@
               <button id="physicalGenerateCodeBtn" type="button">Generar codigo</button>
               <button id="physicalCreateCompetitionBtn" type="button">Crear / actualizar competencia</button>
             </div>
+            <h3>Invitacion de registro</h3>
+            <div class="physical-form">
+              <label>
+                Equipo invitado
+                <input id="physicalInviteTeamName" type="text" placeholder="Nombre del equipo">
+              </label>
+              <label>
+                Link generado
+                <input id="physicalInviteLink" type="text" readonly placeholder="Se genera al crear invitacion">
+              </label>
+              <button id="physicalInviteBtn" type="button">Generar link</button>
+            </div>
+            <p id="physicalInviteStatus" class="setup-status">El organizador puede enviar un link para que el DT complete registro y autenticacion.</p>
             <h3>Partido fisico</h3>
             <div class="physical-form">
               <label>
@@ -199,6 +232,12 @@
               <div>
                 <h3>Estado</h3>
                 <p id="physicalMatchStatus" class="setup-status">Reloj preparado.</p>
+                <label class="physical-evidence-control">
+                  Foto o video corto
+                  <input id="physicalEvidenceFile" type="file" accept="image/*,video/*">
+                </label>
+                <button id="physicalEvidenceBtn" type="button">Adjuntar evidencia</button>
+                <div id="physicalEvidenceList" class="physical-list physical-evidence-list"></div>
               </div>
             </div>
           </section>
@@ -320,8 +359,8 @@
           <p class="setup-note">Opcional para jugar contra la maquina con continuidad, dificultad progresiva y codigo de competencia.</p>
           <div class="setup-options compact">
             <button data-competition="friendly">Partido unico</button>
-            <button data-competition="cup">Mini copa 4</button>
-            <button data-competition="league">Torneo liga</button>
+            <button data-competition="cup">Copa IA 8</button>
+            <button data-competition="league">Liga IA 10</button>
           </div>
           <div class="login-grid">
             <label>
@@ -795,6 +834,6 @@
       </div>
     </dialog>
 
-    <script src="app.js"></script>
+    <script src="app.js?v=20260528-2"></script>
   </body>
 </html>

@@ -51,11 +51,17 @@ const physicalMatchPanelEl = document.querySelector("#physicalMatchPanel");
 const physicalUserNameEl = document.querySelector("#physicalUserName");
 const physicalTeamNameEl = document.querySelector("#physicalTeamName");
 const physicalTeamCodeEl = document.querySelector("#physicalTeamCode");
+const physicalTeamAuthMethodEl = document.querySelector("#physicalTeamAuthMethod");
+const physicalTeamAuthBtn = document.querySelector("#physicalTeamAuthBtn");
+const physicalTeamAuthStatusEl = document.querySelector("#physicalTeamAuthStatus");
 const physicalRegisterTeamBtn = document.querySelector("#physicalRegisterTeamBtn");
 const physicalTeamListEl = document.querySelector("#physicalTeamList");
 const physicalOfficialNameEl = document.querySelector("#physicalOfficialName");
 const physicalOfficialRoleEl = document.querySelector("#physicalOfficialRole");
 const physicalOfficialCodeEl = document.querySelector("#physicalOfficialCode");
+const physicalOfficialAuthMethodEl = document.querySelector("#physicalOfficialAuthMethod");
+const physicalOfficialAuthBtn = document.querySelector("#physicalOfficialAuthBtn");
+const physicalOfficialAuthStatusEl = document.querySelector("#physicalOfficialAuthStatus");
 const physicalRegisterOfficialBtn = document.querySelector("#physicalRegisterOfficialBtn");
 const physicalOfficialListEl = document.querySelector("#physicalOfficialList");
 const physicalCompetitionNameEl = document.querySelector("#physicalCompetitionName");
@@ -63,6 +69,10 @@ const physicalCompetitionTypeEl = document.querySelector("#physicalCompetitionTy
 const physicalCompetitionCodeEl = document.querySelector("#physicalCompetitionCode");
 const physicalGenerateCodeBtn = document.querySelector("#physicalGenerateCodeBtn");
 const physicalCreateCompetitionBtn = document.querySelector("#physicalCreateCompetitionBtn");
+const physicalInviteTeamNameEl = document.querySelector("#physicalInviteTeamName");
+const physicalInviteLinkEl = document.querySelector("#physicalInviteLink");
+const physicalInviteBtn = document.querySelector("#physicalInviteBtn");
+const physicalInviteStatusEl = document.querySelector("#physicalInviteStatus");
 const physicalHomeTeamEl = document.querySelector("#physicalHomeTeam");
 const physicalAwayTeamEl = document.querySelector("#physicalAwayTeam");
 const physicalObserverEl = document.querySelector("#physicalObserver");
@@ -86,6 +96,9 @@ const physicalFinishBtn = document.querySelector("#physicalFinishBtn");
 const physicalNewMatchBtn = document.querySelector("#physicalNewMatchBtn");
 const physicalMatchLogEl = document.querySelector("#physicalMatchLog");
 const physicalMatchStatusEl = document.querySelector("#physicalMatchStatus");
+const physicalEvidenceFileEl = document.querySelector("#physicalEvidenceFile");
+const physicalEvidenceBtn = document.querySelector("#physicalEvidenceBtn");
+const physicalEvidenceListEl = document.querySelector("#physicalEvidenceList");
 const changeDialog = document.querySelector("#changeDialog");
 const secretDialog = document.querySelector("#secretDialog");
 const secretTitleEl = document.querySelector("#secretTitle");
@@ -344,15 +357,881 @@ const uiText = {
     physicalDesc: "Suporte para tabuleiro real, relogio e competicao"
   }
 };
+
+Object.assign(uiText.es, {
+  setupConfigure: "Configurar partido",
+  setupTitle: "DT Digital",
+  identificationTitle: "Identificacion",
+  identificationNote: "El perfil queda registrado en este dispositivo para validar cuenta, equipo, ranking y futuras competencias.",
+  userLabel: "Usuario",
+  teamUniqueLabel: "Equipo unico",
+  dniLabel: "DNI",
+  phoneLabel: "Telefono",
+  emailLabel: "Mail",
+  addressLabel: "Direccion",
+  countryLabel: "Pais",
+  mfaCodeLabel: "Codigo MFA",
+  registerLogin: "Registrar / ingresar",
+  newProfile: "Nuevo perfil",
+  setupLoginPrompt: "Primero registra el usuario para habilitar modos de juego. Los registros quedan guardados por navegador/dispositivo.",
+  registeredTeams: "Equipos registrados",
+  noRegisteredTeams: "Todavia no hay equipos registrados.",
+  player1: "Jugador 1",
+  player2: "Jugador 2",
+  activeProfile: "Perfil activo",
+  guest: "Invitado",
+  initialRank: "Rango inicial",
+  modeTitle: "Modo",
+  localMode: "1 vs 1 local",
+  aiMode: "1 vs Maquina",
+  onlineMode: "Online / enlace",
+  leagueMode: "Liga",
+  localPlayer2Title: "Jugador 2 local",
+  localPlayer2Note: "Para 1 vs 1 local el segundo DT debe estar registrado y autenticado por equipo unico + MFA.",
+  player2TeamLabel: "Equipo jugador 2",
+  player2MfaLabel: "Codigo MFA jugador 2",
+  validatePlayer2: "Validar jugador 2",
+  onlineTitle: "Online / enlace",
+  onlineNote: "Este modo no inicia partida directa: crea un vinculo para compartir o permite pegar uno recibido.",
+  createOnlineLink: "Crear enlace de partida",
+  receivedLink: "Enlace recibido",
+  leagueSetupTitle: "Liga / torneo",
+  leagueSetupNote: "El administrador autenticado crea la competencia, invita equipos y define formato, llaves y fechas.",
+  leagueNameLabel: "Nombre liga",
+  formatLabel: "Formato",
+  formatFixture: "Fixture todos contra todos",
+  formatKnockout: "Llaves eliminatorias",
+  formatLocal: "Torneo local en un dispositivo",
+  createLeague: "Crear liga",
+  aiDifficultyTitle: "Dificultad IA",
+  easy: "Facil",
+  medium: "Medio",
+  hard: "Dificil",
+  aiCompetitionTitle: "Competencia IA",
+  aiCompetitionNote: "Opcional para jugar contra la maquina con continuidad, dificultad progresiva y codigo de competencia.",
+  friendlyMatch: "Partido unico",
+  cup8: "Copa IA 8",
+  league10: "Liga IA 10",
+  competitionCodeLabel: "Codigo competencia",
+  resume: "Retomar",
+  abandonCompetition: "Abandonar competencia",
+  formationTitle: "Formacion",
+  durationTitle: "Duracion",
+  durationNote: "La duracion solo inicia cancha en 1 vs 1 local o 1 vs Maquina.",
+  duration5: "5 minutos por tiempo",
+  duration10: "10 minutos por tiempo",
+  duration15: "15 minutos por tiempo",
+  duration30: "30 minutos por tiempo",
+  duration45: "45 minutos por tiempo",
+  lockerEnter: "Entrar al vestuario",
+  lineupPrepare: "Preparar alineacion en cancha",
+  backToStyles: "Volver a estilos",
+  startMatch: "Iniciar partido",
+  physEyebrow: "DT Fisico",
+  physTitle: "Soporte para juego fisico",
+  physIntro: "Registra equipos, crea desafios o competencias, define tiempos por periodo y carga el resultado del partido jugado en tablero real.",
+  showClock: "Ver reloj",
+  registerTitle: "Registro",
+  physicalNote: "Esta capa simula el registro local. En la version online estos datos pasaran a base de datos, validacion MFA y ranking global.",
+  authMethodLabel: "Metodo de identidad",
+  authMfa: "Codigo MFA",
+  authFingerprint: "Huella digital",
+  authFace: "Reconocimiento de rostro",
+  validateIdentity: "Validar identidad",
+  validateAuthority: "Validar autoridad",
+  registerTeam: "Registrar equipo",
+  teamAuthPending: "Identidad del DT pendiente de validar.",
+  teamsRegistered: "Equipos registrados",
+  officialTitle: "Veedor / arbitro",
+  officialName: "Nombre",
+  officialRole: "Rol",
+  officialCode: "Codigo validacion",
+  officialPending: "Autoridad pendiente de validar.",
+  registerOfficial: "Registrar veedor",
+  officials: "Autoridades",
+  competitionTitle: "Competencia",
+  competitionName: "Nombre competencia",
+  competitionType: "Tipo",
+  competitionCode: "Codigo competencia",
+  challenge1v1: "Desafio 1 vs 1",
+  leagueTable: "Liga / tabla",
+  cupBracket: "Copa / llave",
+  generateCode: "Generar codigo",
+  createCompetition: "Crear / actualizar competencia",
+  inviteTitle: "Invitacion de registro",
+  invitedTeam: "Equipo invitado",
+  generatedLink: "Link generado",
+  generateLink: "Generar link",
+  invitePending: "El organizador puede enviar un link para que el DT complete registro y autenticacion.",
+  physicalMatchTitle: "Partido fisico",
+  homeTeam: "Equipo local",
+  awayTeam: "Equipo visitante",
+  observer: "Veedor",
+  prepareClock: "Preparar reloj del partido",
+  physicalStatusReady: "Registra al menos dos equipos para preparar un partido fisico.",
+  matchAct: "Acta del partido",
+  noCompetition: "Sin competencia",
+  local: "Local",
+  visitor: "Visitante",
+  homeGoal: "Gol local",
+  awayGoal: "Gol visitante",
+  startResume: "Iniciar / reanudar",
+  pause: "Pausar",
+  changeHalf: "Cambiar tiempo",
+  finishAndSave: "Finalizar y guardar",
+  newMatch: "Nuevo partido",
+  matchLogTitle: "Acta / eventos",
+  statusTitle: "Estado",
+  matchReady: "Reloj preparado.",
+  evidenceLabel: "Foto o video corto",
+  attachEvidence: "Adjuntar evidencia",
+  chooseHome: "Elegir local",
+  chooseAway: "Elegir visitante",
+  noObserver: "Sin veedor asignado",
+  localPlayer2Pending: "Jugador 2 pendiente de autenticar.",
+  onlinePending: "Pendiente de sincronizacion online profesional.",
+  leaguePending: "Pendiente de backend: usuarios, equipos, fixture, tabla y ranking global.",
+  singleMatchSelected: "Partido unico seleccionado.",
+  strategyStyleName: "DT Estratega",
+  intensityStyleName: "DT Intensidad",
+  styleSelected: "{style} seleccionado. Ahora registra o elige tus equipos.",
+  durationSelected: "Duracion seleccionada: {minutes} minutos por tiempo. Primer paso recomendado: entrar al vestuario.",
+  competitionNeedsProfile: "Primero registra o activa un equipo para crear una competencia IA.",
+  competitionCreated: "{type} creada. Codigo {code}.",
+  competitionNotFound: "No se encontro una competencia guardada con ese codigo en este dispositivo.",
+  competitionResumed: "Competencia retomada: {code}.",
+  cupQuarter: "Cuartos de final",
+  cupSemi: "Semifinal",
+  cupFinal: "Final",
+  leagueRound: "Fecha {round}",
+  cupEliminated: "Copa IA 8: quedaste eliminado en {stage}. Codigo {code}.",
+  cupChampion: "Copa IA 8: campeon {team}. Codigo {code}.",
+  cupWonNext: "Copa IA 8: ganaste {stage}. Proxima instancia: {next}.",
+  leagueChampionPlayer: "Liga IA 10: campeon {team}.",
+  leagueFinishedChampion: "Liga IA 10 finalizada. Campeon: {team}.",
+  leagueResultLoaded: "Liga IA 10: resultado cargado. Proxima fecha: {next}.",
+  nextRival: "Proximo rival: {rival}. Dificultad {difficulty}.",
+  competitionCompleteChampion: "Competencia completada: campeon.",
+  competitionCompleteEliminated: "Competencia completada: eliminado.",
+  competitionComplete: "Competencia completada.",
+  codeLabel: "Codigo",
+  rematchAi: "Revancha IA {difficulty}",
+  rematchAiLevelUp: "Revancha IA {difficulty} - sube nivel",
+  mfaMinCode: "Para MFA ingresa un codigo de al menos 4 digitos.",
+  physicalAuthMfaValid: "Codigo MFA validado para este registro.",
+  physicalAuthSimValid: "{method} simulado y validado para este prototipo.",
+  physicalStandingsEmptyCompetition: "Crea una competencia para ver tabla, actas y codigo.",
+  physicalNoTeamsInTable: "Sin equipos cargados en la tabla.",
+  physicalTypeLeague: "Liga",
+  physicalTypeCup: "Copa",
+  physicalTypeChallenge: "Desafio",
+  physicalValidated: "validado",
+  physicalMatchFinishedSaved: "Partido finalizado y guardado en el acta local.",
+  physicalClockRunning: "Reloj corriendo",
+  physicalClockPaused: "Reloj pausado",
+  observerPrefix: "Veedor",
+  completeTeamRegister: "Completa DT y equipo unico para registrar.",
+  validateDtIdentityFirst: "Primero valida la identidad del DT con MFA, huella o rostro.",
+  completeValidMfa: "Completa un codigo MFA valido para registrar.",
+  teamRegisteredPhysical: "{team} queda registrado para desafios fisicos y competencias.",
+  completeOfficialName: "Completa nombre para validar al veedor/arbitro.",
+  validateAuthorityFirst: "Primero valida la autoridad con MFA, huella o rostro.",
+  completeValidOfficialCode: "Completa un codigo de validacion valido.",
+  officialRegisteredPhysical: "{name} queda registrado como {role} validado para cargar actas.",
+  physicalDefaultCompetition: "Competencia DT Fisico",
+  physicalCompetitionCreated: "{name} creada. Codigo para retomar/cargar desde otro dispositivo: {code}.",
+  chooseDifferentTeams: "Elegi dos equipos distintos para preparar el partido.",
+  teamsAuthRequired: "Los dos equipos deben estar registrados y autenticados para jugar competencia fisica.",
+  observerAuthRequired: "El veedor/arbitro seleccionado debe estar autenticado por la organizacion.",
+  physicalMatchPrepared: "Reloj de partido preparado. Inicia cuando el arbitro/veedor lo indique.",
+  physicalMatchEventCreated: "Acta creada: {home} vs {away}. Duracion {duration} minutos por tiempo.",
+  inviteNeedsCompetition: "Primero crea o selecciona una competencia para generar invitacion.",
+  physicalInviteDefaultTeam: "equipo-invitado",
+  inviteCreated: "Link creado para {team}. El DT completa registro y autenticacion antes de jugar.",
+  evidenceNeedsMatch: "Primero prepara un partido para adjuntar evidencia.",
+  onlineNeedsProfile: "Primero registra el usuario para crear un enlace.",
+  onlineLinkCreated: "Enlace creado para compartir: {link}",
+  onlineLinkReceived: "Enlace recibido. En version online se sincronizaria como 1 vs 1 remoto.",
+  onlinePasteLink: "Pega un enlace recibido para vincular la partida.",
+  leagueNeedsAdmin: "Primero registra el administrador de la liga.",
+  leagueCreated: "{name} creada por {admin}. Formato: {format}. Proximo paso: invitar equipos y cerrar inscripcion."
+});
+
+Object.assign(uiText.en, {
+  setupConfigure: "Set up match",
+  setupTitle: "DT Digital",
+  identificationTitle: "Identification",
+  identificationNote: "The profile is saved on this device to validate account, team, ranking and future competitions.",
+  userLabel: "User",
+  teamUniqueLabel: "Unique team",
+  dniLabel: "ID",
+  phoneLabel: "Phone",
+  emailLabel: "Email",
+  addressLabel: "Address",
+  countryLabel: "Country",
+  mfaCodeLabel: "MFA code",
+  registerLogin: "Register / sign in",
+  newProfile: "New profile",
+  setupLoginPrompt: "First register the user to enable game modes. Records are saved by browser/device.",
+  registeredTeams: "Registered teams",
+  noRegisteredTeams: "No registered teams yet.",
+  player1: "Player 1",
+  player2: "Player 2",
+  activeProfile: "Active profile",
+  guest: "Guest",
+  initialRank: "Initial rank",
+  modeTitle: "Mode",
+  localMode: "Local 1 vs 1",
+  aiMode: "1 vs Machine",
+  onlineMode: "Online / link",
+  leagueMode: "League",
+  localPlayer2Title: "Local player 2",
+  localPlayer2Note: "For local 1 vs 1, the second DT must be registered and authenticated by unique team + MFA.",
+  player2TeamLabel: "Player 2 team",
+  player2MfaLabel: "Player 2 MFA code",
+  validatePlayer2: "Validate player 2",
+  onlineTitle: "Online / link",
+  onlineNote: "This mode does not start a direct match: create a link to share or paste one you received.",
+  createOnlineLink: "Create match link",
+  receivedLink: "Received link",
+  leagueSetupTitle: "League / tournament",
+  leagueSetupNote: "The authenticated admin creates the competition, invites teams and defines format, bracket and dates.",
+  leagueNameLabel: "League name",
+  formatLabel: "Format",
+  formatFixture: "Round-robin fixture",
+  formatKnockout: "Knockout bracket",
+  formatLocal: "Local tournament on one device",
+  createLeague: "Create league",
+  aiDifficultyTitle: "AI difficulty",
+  easy: "Easy",
+  medium: "Medium",
+  hard: "Hard",
+  aiCompetitionTitle: "AI competition",
+  aiCompetitionNote: "Optional continuity mode against the machine with progressive difficulty and competition code.",
+  friendlyMatch: "Single match",
+  cup8: "AI Cup 8",
+  league10: "AI League 10",
+  competitionCodeLabel: "Competition code",
+  resume: "Resume",
+  abandonCompetition: "Abandon competition",
+  formationTitle: "Formation",
+  durationTitle: "Duration",
+  durationNote: "Duration starts the field only in local 1 vs 1 or 1 vs Machine.",
+  duration5: "5 minutes per half",
+  duration10: "10 minutes per half",
+  duration15: "15 minutes per half",
+  duration30: "30 minutes per half",
+  duration45: "45 minutes per half",
+  lockerEnter: "Enter locker room",
+  lineupPrepare: "Prepare lineup on field",
+  backToStyles: "Back to styles",
+  startMatch: "Start match",
+  physEyebrow: "Physical DT",
+  physTitle: "Physical game support",
+  physIntro: "Register teams, create challenges or competitions, define half lengths and record the score from the real board match.",
+  showClock: "Show clock",
+  registerTitle: "Registration",
+  physicalNote: "This layer simulates local registration. Online, these records will move to database, MFA validation and global ranking.",
+  authMethodLabel: "Identity method",
+  authMfa: "MFA code",
+  authFingerprint: "Fingerprint",
+  authFace: "Face recognition",
+  validateIdentity: "Validate identity",
+  validateAuthority: "Validate authority",
+  registerTeam: "Register team",
+  teamAuthPending: "DT identity validation pending.",
+  teamsRegistered: "Registered teams",
+  officialTitle: "Observer / referee",
+  officialName: "Name",
+  officialRole: "Role",
+  officialCode: "Validation code",
+  officialPending: "Authority validation pending.",
+  registerOfficial: "Register observer",
+  officials: "Authorities",
+  competitionTitle: "Competition",
+  competitionName: "Competition name",
+  competitionType: "Type",
+  competitionCode: "Competition code",
+  challenge1v1: "1 vs 1 challenge",
+  leagueTable: "League / table",
+  cupBracket: "Cup / bracket",
+  generateCode: "Generate code",
+  createCompetition: "Create / update competition",
+  inviteTitle: "Registration invite",
+  invitedTeam: "Invited team",
+  generatedLink: "Generated link",
+  generateLink: "Generate link",
+  invitePending: "The organizer can send a link so the DT completes registration and authentication.",
+  physicalMatchTitle: "Physical match",
+  homeTeam: "Home team",
+  awayTeam: "Away team",
+  observer: "Observer",
+  prepareClock: "Prepare match clock",
+  physicalStatusReady: "Register at least two teams to prepare a physical match.",
+  matchAct: "Match report",
+  noCompetition: "No competition",
+  local: "Home",
+  visitor: "Away",
+  homeGoal: "Home goal",
+  awayGoal: "Away goal",
+  startResume: "Start / resume",
+  pause: "Pause",
+  changeHalf: "Change half",
+  finishAndSave: "Finish and save",
+  newMatch: "New match",
+  matchLogTitle: "Report / events",
+  statusTitle: "Status",
+  matchReady: "Clock ready.",
+  evidenceLabel: "Photo or short video",
+  attachEvidence: "Attach evidence",
+  chooseHome: "Choose home",
+  chooseAway: "Choose away",
+  noObserver: "No observer assigned",
+  localPlayer2Pending: "Player 2 pending authentication.",
+  onlinePending: "Professional online sync pending.",
+  leaguePending: "Backend pending: users, teams, fixture, table and global ranking.",
+  singleMatchSelected: "Single match selected.",
+  strategyStyleName: "DT Strategy",
+  intensityStyleName: "DT Intensity",
+  styleSelected: "{style} selected. Now register or choose your teams.",
+  durationSelected: "Duration selected: {minutes} minutes per half. Recommended first step: enter the locker room.",
+  competitionNeedsProfile: "First register or activate a team to create an AI competition.",
+  competitionCreated: "{type} created. Code {code}.",
+  competitionNotFound: "No saved competition with that code was found on this device.",
+  competitionResumed: "Competition resumed: {code}.",
+  cupQuarter: "Quarterfinal",
+  cupSemi: "Semifinal",
+  cupFinal: "Final",
+  leagueRound: "Round {round}",
+  cupEliminated: "AI Cup 8: you were eliminated in the {stage}. Code {code}.",
+  cupChampion: "AI Cup 8: champion {team}. Code {code}.",
+  cupWonNext: "AI Cup 8: you won the {stage}. Next stage: {next}.",
+  leagueChampionPlayer: "AI League 10: champion {team}.",
+  leagueFinishedChampion: "AI League 10 finished. Champion: {team}.",
+  leagueResultLoaded: "AI League 10: result loaded. Next round: {next}.",
+  nextRival: "Next rival: {rival}. Difficulty {difficulty}.",
+  competitionCompleteChampion: "Competition complete: champion.",
+  competitionCompleteEliminated: "Competition complete: eliminated.",
+  competitionComplete: "Competition complete.",
+  codeLabel: "Code",
+  rematchAi: "AI rematch {difficulty}",
+  rematchAiLevelUp: "AI rematch {difficulty} - level up",
+  mfaMinCode: "For MFA enter a code with at least 4 digits.",
+  physicalAuthMfaValid: "MFA code validated for this record.",
+  physicalAuthSimValid: "{method} simulated and validated for this prototype.",
+  physicalStandingsEmptyCompetition: "Create a competition to view table, reports and code.",
+  physicalNoTeamsInTable: "No teams loaded in the table.",
+  physicalTypeLeague: "League",
+  physicalTypeCup: "Cup",
+  physicalTypeChallenge: "Challenge",
+  physicalValidated: "validated",
+  physicalMatchFinishedSaved: "Match finished and saved in the local report.",
+  physicalClockRunning: "Clock running",
+  physicalClockPaused: "Clock paused",
+  observerPrefix: "Observer",
+  completeTeamRegister: "Complete DT and unique team to register.",
+  validateDtIdentityFirst: "First validate the DT identity with MFA, fingerprint or face.",
+  completeValidMfa: "Complete a valid MFA code to register.",
+  teamRegisteredPhysical: "{team} is registered for physical challenges and competitions.",
+  completeOfficialName: "Complete the name to validate the observer/referee.",
+  validateAuthorityFirst: "First validate the authority with MFA, fingerprint or face.",
+  completeValidOfficialCode: "Complete a valid validation code.",
+  officialRegisteredPhysical: "{name} is registered as validated {role} to load reports.",
+  physicalDefaultCompetition: "Physical DT Competition",
+  physicalCompetitionCreated: "{name} created. Code to resume/load from another device: {code}.",
+  chooseDifferentTeams: "Choose two different teams to prepare the match.",
+  teamsAuthRequired: "Both teams must be registered and authenticated to play a physical competition.",
+  observerAuthRequired: "The selected observer/referee must be authenticated by the organization.",
+  physicalMatchPrepared: "Match clock prepared. Start it when the referee/observer says so.",
+  physicalMatchEventCreated: "Report created: {home} vs {away}. Duration {duration} minutes per half.",
+  inviteNeedsCompetition: "First create or select a competition to generate an invite.",
+  physicalInviteDefaultTeam: "invited-team",
+  inviteCreated: "Link created for {team}. The DT completes registration and authentication before playing.",
+  evidenceNeedsMatch: "First prepare a match to attach evidence.",
+  onlineNeedsProfile: "First register the user to create a link.",
+  onlineLinkCreated: "Link created to share: {link}",
+  onlineLinkReceived: "Link received. In the online version it would sync as remote 1 vs 1.",
+  onlinePasteLink: "Paste a received link to pair the match.",
+  leagueNeedsAdmin: "First register the league administrator.",
+  leagueCreated: "{name} created by {admin}. Format: {format}. Next step: invite teams and close registration."
+});
+
+Object.assign(uiText.pt, {
+  setupConfigure: "Configurar partida",
+  setupTitle: "DT Digital",
+  identificationTitle: "Identificacao",
+  identificationNote: "O perfil fica salvo neste dispositivo para validar conta, equipe, ranking e futuras competicoes.",
+  userLabel: "Usuario",
+  teamUniqueLabel: "Equipe unica",
+  dniLabel: "Documento",
+  phoneLabel: "Telefone",
+  emailLabel: "Email",
+  addressLabel: "Endereco",
+  countryLabel: "Pais",
+  mfaCodeLabel: "Codigo MFA",
+  registerLogin: "Registrar / entrar",
+  newProfile: "Novo perfil",
+  setupLoginPrompt: "Primeiro registre o usuario para habilitar modos de jogo. Os registros ficam salvos por navegador/dispositivo.",
+  registeredTeams: "Equipes registradas",
+  noRegisteredTeams: "Ainda nao ha equipes registradas.",
+  player1: "Jogador 1",
+  player2: "Jogador 2",
+  activeProfile: "Perfil ativo",
+  guest: "Convidado",
+  initialRank: "Ranking inicial",
+  modeTitle: "Modo",
+  localMode: "1 vs 1 local",
+  aiMode: "1 vs Maquina",
+  onlineMode: "Online / link",
+  leagueMode: "Liga",
+  localPlayer2Title: "Jogador 2 local",
+  localPlayer2Note: "Para 1 vs 1 local, o segundo DT deve estar registrado e autenticado por equipe unica + MFA.",
+  player2TeamLabel: "Equipe jogador 2",
+  player2MfaLabel: "Codigo MFA jogador 2",
+  validatePlayer2: "Validar jogador 2",
+  onlineTitle: "Online / link",
+  onlineNote: "Este modo nao inicia partida direta: cria um link para compartilhar ou permite colar um recebido.",
+  createOnlineLink: "Criar link da partida",
+  receivedLink: "Link recebido",
+  leagueSetupTitle: "Liga / torneio",
+  leagueSetupNote: "O administrador autenticado cria a competicao, convida equipes e define formato, chaves e datas.",
+  leagueNameLabel: "Nome da liga",
+  formatLabel: "Formato",
+  formatFixture: "Todos contra todos",
+  formatKnockout: "Chaves eliminatorias",
+  formatLocal: "Torneio local em um dispositivo",
+  createLeague: "Criar liga",
+  aiDifficultyTitle: "Dificuldade IA",
+  easy: "Facil",
+  medium: "Medio",
+  hard: "Dificil",
+  aiCompetitionTitle: "Competicao IA",
+  aiCompetitionNote: "Opcional para jogar contra a maquina com continuidade, dificuldade progressiva e codigo de competicao.",
+  friendlyMatch: "Partida unica",
+  cup8: "Copa IA 8",
+  league10: "Liga IA 10",
+  competitionCodeLabel: "Codigo competicao",
+  resume: "Retomar",
+  abandonCompetition: "Abandonar competicao",
+  formationTitle: "Formacao",
+  durationTitle: "Duracao",
+  durationNote: "A duracao so inicia campo em 1 vs 1 local ou 1 vs Maquina.",
+  duration5: "5 minutos por tempo",
+  duration10: "10 minutos por tempo",
+  duration15: "15 minutos por tempo",
+  duration30: "30 minutos por tempo",
+  duration45: "45 minutos por tempo",
+  lockerEnter: "Entrar no vestiario",
+  lineupPrepare: "Preparar alinhamento em campo",
+  backToStyles: "Voltar aos estilos",
+  startMatch: "Iniciar partida",
+  physEyebrow: "DT Fisico",
+  physTitle: "Suporte para jogo fisico",
+  physIntro: "Registre equipes, crie desafios ou competicoes, defina tempos por periodo e carregue o resultado da partida no tabuleiro real.",
+  showClock: "Ver relogio",
+  registerTitle: "Registro",
+  physicalNote: "Esta camada simula o registro local. Na versao online estes dados irao para banco de dados, validacao MFA e ranking global.",
+  authMethodLabel: "Metodo de identidade",
+  authMfa: "Codigo MFA",
+  authFingerprint: "Digital",
+  authFace: "Reconhecimento facial",
+  validateIdentity: "Validar identidade",
+  validateAuthority: "Validar autoridade",
+  registerTeam: "Registrar equipe",
+  teamAuthPending: "Identidade do DT pendente de validar.",
+  teamsRegistered: "Equipes registradas",
+  officialTitle: "Observador / arbitro",
+  officialName: "Nome",
+  officialRole: "Funcao",
+  officialCode: "Codigo validacao",
+  officialPending: "Autoridade pendente de validar.",
+  registerOfficial: "Registrar observador",
+  officials: "Autoridades",
+  competitionTitle: "Competicao",
+  competitionName: "Nome competicao",
+  competitionType: "Tipo",
+  competitionCode: "Codigo competicao",
+  challenge1v1: "Desafio 1 vs 1",
+  leagueTable: "Liga / tabela",
+  cupBracket: "Copa / chave",
+  generateCode: "Gerar codigo",
+  createCompetition: "Criar / atualizar competicao",
+  inviteTitle: "Convite de registro",
+  invitedTeam: "Equipe convidada",
+  generatedLink: "Link gerado",
+  generateLink: "Gerar link",
+  invitePending: "O organizador pode enviar um link para o DT completar registro e autenticacao.",
+  physicalMatchTitle: "Partida fisica",
+  homeTeam: "Equipe local",
+  awayTeam: "Equipe visitante",
+  observer: "Observador",
+  prepareClock: "Preparar relogio da partida",
+  physicalStatusReady: "Registre pelo menos duas equipes para preparar uma partida fisica.",
+  matchAct: "Sumula da partida",
+  noCompetition: "Sem competicao",
+  local: "Local",
+  visitor: "Visitante",
+  homeGoal: "Gol local",
+  awayGoal: "Gol visitante",
+  startResume: "Iniciar / retomar",
+  pause: "Pausar",
+  changeHalf: "Trocar tempo",
+  finishAndSave: "Finalizar e salvar",
+  newMatch: "Nova partida",
+  matchLogTitle: "Sumula / eventos",
+  statusTitle: "Estado",
+  matchReady: "Relogio preparado.",
+  evidenceLabel: "Foto ou video curto",
+  attachEvidence: "Anexar evidencia",
+  chooseHome: "Escolher local",
+  chooseAway: "Escolher visitante",
+  noObserver: "Sem observador designado",
+  localPlayer2Pending: "Jogador 2 pendente de autenticacao.",
+  onlinePending: "Sincronizacao online profissional pendente.",
+  leaguePending: "Backend pendente: usuarios, equipes, calendario, tabela e ranking global.",
+  singleMatchSelected: "Partida unica selecionada.",
+  strategyStyleName: "DT Estrategia",
+  intensityStyleName: "DT Intensidade",
+  styleSelected: "{style} selecionado. Agora registre ou escolha suas equipes.",
+  durationSelected: "Duracao selecionada: {minutes} minutos por tempo. Primeiro passo recomendado: entrar no vestiario.",
+  competitionNeedsProfile: "Primeiro registre ou ative uma equipe para criar uma competicao IA.",
+  competitionCreated: "{type} criada. Codigo {code}.",
+  competitionNotFound: "Nao foi encontrada competicao salva com esse codigo neste dispositivo.",
+  competitionResumed: "Competicao retomada: {code}.",
+  cupQuarter: "Quartas de final",
+  cupSemi: "Semifinal",
+  cupFinal: "Final",
+  leagueRound: "Rodada {round}",
+  cupEliminated: "Copa IA 8: voce foi eliminado em {stage}. Codigo {code}.",
+  cupChampion: "Copa IA 8: campeao {team}. Codigo {code}.",
+  cupWonNext: "Copa IA 8: voce venceu {stage}. Proxima fase: {next}.",
+  leagueChampionPlayer: "Liga IA 10: campeao {team}.",
+  leagueFinishedChampion: "Liga IA 10 finalizada. Campeao: {team}.",
+  leagueResultLoaded: "Liga IA 10: resultado carregado. Proxima rodada: {next}.",
+  nextRival: "Proximo rival: {rival}. Dificuldade {difficulty}.",
+  competitionCompleteChampion: "Competicao concluida: campeao.",
+  competitionCompleteEliminated: "Competicao concluida: eliminado.",
+  competitionComplete: "Competicao concluida.",
+  codeLabel: "Codigo",
+  rematchAi: "Revanche IA {difficulty}",
+  rematchAiLevelUp: "Revanche IA {difficulty} - subir nivel",
+  mfaMinCode: "Para MFA insira um codigo com pelo menos 4 digitos.",
+  physicalAuthMfaValid: "Codigo MFA validado para este registro.",
+  physicalAuthSimValid: "{method} simulado e validado para este prototipo.",
+  physicalStandingsEmptyCompetition: "Crie uma competicao para ver tabela, sumulas e codigo.",
+  physicalNoTeamsInTable: "Sem equipes carregadas na tabela.",
+  physicalTypeLeague: "Liga",
+  physicalTypeCup: "Copa",
+  physicalTypeChallenge: "Desafio",
+  physicalValidated: "validado",
+  physicalMatchFinishedSaved: "Partida finalizada e salva na sumula local.",
+  physicalClockRunning: "Relogio rodando",
+  physicalClockPaused: "Relogio pausado",
+  observerPrefix: "Observador",
+  completeTeamRegister: "Complete DT e equipe unica para registrar.",
+  validateDtIdentityFirst: "Primeiro valide a identidade do DT com MFA, digital ou rosto.",
+  completeValidMfa: "Complete um codigo MFA valido para registrar.",
+  teamRegisteredPhysical: "{team} fica registrada para desafios fisicos e competicoes.",
+  completeOfficialName: "Complete o nome para validar o observador/arbitro.",
+  validateAuthorityFirst: "Primeiro valide a autoridade com MFA, digital ou rosto.",
+  completeValidOfficialCode: "Complete um codigo de validacao valido.",
+  officialRegisteredPhysical: "{name} fica registrado como {role} validado para carregar sumulas.",
+  physicalDefaultCompetition: "Competicao DT Fisico",
+  physicalCompetitionCreated: "{name} criada. Codigo para retomar/carregar de outro dispositivo: {code}.",
+  chooseDifferentTeams: "Escolha duas equipes diferentes para preparar a partida.",
+  teamsAuthRequired: "As duas equipes devem estar registradas e autenticadas para jogar competicao fisica.",
+  observerAuthRequired: "O observador/arbitro selecionado deve estar autenticado pela organizacao.",
+  physicalMatchPrepared: "Relogio da partida preparado. Inicie quando o arbitro/observador indicar.",
+  physicalMatchEventCreated: "Sumula criada: {home} vs {away}. Duracao {duration} minutos por tempo.",
+  inviteNeedsCompetition: "Primeiro crie ou selecione uma competicao para gerar convite.",
+  physicalInviteDefaultTeam: "equipe-convidada",
+  inviteCreated: "Link criado para {team}. O DT completa registro e autenticacao antes de jogar.",
+  evidenceNeedsMatch: "Primeiro prepare uma partida para anexar evidencia.",
+  onlineNeedsProfile: "Primeiro registre o usuario para criar um link.",
+  onlineLinkCreated: "Link criado para compartilhar: {link}",
+  onlineLinkReceived: "Link recebido. Na versao online sincronizaria como 1 vs 1 remoto.",
+  onlinePasteLink: "Cole um link recebido para vincular a partida.",
+  leagueNeedsAdmin: "Primeiro registre o administrador da liga.",
+  leagueCreated: "{name} criada por {admin}. Formato: {format}. Proximo passo: convidar equipes e fechar inscricao."
+});
+
+Object.assign(uiText.es, {
+  profileMissingFields: "Completa usuario, equipo unico, DNI, telefono, mail, direccion, pais y codigo MFA.",
+  profileMfaMismatch: "Ese equipo ya existe. Para ingresar o actualizarlo, el codigo MFA debe coincidir.",
+  newProfilePrompt: "Carga los datos del nuevo equipo. Los perfiles anteriores quedan en equipos registrados.",
+  player2TeamLoaded: "Equipo cargado para jugador 2: {team}. Ingresa su MFA y valida.",
+  registerPlayer1First: "Primero registra el jugador 1.",
+  player2TeamAndMfaRequired: "Ingresa el nombre exacto del equipo y su codigo MFA.",
+  player2TeamNotFound: "No se encontro un equipo registrado con ese nombre en este dispositivo.",
+  player2MustDiffer: "El jugador 2 debe ser un usuario distinto al jugador 1.",
+  player2MfaWrong: "Codigo MFA incorrecto para ese equipo.",
+  player2Authenticated: "Jugador 2 autenticado: {name} / {team}.",
+  registerUserFirstTitle: "Primero registra usuario.",
+  localModeNeedsTwoProfilesTitle: "Selecciona para cargar segundo equipo; no inicia hasta registrar dos.",
+  onlineNoDirectStartTitle: "Online crea o recibe enlace; no inicia cancha directa.",
+  leagueNoDirectStartTitle: "Liga se configura desde administrador y calendario.",
+  startGameTitle: "Iniciar partido",
+  setupStartNeedsProfile: "Primero registra el usuario antes de iniciar una partida.",
+  localNeedsTwoTeams: "Para 1 vs 1 local primero registra al menos dos equipos.",
+  localNeedsPlayer2Auth: "Para 1 vs 1 local debe autenticarse el jugador 2 registrado.",
+  onlineNoDirectStart: "Online/enlace no inicia cancha directa: crea o pega un enlace para vincular jugadores.",
+  leagueNoDirectStart: "Liga requiere administrador, equipos registrados, formato y calendario antes de jugar.",
+  setupLineupNeedsProfile: "Primero registra el usuario antes de preparar la alineacion.",
+  setupLineupLocalNeedsAuth: "Para preparar 1 vs 1 local autentica tambien el jugador 2.",
+  lineupMode: "Modo alineacion: arrastra los jugadores antes de iniciar el partido.",
+  physicalDurationSelected: "Duracion fisica seleccionada: {minutes} minutos por tiempo.",
+  noPhysicalClockPrepared: "Todavia no hay un reloj preparado. Registra equipos y prepara el partido.",
+  standingsStats: "PJ {played} / G {won} / E {drawn} / P {lost} / DG {goalDiff} / Pts {points}",
+  fileFallback: "archivo",
+  evidenceSelectedMissing: "Selecciona una foto o video corto para adjuntar.",
+  evidenceTooLarge: "El archivo supera {maxSizeMb} MB. Usa una foto o video mas corto.",
+  evidenceAttached: "Evidencia adjunta al acta local del encuentro.",
+  evidenceAttachedEvent: "Evidencia adjunta: {file}.",
+  physicalEndFirstHalf: "Fin del primer tiempo.",
+  physicalEndMatch: "Fin del partido.",
+  physicalSecondHalfPrep: "Comienza preparacion del segundo tiempo. Cambios permitidos con reloj detenido.",
+  physicalGoalEvent: "Gol de {team}. Resultado {home}-{away}.",
+  physicalClockResume: "Se reanuda el reloj.",
+  physicalClockPauseEvent: "Reloj pausado por cambio, consulta o carga de acta.",
+  physicalTie: "Empate",
+  physicalWinner: "Ganador: {team}",
+  physicalFinalEvent: "Final del encuentro. {result}. Resultado {home} {homeScore}-{awayScore} {away}.",
+  physicalOfficialFallback: "Sin veedor",
+  teamFallback: "equipo",
+  defaultTeamName: "Equipo DT",
+  defaultLeagueName: "Liga DT",
+  unknownChampion: "por definir",
+  lockerStatusActive: "Vestuario de {team}.",
+  lockerStatusPreview: "Podes previsualizar el vestuario; registra un equipo para guardar charlas.",
+  lockerSaved: "Vestuario guardado. La proxima salida a cancha toma esta tactica, visual y ambiente.",
+  benchEmpty: "Sin suplentes cargados",
+  lockerChangeSelect: "Selecciona quien sale y quien entra para preparar el cambio.",
+  lockerChangeMissing: "No se encontro una de las fichas del cambio.",
+  lockerChangePrepared: "Cambio preparado: sale {outRole}, entra {inRole}.",
+  teamTalkNeedsProfile: "Registra o activa un equipo antes de guardar la charla tecnica.",
+  teamTalkNeedsText: "Escribe una charla tecnica antes de guardarla.",
+  teamTalkSaved: "Charla guardada para {team}.",
+  keeperChooseCard: "Arquero elige carta 1-4",
+  shooterChooseCard: "Rematador elige carta 1-4",
+  humanKeeperChooseCard: "Elegi carta de arquero 1-4",
+  shotCardChooseKeeper: "Elegir carta del arquero",
+  shotCardChooseShooter: "Elegir carta del rematador",
+  shotKeeperCard: "Carta de remate/arquero",
+  observerRole: "Veedor",
+  refereeRole: "Arbitro",
+  organizerRole: "Organizador",
+  shotLongDeclaredLog: "Remate larga distancia declarado a distancia {distance}. Rematador elige 1 carta; arquero elegira atajada y rebote.",
+  shotDeclaredLog: "Remate declarado a distancia {distance}. El rematador elige carta 1-4.",
+  shotCardSelectedLog: "Carta de remate/arquero seleccionada: {card}.",
+  shooterHiddenKeeperDirect: "Rematador eligio carta tapada. Arquero elige carta de atajada directa.",
+  shooterHiddenKeeperChoose: "Rematador eligio carta tapada. Ahora el arquero elige 1-4.",
+  keeperSecretTitle: "Turno del arquero",
+  keeperSecretMessage: "Carta de remate guardada y tapada. Entrega el dispositivo al arquero.",
+  keeperReboundChoose: "Arquero eligio carta de atajada tapada. Ahora elige carta de rebote.",
+  saveLog: "Atajada: el arquero acerto la carta {card}.",
+  saveBannerTitle: "ATAJADA",
+  saveBannerText: "El arquero {team} se quedo con el balon.",
+  saveResult: "Atajada: arquero {keeper} contra remate {shot}.",
+  reboundLog: "Rebote: arquero acerto carta {card}. La pelota queda a dos cuadrantes del arquero.",
+  reboundResult: "Rebote: remate {shot}, atajada {keeper}, rebote {rebound}.",
+  shotGoalLog: "Gol: remate {shot}, arquero {keeper}.",
+  shotGoalResult: "Gol: remate {shot}, arquero {keeper}.",
+  competitionFormatUpdated: "Formato actualizado a Liga IA 10 / Copa IA 8. Se conserva el codigo de competencia."
+});
+
+Object.assign(uiText.en, {
+  profileMissingFields: "Complete user, unique team, ID, phone, email, address, country and MFA code.",
+  profileMfaMismatch: "That team already exists. To log in or update it, the MFA code must match.",
+  newProfilePrompt: "Enter the new team data. Previous profiles stay in registered teams.",
+  player2TeamLoaded: "Team loaded for player 2: {team}. Enter its MFA and validate.",
+  registerPlayer1First: "Register player 1 first.",
+  player2TeamAndMfaRequired: "Enter the exact team name and its MFA code.",
+  player2TeamNotFound: "No registered team with that name was found on this device.",
+  player2MustDiffer: "Player 2 must be a different user from player 1.",
+  player2MfaWrong: "Wrong MFA code for that team.",
+  player2Authenticated: "Player 2 authenticated: {name} / {team}.",
+  registerUserFirstTitle: "Register a user first.",
+  localModeNeedsTwoProfilesTitle: "Select to load the second team; it cannot start until two teams are registered.",
+  onlineNoDirectStartTitle: "Online creates or receives a link; it does not start the field directly.",
+  leagueNoDirectStartTitle: "League is configured by admin and calendar.",
+  startGameTitle: "Start match",
+  setupStartNeedsProfile: "Register the user before starting a match.",
+  localNeedsTwoTeams: "For local 1 vs 1, register at least two teams first.",
+  localNeedsPlayer2Auth: "For local 1 vs 1, the registered player 2 must be authenticated.",
+  onlineNoDirectStart: "Online/link does not start the field directly: create or paste a link to pair players.",
+  leagueNoDirectStart: "League requires admin, registered teams, format and calendar before playing.",
+  setupLineupNeedsProfile: "Register the user before preparing the lineup.",
+  setupLineupLocalNeedsAuth: "To prepare local 1 vs 1, authenticate player 2 too.",
+  lineupMode: "Lineup mode: drag players before starting the match.",
+  physicalDurationSelected: "Physical duration selected: {minutes} minutes per half.",
+  noPhysicalClockPrepared: "There is no prepared clock yet. Register teams and prepare the match.",
+  standingsStats: "P {played} / W {won} / D {drawn} / L {lost} / GD {goalDiff} / Pts {points}",
+  fileFallback: "file",
+  evidenceSelectedMissing: "Select a photo or short video to attach.",
+  evidenceTooLarge: "The file is over {maxSizeMb} MB. Use a shorter photo or video.",
+  evidenceAttached: "Evidence attached to the local match report.",
+  evidenceAttachedEvent: "Evidence attached: {file}.",
+  physicalEndFirstHalf: "End of the first half.",
+  physicalEndMatch: "End of the match.",
+  physicalSecondHalfPrep: "Second half preparation starts. Changes are allowed with the clock stopped.",
+  physicalGoalEvent: "Goal by {team}. Score {home}-{away}.",
+  physicalClockResume: "The clock resumes.",
+  physicalClockPauseEvent: "Clock paused for substitution, review or report entry.",
+  physicalTie: "Draw",
+  physicalWinner: "Winner: {team}",
+  physicalFinalEvent: "Final whistle. {result}. Score {home} {homeScore}-{awayScore} {away}.",
+  physicalOfficialFallback: "No observer",
+  teamFallback: "team",
+  defaultTeamName: "DT Team",
+  defaultLeagueName: "DT League",
+  unknownChampion: "to be defined",
+  lockerStatusActive: "{team} locker room.",
+  lockerStatusPreview: "You can preview the locker room; register a team to save team talks.",
+  lockerSaved: "Locker room saved. The next field entry uses this tactic, visual style and environment.",
+  benchEmpty: "No substitutes loaded",
+  lockerChangeSelect: "Select who leaves and who enters to prepare the substitution.",
+  lockerChangeMissing: "One of the substitution pieces was not found.",
+  lockerChangePrepared: "Substitution prepared: out {outRole}, in {inRole}.",
+  teamTalkNeedsProfile: "Register or activate a team before saving the team talk.",
+  teamTalkNeedsText: "Write a team talk before saving it.",
+  teamTalkSaved: "Team talk saved for {team}.",
+  keeperChooseCard: "Keeper chooses card 1-4",
+  shooterChooseCard: "Shooter chooses card 1-4",
+  humanKeeperChooseCard: "Choose keeper card 1-4",
+  shotCardChooseKeeper: "Choose keeper card",
+  shotCardChooseShooter: "Choose shooter card",
+  shotKeeperCard: "Shot/keeper card",
+  observerRole: "Observer",
+  refereeRole: "Referee",
+  organizerRole: "Organizer",
+  shotLongDeclaredLog: "Long-range shot declared at distance {distance}. The shooter chooses 1 card; the keeper chooses save and rebound.",
+  shotDeclaredLog: "Shot declared at distance {distance}. The shooter chooses card 1-4.",
+  shotCardSelectedLog: "Shot/keeper card selected: {card}.",
+  shooterHiddenKeeperDirect: "Shooter chose a hidden card. Keeper chooses the direct save card.",
+  shooterHiddenKeeperChoose: "Shooter chose a hidden card. Now the keeper chooses 1-4.",
+  keeperSecretTitle: "Keeper turn",
+  keeperSecretMessage: "Shot card saved and hidden. Pass the device to the keeper.",
+  keeperReboundChoose: "Keeper chose a hidden save card. Now choose the rebound card.",
+  saveLog: "Save: the keeper matched card {card}.",
+  saveBannerTitle: "SAVE",
+  saveBannerText: "The {team} keeper kept the ball.",
+  saveResult: "Save: keeper {keeper} against shot {shot}.",
+  reboundLog: "Rebound: keeper matched card {card}. The ball lands two quadrants from the keeper.",
+  reboundResult: "Rebound: shot {shot}, save {keeper}, rebound {rebound}.",
+  shotGoalLog: "Goal: shot {shot}, keeper {keeper}.",
+  shotGoalResult: "Goal: shot {shot}, keeper {keeper}.",
+  competitionFormatUpdated: "Competition format updated to AI League 10 / AI Cup 8. Competition code kept."
+});
+
+Object.assign(uiText.pt, {
+  profileMissingFields: "Complete usuario, equipe unica, documento, telefone, email, endereco, pais e codigo MFA.",
+  profileMfaMismatch: "Essa equipe ja existe. Para entrar ou atualizar, o codigo MFA deve coincidir.",
+  newProfilePrompt: "Carregue os dados da nova equipe. Os perfis anteriores ficam em equipes registradas.",
+  player2TeamLoaded: "Equipe carregada para jogador 2: {team}. Insira o MFA e valide.",
+  registerPlayer1First: "Primeiro registre o jogador 1.",
+  player2TeamAndMfaRequired: "Insira o nome exato da equipe e seu codigo MFA.",
+  player2TeamNotFound: "Nao foi encontrada equipe registrada com esse nome neste dispositivo.",
+  player2MustDiffer: "O jogador 2 deve ser um usuario diferente do jogador 1.",
+  player2MfaWrong: "Codigo MFA incorreto para essa equipe.",
+  player2Authenticated: "Jogador 2 autenticado: {name} / {team}.",
+  registerUserFirstTitle: "Primeiro registre usuario.",
+  localModeNeedsTwoProfilesTitle: "Selecione para carregar a segunda equipe; nao inicia ate registrar duas.",
+  onlineNoDirectStartTitle: "Online cria ou recebe link; nao inicia campo direto.",
+  leagueNoDirectStartTitle: "Liga se configura por administrador e calendario.",
+  startGameTitle: "Iniciar partida",
+  setupStartNeedsProfile: "Primeiro registre o usuario antes de iniciar uma partida.",
+  localNeedsTwoTeams: "Para 1 vs 1 local, primeiro registre pelo menos duas equipes.",
+  localNeedsPlayer2Auth: "Para 1 vs 1 local, o jogador 2 registrado deve ser autenticado.",
+  onlineNoDirectStart: "Online/link nao inicia campo direto: crie ou cole um link para vincular jogadores.",
+  leagueNoDirectStart: "Liga requer administrador, equipes registradas, formato e calendario antes de jogar.",
+  setupLineupNeedsProfile: "Primeiro registre o usuario antes de preparar a formacao.",
+  setupLineupLocalNeedsAuth: "Para preparar 1 vs 1 local, autentique tambem o jogador 2.",
+  lineupMode: "Modo formacao: arraste os jogadores antes de iniciar a partida.",
+  physicalDurationSelected: "Duracao fisica selecionada: {minutes} minutos por tempo.",
+  noPhysicalClockPrepared: "Ainda nao ha relogio preparado. Registre equipes e prepare a partida.",
+  standingsStats: "PJ {played} / V {won} / E {drawn} / D {lost} / SG {goalDiff} / Pts {points}",
+  fileFallback: "arquivo",
+  evidenceSelectedMissing: "Selecione uma foto ou video curto para anexar.",
+  evidenceTooLarge: "O arquivo supera {maxSizeMb} MB. Use uma foto ou video mais curto.",
+  evidenceAttached: "Evidencia anexada a sumula local da partida.",
+  evidenceAttachedEvent: "Evidencia anexada: {file}.",
+  physicalEndFirstHalf: "Fim do primeiro tempo.",
+  physicalEndMatch: "Fim da partida.",
+  physicalSecondHalfPrep: "Comeca a preparacao do segundo tempo. Alteracoes permitidas com relogio parado.",
+  physicalGoalEvent: "Gol de {team}. Resultado {home}-{away}.",
+  physicalClockResume: "O relogio foi retomado.",
+  physicalClockPauseEvent: "Relogio pausado por substituicao, consulta ou carga da sumula.",
+  physicalTie: "Empate",
+  physicalWinner: "Vencedor: {team}",
+  physicalFinalEvent: "Final da partida. {result}. Resultado {home} {homeScore}-{awayScore} {away}.",
+  physicalOfficialFallback: "Sem observador",
+  teamFallback: "equipe",
+  defaultTeamName: "Equipe DT",
+  defaultLeagueName: "Liga DT",
+  unknownChampion: "a definir",
+  lockerStatusActive: "Vestiario de {team}.",
+  lockerStatusPreview: "Voce pode previsualizar o vestiario; registre uma equipe para salvar palestras.",
+  lockerSaved: "Vestiario salvo. A proxima saida ao campo usa esta tatica, visual e ambiente.",
+  benchEmpty: "Sem reservas carregados",
+  lockerChangeSelect: "Selecione quem sai e quem entra para preparar a substituicao.",
+  lockerChangeMissing: "Uma das pecas da substituicao nao foi encontrada.",
+  lockerChangePrepared: "Substituicao preparada: sai {outRole}, entra {inRole}.",
+  teamTalkNeedsProfile: "Registre ou ative uma equipe antes de salvar a palestra.",
+  teamTalkNeedsText: "Escreva uma palestra antes de salvar.",
+  teamTalkSaved: "Palestra salva para {team}.",
+  keeperChooseCard: "Goleiro escolhe carta 1-4",
+  shooterChooseCard: "Finalizador escolhe carta 1-4",
+  humanKeeperChooseCard: "Escolha carta do goleiro 1-4",
+  shotCardChooseKeeper: "Escolher carta do goleiro",
+  shotCardChooseShooter: "Escolher carta do finalizador",
+  shotKeeperCard: "Carta de chute/goleiro",
+  observerRole: "Observador",
+  refereeRole: "Arbitro",
+  organizerRole: "Organizador",
+  shotLongDeclaredLog: "Chute de longa distancia declarado a distancia {distance}. O finalizador escolhe 1 carta; o goleiro escolhe defesa e rebote.",
+  shotDeclaredLog: "Chute declarado a distancia {distance}. O finalizador escolhe carta 1-4.",
+  shotCardSelectedLog: "Carta de chute/goleiro selecionada: {card}.",
+  shooterHiddenKeeperDirect: "Finalizador escolheu carta tapada. Goleiro escolhe carta de defesa direta.",
+  shooterHiddenKeeperChoose: "Finalizador escolheu carta tapada. Agora o goleiro escolhe 1-4.",
+  keeperSecretTitle: "Turno do goleiro",
+  keeperSecretMessage: "Carta de chute guardada e tapada. Entregue o dispositivo ao goleiro.",
+  keeperReboundChoose: "Goleiro escolheu carta de defesa tapada. Agora escolha carta de rebote.",
+  saveLog: "Defesa: o goleiro acertou a carta {card}.",
+  saveBannerTitle: "DEFESA",
+  saveBannerText: "O goleiro {team} ficou com a bola.",
+  saveResult: "Defesa: goleiro {keeper} contra chute {shot}.",
+  reboundLog: "Rebote: goleiro acertou carta {card}. A bola fica a dois quadrantes do goleiro.",
+  reboundResult: "Rebote: chute {shot}, defesa {keeper}, rebote {rebound}.",
+  shotGoalLog: "Gol: chute {shot}, goleiro {keeper}.",
+  shotGoalResult: "Gol: chute {shot}, goleiro {keeper}.",
+  competitionFormatUpdated: "Formato atualizado para Liga IA 10 / Copa IA 8. O codigo da competicao foi preservado."
+});
+
 const crowdTracks = ["assets/tribuna-estadio.mp3"];
 const lockerTracks = ["assets/vestuario-motivacion.mp3", "assets/vestuario-arenga.mp3"];
 const goalTracks = ["assets/gol-principal.mp3"];
 const oleTrack = "assets/ole.mp3";
 const whistleTrack = "assets/silbato.mp3";
+const competitionFormatVersion = 4;
 const competitionStorageKey = "dtDigitalCompetitionV1";
 const physicalSupportStorageKey = "dtPhysicalSupportV1";
 const aiDifficultyOrder = ["easy", "medium", "hard"];
-const aiDifficultyLabels = { easy: "Facil", medium: "Medio", hard: "Dificil" };
+const aiLeagueRivals = [
+  "IA Norte",
+  "IA Sur",
+  "IA Barrio",
+  "IA Puerto",
+  "IA Academia",
+  "IA Tricolor",
+  "IA Andes",
+  "IA Capital",
+  "IA Campeona"
+];
+const aiCupPath = [
+  { label: "Cuartos de final", rival: "IA Barrio", difficulty: "easy" },
+  { label: "Semifinal", rival: "IA Capital", difficulty: "medium" },
+  { label: "Final", rival: "IA Campeona", difficulty: "hard" }
+];
 let keeperZones = {
   red: { x: 2, y: -1 },
   blue: { x: 2, y: 10 }
@@ -408,6 +1287,8 @@ let lockerSettings = loadLockerSettings();
 let competitionState = loadCompetitionState();
 let physicalSupportState = loadPhysicalSupportState();
 let physicalTimerInterval = null;
+let pendingPhysicalTeamAuth = null;
+let pendingPhysicalOfficialAuth = null;
 let audioState = {
   enabled: true,
   context: null,
@@ -539,6 +1420,7 @@ function defaultPhysicalSupportState() {
     teams: [],
     officials: [],
     competitions: [],
+    invites: [],
     activeCompetitionId: null,
     activeMatch: null,
     selectedDuration: 15
@@ -564,6 +1446,50 @@ function makePhysicalCode(prefix = "DTF") {
   return `${prefix}-${Date.now().toString(36).slice(-4).toUpperCase()}${Math.random().toString(36).slice(2, 5).toUpperCase()}`;
 }
 
+function physicalAuthLabel(method) {
+  if (method === "fingerprint") return textFor("authFingerprint");
+  if (method === "face") return textFor("authFace");
+  return textFor("authMfa");
+}
+
+function physicalRoleLabel(role) {
+  if (role === "arbitro") return textFor("refereeRole");
+  if (role === "organizador") return textFor("organizerRole");
+  return textFor("observerRole");
+}
+
+function validatePhysicalIdentity(kind) {
+  const isOfficial = kind === "official";
+  const methodEl = isOfficial ? physicalOfficialAuthMethodEl : physicalTeamAuthMethodEl;
+  const codeEl = isOfficial ? physicalOfficialCodeEl : physicalTeamCodeEl;
+  const statusEl = isOfficial ? physicalOfficialAuthStatusEl : physicalTeamAuthStatusEl;
+  const method = methodEl?.value || "mfa";
+  const code = codeEl?.value.trim() || "";
+  if (method === "mfa" && code.length < 4) {
+    if (statusEl) statusEl.textContent = textFor("mfaMinCode");
+    if (isOfficial) pendingPhysicalOfficialAuth = null;
+    else pendingPhysicalTeamAuth = null;
+    return false;
+  }
+  const auth = {
+    method,
+    code,
+    validatedAt: new Date().toISOString()
+  };
+  if (isOfficial) pendingPhysicalOfficialAuth = auth;
+  else pendingPhysicalTeamAuth = auth;
+  if (statusEl) {
+    statusEl.textContent = method === "mfa"
+      ? textFor("physicalAuthMfaValid")
+      : textTemplate("physicalAuthSimValid", { method: physicalAuthLabel(method) });
+  }
+  return true;
+}
+
+function physicalRecordIsAuthenticated(record) {
+  return Boolean(record && (record.authValidated || record.validated || record.code));
+}
+
 function physicalTeamById(id) {
   return physicalSupportState.teams.find(team => team.id === id);
 }
@@ -584,8 +1510,8 @@ function formatPhysicalClock(seconds) {
 }
 
 function physicalHalfLabel(match = physicalSupportState.activeMatch) {
-  if (!match) return "Primer tiempo";
-  return match.half === 1 ? "Primer tiempo" : "Segundo tiempo";
+  if (!match) return textFor("firstHalf");
+  return match.half === 1 ? textFor("firstHalf") : textFor("secondHalf");
 }
 
 function updatePhysicalDurationButtons() {
@@ -622,7 +1548,7 @@ function renderPhysicalTeamList() {
     const label = document.createElement("strong");
     label.textContent = team.team;
     const detail = document.createElement("span");
-    detail.textContent = `${team.user} / ID ${team.id}`;
+    detail.textContent = `${team.user} / ID ${team.id} / ${physicalAuthLabel(team.authMethod || "mfa")}`;
     item.append(label, detail);
     physicalTeamListEl.append(item);
   });
@@ -637,7 +1563,7 @@ function renderPhysicalOfficialList() {
     const label = document.createElement("strong");
     label.textContent = official.name;
     const detail = document.createElement("span");
-    detail.textContent = `${official.role} / validado`;
+    detail.textContent = `${physicalRoleLabel(official.role)} / ${physicalAuthLabel(official.authMethod || "mfa")} / ${textFor("physicalValidated")}`;
     item.append(label, detail);
     physicalOfficialListEl.append(item);
   });
@@ -648,7 +1574,7 @@ function renderPhysicalStandings() {
   physicalStandingsEl.innerHTML = "";
   const competition = activePhysicalCompetition();
   if (!competition) {
-    physicalStandingsEl.textContent = "Crea una competencia para ver tabla, actas y codigo.";
+    physicalStandingsEl.textContent = textFor("physicalStandingsEmptyCompetition");
     return;
   }
   const header = document.createElement("div");
@@ -656,14 +1582,18 @@ function renderPhysicalStandings() {
   const title = document.createElement("strong");
   title.textContent = `${competition.name} / ${competition.code}`;
   const mode = document.createElement("span");
-  mode.textContent = competition.type === "league" ? "Liga" : competition.type === "cup" ? "Copa" : "Desafio";
+  mode.textContent = competition.type === "league"
+    ? textFor("physicalTypeLeague")
+    : competition.type === "cup"
+      ? textFor("physicalTypeCup")
+      : textFor("physicalTypeChallenge");
   header.append(title, mode);
   physicalStandingsEl.append(header);
   const rows = Object.values(competition.standings || {}).sort((a, b) => (b.points - a.points) || (b.goalDiff - a.goalDiff));
   if (!rows.length) {
     const empty = document.createElement("div");
     empty.className = "physical-standing-row";
-    empty.textContent = "Sin equipos cargados en la tabla.";
+    empty.textContent = textFor("physicalNoTeamsInTable");
     physicalStandingsEl.append(empty);
     return;
   }
@@ -673,16 +1603,16 @@ function renderPhysicalStandings() {
     const label = document.createElement("strong");
     label.textContent = row.team;
     const detail = document.createElement("span");
-    detail.textContent = `PJ ${row.played} / G ${row.won} / E ${row.drawn} / P ${row.lost} / DG ${row.goalDiff} / Pts ${row.points}`;
+    detail.textContent = textTemplate("standingsStats", row);
     item.append(label, detail);
     physicalStandingsEl.append(item);
   });
 }
 
 function renderPhysicalOptions() {
-  fillPhysicalSelect(physicalHomeTeamEl, physicalSupportState.teams, "Elegir local");
-  fillPhysicalSelect(physicalAwayTeamEl, physicalSupportState.teams, "Elegir visitante");
-  fillPhysicalSelect(physicalObserverEl, physicalSupportState.officials, "Sin veedor asignado");
+  fillPhysicalSelect(physicalHomeTeamEl, physicalSupportState.teams, textFor("chooseHome"));
+  fillPhysicalSelect(physicalAwayTeamEl, physicalSupportState.teams, textFor("chooseAway"));
+  fillPhysicalSelect(physicalObserverEl, physicalSupportState.officials, textFor("noObserver"));
   updatePhysicalDurationButtons();
 }
 
@@ -696,10 +1626,10 @@ function renderPhysicalMatch() {
   const away = physicalTeamById(match.awayTeamId);
   const competition = activePhysicalCompetition();
   physicalMatchPanelEl?.classList.remove("hidden");
-  if (physicalMatchTitleEl) physicalMatchTitleEl.textContent = `${home?.team || "Local"} vs ${away?.team || "Visitante"}`;
-  if (physicalCompetitionBadgeEl) physicalCompetitionBadgeEl.textContent = competition ? `${competition.name} / ${competition.code}` : "Desafio fisico";
-  if (physicalScoreHomeNameEl) physicalScoreHomeNameEl.textContent = home?.team || "Local";
-  if (physicalScoreAwayNameEl) physicalScoreAwayNameEl.textContent = away?.team || "Visitante";
+  if (physicalMatchTitleEl) physicalMatchTitleEl.textContent = `${home?.team || textFor("local")} vs ${away?.team || textFor("visitor")}`;
+  if (physicalCompetitionBadgeEl) physicalCompetitionBadgeEl.textContent = competition ? `${competition.name} / ${competition.code}` : textFor("physicalTypeChallenge");
+  if (physicalScoreHomeNameEl) physicalScoreHomeNameEl.textContent = home?.team || textFor("local");
+  if (physicalScoreAwayNameEl) physicalScoreAwayNameEl.textContent = away?.team || textFor("visitor");
   if (physicalScoreHomeEl) physicalScoreHomeEl.textContent = match.score.home;
   if (physicalScoreAwayEl) physicalScoreAwayEl.textContent = match.score.away;
   if (physicalTimerLabelEl) physicalTimerLabelEl.textContent = physicalHalfLabel(match);
@@ -707,8 +1637,8 @@ function renderPhysicalMatch() {
   if (physicalMatchStatusEl) {
     const official = physicalOfficialById(match.observerId);
     physicalMatchStatusEl.textContent = match.finished
-      ? "Partido finalizado y guardado en el acta local."
-      : `${match.running ? "Reloj corriendo" : "Reloj pausado"}${official ? `. Veedor: ${official.name}` : ". Sin veedor asignado."}`;
+      ? textFor("physicalMatchFinishedSaved")
+      : `${match.running ? textFor("physicalClockRunning") : textFor("physicalClockPaused")}${official ? `. ${textFor("observerPrefix")}: ${official.name}` : `. ${textFor("noObserver")}.`}`;
   }
   if (physicalMatchLogEl) {
     physicalMatchLogEl.innerHTML = "";
@@ -716,6 +1646,19 @@ function renderPhysicalMatch() {
       const li = document.createElement("li");
       li.textContent = event;
       physicalMatchLogEl.append(li);
+    });
+  }
+  if (physicalEvidenceListEl) {
+    physicalEvidenceListEl.innerHTML = "";
+    (match.evidence || []).forEach(file => {
+      const item = document.createElement("div");
+      item.className = "physical-list-item";
+      const label = document.createElement("strong");
+      label.textContent = file.name;
+      const detail = document.createElement("span");
+      detail.textContent = `${file.type || textFor("fileFallback")} / ${file.sizeKb} KB`;
+      item.append(label, detail);
+      physicalEvidenceListEl.append(item);
     });
   }
 }
@@ -732,8 +1675,19 @@ function registerPhysicalTeam() {
   const team = physicalTeamNameEl?.value.trim();
   const user = physicalUserNameEl?.value.trim();
   const code = physicalTeamCodeEl?.value.trim();
-  if (!team || !user || !code) {
-    if (physicalStatusEl) physicalStatusEl.textContent = "Completa DT, equipo unico y MFA para registrar.";
+  const method = physicalTeamAuthMethodEl?.value || "mfa";
+  if (!team || !user) {
+    if (physicalStatusEl) physicalStatusEl.textContent = textFor("completeTeamRegister");
+    return;
+  }
+  if (!pendingPhysicalTeamAuth || pendingPhysicalTeamAuth.method !== method || (method === "mfa" && pendingPhysicalTeamAuth.code !== code)) {
+    if (!validatePhysicalIdentity("team")) {
+      if (physicalStatusEl) physicalStatusEl.textContent = textFor("validateDtIdentityFirst");
+      return;
+    }
+  }
+  if (method === "mfa" && code.length < 4) {
+    if (physicalStatusEl) physicalStatusEl.textContent = textFor("completeValidMfa");
     return;
   }
   const existing = physicalSupportState.teams.find(item => item.team.toLowerCase() === team.toLowerCase());
@@ -742,6 +1696,9 @@ function registerPhysicalTeam() {
     team,
     user,
     code,
+    authMethod: method,
+    authValidated: true,
+    authValidatedAt: pendingPhysicalTeamAuth?.validatedAt || new Date().toISOString(),
     createdAt: existing?.createdAt || new Date().toISOString()
   };
   if (existing) {
@@ -750,7 +1707,9 @@ function registerPhysicalTeam() {
     physicalSupportState.teams.push(record);
   }
   savePhysicalSupportState();
-  if (physicalStatusEl) physicalStatusEl.textContent = `${team} queda registrado para desafios fisicos y competencias.`;
+  if (physicalStatusEl) physicalStatusEl.textContent = textTemplate("teamRegisteredPhysical", { team });
+  if (physicalTeamAuthStatusEl) physicalTeamAuthStatusEl.textContent = textFor("teamAuthPending");
+  pendingPhysicalTeamAuth = null;
   physicalTeamNameEl.value = "";
   physicalUserNameEl.value = "";
   physicalTeamCodeEl.value = "";
@@ -761,8 +1720,19 @@ function registerPhysicalOfficial() {
   const name = physicalOfficialNameEl?.value.trim();
   const role = physicalOfficialRoleEl?.value || "veedor";
   const code = physicalOfficialCodeEl?.value.trim();
-  if (!name || !code) {
-    if (physicalStatusEl) physicalStatusEl.textContent = "Completa nombre y codigo para validar al veedor/arbitro.";
+  const method = physicalOfficialAuthMethodEl?.value || "mfa";
+  if (!name) {
+    if (physicalStatusEl) physicalStatusEl.textContent = textFor("completeOfficialName");
+    return;
+  }
+  if (!pendingPhysicalOfficialAuth || pendingPhysicalOfficialAuth.method !== method || (method === "mfa" && pendingPhysicalOfficialAuth.code !== code)) {
+    if (!validatePhysicalIdentity("official")) {
+      if (physicalStatusEl) physicalStatusEl.textContent = textFor("validateAuthorityFirst");
+      return;
+    }
+  }
+  if (method === "mfa" && code.length < 4) {
+    if (physicalStatusEl) physicalStatusEl.textContent = textFor("completeValidOfficialCode");
     return;
   }
   const record = {
@@ -771,18 +1741,28 @@ function registerPhysicalOfficial() {
     role,
     code,
     validated: true,
+    authMethod: method,
+    authValidated: true,
+    authValidatedAt: pendingPhysicalOfficialAuth?.validatedAt || new Date().toISOString(),
     createdAt: new Date().toISOString()
   };
   physicalSupportState.officials.push(record);
   savePhysicalSupportState();
-  if (physicalStatusEl) physicalStatusEl.textContent = `${name} queda registrado como ${role} validado para cargar actas.`;
+  if (physicalStatusEl) {
+    physicalStatusEl.textContent = textTemplate("officialRegisteredPhysical", {
+      name,
+      role: physicalRoleLabel(role)
+    });
+  }
+  if (physicalOfficialAuthStatusEl) physicalOfficialAuthStatusEl.textContent = textFor("officialPending");
+  pendingPhysicalOfficialAuth = null;
   physicalOfficialNameEl.value = "";
   physicalOfficialCodeEl.value = "";
   renderPhysicalSupport();
 }
 
 function createPhysicalCompetition() {
-  const name = physicalCompetitionNameEl?.value.trim() || "Competencia DT Fisico";
+  const name = physicalCompetitionNameEl?.value.trim() || textFor("physicalDefaultCompetition");
   const type = physicalCompetitionTypeEl?.value || "challenge";
   const code = physicalCompetitionCodeEl?.value.trim() || makePhysicalCode("COMP");
   const existing = physicalSupportState.competitions.find(item => item.code.toLowerCase() === code.toLowerCase());
@@ -814,40 +1794,117 @@ function createPhysicalCompetition() {
   physicalSupportState.activeCompetitionId = record.id;
   if (physicalCompetitionCodeEl) physicalCompetitionCodeEl.value = record.code;
   savePhysicalSupportState();
-  if (physicalStatusEl) physicalStatusEl.textContent = `${name} creada. Codigo para retomar/cargar desde otro dispositivo: ${record.code}.`;
+  if (physicalStatusEl) {
+    physicalStatusEl.textContent = textTemplate("physicalCompetitionCreated", { name, code: record.code });
+  }
   renderPhysicalSupport();
 }
 
 function preparePhysicalMatch() {
   const homeTeamId = physicalHomeTeamEl?.value;
   const awayTeamId = physicalAwayTeamEl?.value;
+  const observerId = physicalObserverEl?.value || "";
   if (!homeTeamId || !awayTeamId || homeTeamId === awayTeamId) {
-    if (physicalStatusEl) physicalStatusEl.textContent = "Elegí dos equipos distintos para preparar el partido.";
+    if (physicalStatusEl) physicalStatusEl.textContent = textFor("chooseDifferentTeams");
     return;
   }
   if (!activePhysicalCompetition()) createPhysicalCompetition();
   const home = physicalTeamById(homeTeamId);
   const away = physicalTeamById(awayTeamId);
+  const observer = physicalOfficialById(observerId);
+  if (!physicalRecordIsAuthenticated(home) || !physicalRecordIsAuthenticated(away)) {
+    if (physicalStatusEl) physicalStatusEl.textContent = textFor("teamsAuthRequired");
+    return;
+  }
+  if (observerId && !physicalRecordIsAuthenticated(observer)) {
+    if (physicalStatusEl) physicalStatusEl.textContent = textFor("observerAuthRequired");
+    return;
+  }
   const duration = physicalSupportState.selectedDuration || 15;
   physicalSupportState.activeMatch = {
     id: makePhysicalCode("PAR"),
     competitionId: physicalSupportState.activeCompetitionId,
     homeTeamId,
     awayTeamId,
-    observerId: physicalObserverEl?.value || "",
+    observerId,
     durationMinutes: duration,
     half: 1,
     remainingSeconds: duration * 60,
     running: false,
     finished: false,
     score: { home: 0, away: 0 },
-    events: [`Acta creada: ${home?.team || "Local"} vs ${away?.team || "Visitante"}. Duracion ${duration} minutos por tiempo.`],
+    evidence: [],
+    events: [
+      textTemplate("physicalMatchEventCreated", {
+        home: home?.team || textFor("local"),
+        away: away?.team || textFor("visitor"),
+        duration
+      })
+    ],
     savedResult: false
   };
   savePhysicalSupportState();
-  if (physicalStatusEl) physicalStatusEl.textContent = "Reloj de partido preparado. Inicia cuando el arbitro/veedor lo indique.";
+  if (physicalStatusEl) physicalStatusEl.textContent = textFor("physicalMatchPrepared");
   renderPhysicalSupport();
   physicalMatchPanelEl?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function generatePhysicalInvite() {
+  const competition = activePhysicalCompetition();
+  if (!competition) {
+    if (physicalInviteStatusEl) physicalInviteStatusEl.textContent = textFor("inviteNeedsCompetition");
+    return;
+  }
+  const teamName = physicalInviteTeamNameEl?.value.trim() || textFor("physicalInviteDefaultTeam");
+  const inviteCode = makePhysicalCode("INV");
+  const link = `${window.location.origin}${window.location.pathname}?dtfisico=${encodeURIComponent(competition.code)}&invite=${inviteCode}&team=${encodeURIComponent(teamName)}`;
+  const invite = {
+    code: inviteCode,
+    competitionId: competition.id,
+    competitionCode: competition.code,
+    teamName,
+    link,
+    createdAt: new Date().toISOString(),
+    completed: false
+  };
+  physicalSupportState.invites.unshift(invite);
+  savePhysicalSupportState();
+  if (physicalInviteLinkEl) physicalInviteLinkEl.value = link;
+  if (physicalInviteStatusEl) {
+    physicalInviteStatusEl.textContent = textTemplate("inviteCreated", { team: teamName });
+  }
+}
+
+function addPhysicalEvidence() {
+  const match = physicalSupportState.activeMatch;
+  const file = physicalEvidenceFileEl?.files?.[0];
+  if (!match) {
+    if (physicalMatchStatusEl) physicalMatchStatusEl.textContent = textFor("evidenceNeedsMatch");
+    return;
+  }
+  if (!file) {
+    if (physicalMatchStatusEl) physicalMatchStatusEl.textContent = textFor("evidenceSelectedMissing");
+    return;
+  }
+  const maxSizeMb = 30;
+  if (file.size > maxSizeMb * 1024 * 1024) {
+    if (physicalMatchStatusEl) {
+      physicalMatchStatusEl.textContent = textTemplate("evidenceTooLarge", { maxSizeMb });
+    }
+    return;
+  }
+  match.evidence ||= [];
+  match.evidence.unshift({
+    name: file.name,
+    type: file.type || textFor("fileFallback"),
+    sizeKb: Math.max(1, Math.round(file.size / 1024)),
+    addedAt: new Date().toISOString()
+  });
+  match.events.unshift(textTemplate("evidenceAttachedEvent", { file: file.name }));
+  savePhysicalSupportState();
+  if (physicalEvidenceFileEl) physicalEvidenceFileEl.value = "";
+  if (physicalMatchStatusEl) physicalMatchStatusEl.textContent = textFor("evidenceAttached");
+  renderPhysicalMatch();
 }
 
 function addPhysicalEvent(text) {
@@ -865,14 +1922,18 @@ function addPhysicalGoal(side) {
   const away = physicalTeamById(match.awayTeamId);
   match.score[side] += 1;
   const teamName = side === "home" ? home?.team : away?.team;
-  addPhysicalEvent(`Gol de ${teamName || "equipo"}. Resultado ${match.score.home}-${match.score.away}.`);
+  addPhysicalEvent(textTemplate("physicalGoalEvent", {
+    team: teamName || textFor("teamFallback"),
+    home: match.score.home,
+    away: match.score.away
+  }));
 }
 
 function startPhysicalTimer() {
   const match = physicalSupportState.activeMatch;
   if (!match || match.finished) return;
   match.running = true;
-  addPhysicalEvent("Se reanuda el reloj.");
+  addPhysicalEvent(textFor("physicalClockResume"));
   runPhysicalTimerLoop();
 }
 
@@ -880,7 +1941,7 @@ function pausePhysicalTimer() {
   const match = physicalSupportState.activeMatch;
   if (!match || match.finished) return;
   match.running = false;
-  addPhysicalEvent("Reloj pausado por cambio, consulta o carga de acta.");
+  addPhysicalEvent(textFor("physicalClockPauseEvent"));
   stopPhysicalTimerLoop();
 }
 
@@ -895,7 +1956,7 @@ function runPhysicalTimerLoop() {
     match.remainingSeconds = Math.max(0, match.remainingSeconds - 1);
     if (match.remainingSeconds <= 0) {
       match.running = false;
-      match.events.unshift(match.half === 1 ? "Fin del primer tiempo." : "Fin del partido.");
+      match.events.unshift(match.half === 1 ? textFor("physicalEndFirstHalf") : textFor("physicalEndMatch"));
       if (match.half === 2) finishPhysicalMatch();
       else savePhysicalSupportState();
       stopPhysicalTimerLoop();
@@ -920,7 +1981,7 @@ function changePhysicalHalf() {
     match.half = 2;
     match.remainingSeconds = match.durationMinutes * 60;
     match.running = false;
-    match.events.unshift("Comienza preparacion del segundo tiempo. Cambios permitidos con reloj detenido.");
+    match.events.unshift(textFor("physicalSecondHalfPrep"));
     savePhysicalSupportState();
     stopPhysicalTimerLoop();
     renderPhysicalMatch();
@@ -954,24 +2015,30 @@ function finishPhysicalMatch() {
   const home = physicalTeamById(match.homeTeamId);
   const away = physicalTeamById(match.awayTeamId);
   if (competition && !match.savedResult) {
-    competition.standings[match.homeTeamId] ||= { team: home?.team || "Local", played: 0, won: 0, drawn: 0, lost: 0, goalsFor: 0, goalsAgainst: 0, goalDiff: 0, points: 0 };
-    competition.standings[match.awayTeamId] ||= { team: away?.team || "Visitante", played: 0, won: 0, drawn: 0, lost: 0, goalsFor: 0, goalsAgainst: 0, goalDiff: 0, points: 0 };
+    competition.standings[match.homeTeamId] ||= { team: home?.team || textFor("local"), played: 0, won: 0, drawn: 0, lost: 0, goalsFor: 0, goalsAgainst: 0, goalDiff: 0, points: 0 };
+    competition.standings[match.awayTeamId] ||= { team: away?.team || textFor("visitor"), played: 0, won: 0, drawn: 0, lost: 0, goalsFor: 0, goalsAgainst: 0, goalDiff: 0, points: 0 };
     updatePhysicalStandingRow(competition.standings[match.homeTeamId], match.score.home, match.score.away);
     updatePhysicalStandingRow(competition.standings[match.awayTeamId], match.score.away, match.score.home);
     competition.matches.unshift({
       id: match.id,
-      home: home?.team || "Local",
-      away: away?.team || "Visitante",
+      home: home?.team || textFor("local"),
+      away: away?.team || textFor("visitor"),
       score: `${match.score.home}-${match.score.away}`,
-      observer: physicalOfficialById(match.observerId)?.name || "Sin veedor",
+      observer: physicalOfficialById(match.observerId)?.name || textFor("physicalOfficialFallback"),
       date: new Date().toISOString()
     });
     match.savedResult = true;
   }
   const result = match.score.home === match.score.away
-    ? "Empate"
-    : `Ganador: ${match.score.home > match.score.away ? home?.team : away?.team}`;
-  match.events.unshift(`Final del encuentro. ${result}. Resultado ${home?.team || "Local"} ${match.score.home}-${match.score.away} ${away?.team || "Visitante"}.`);
+    ? textFor("physicalTie")
+    : textTemplate("physicalWinner", { team: match.score.home > match.score.away ? home?.team : away?.team });
+  match.events.unshift(textTemplate("physicalFinalEvent", {
+    result,
+    home: home?.team || textFor("local"),
+    homeScore: match.score.home,
+    awayScore: match.score.away,
+    away: away?.team || textFor("visitor")
+  }));
   savePhysicalSupportState();
   stopPhysicalTimerLoop();
   renderPhysicalSupport();
@@ -998,6 +2065,7 @@ function openPhysicalSupport() {
   syncScreenChrome();
   switchAudioScene("menu");
   renderPhysicalSupport();
+  applySetupLanguage();
 }
 
 function closePhysicalSupport() {
@@ -1619,6 +2687,38 @@ function textFor(key) {
   return uiText[currentLanguage]?.[key] || uiText.es[key] || key;
 }
 
+function textTemplate(key, values = {}) {
+  let text = textFor(key);
+  Object.entries(values).forEach(([name, value]) => {
+    text = text.replaceAll(`{${name}}`, value);
+  });
+  return text;
+}
+
+function difficultyText(level) {
+  return textFor(level) || level;
+}
+
+function styleDisplayName(style = setupSelection.gameStyle) {
+  return style === "intensity" ? textFor("intensityStyleName") : textFor("strategyStyleName");
+}
+
+function competitionTypeName(type) {
+  if (type === "cup") return textFor("cup8");
+  if (type === "league") return textFor("league10");
+  return textFor("friendlyMatch");
+}
+
+function competitionFixtureLabel(fixture) {
+  if (!fixture) return "";
+  if (fixture.label === "Cuartos de final") return textFor("cupQuarter");
+  if (fixture.label === "Semifinal") return textFor("cupSemi");
+  if (fixture.label === "Final") return textFor("cupFinal");
+  const round = /^Fecha\s+(\d+)/.exec(fixture.label);
+  if (round) return textTemplate("leagueRound", { round: round[1] });
+  return fixture.label;
+}
+
 function roleName(type) {
   return textFor(`role${type}`) || stats[type]?.name || type;
 }
@@ -1640,6 +2740,177 @@ function halfAbbrev() {
 function syncScreenChrome() {
   const showingStyleScreen = !styleScreenEl.classList.contains("hidden");
   document.body.classList.toggle("show-language-switch", showingStyleScreen);
+}
+
+function setElementText(selector, key) {
+  const element = typeof selector === "string" ? document.querySelector(selector) : selector;
+  if (element) element.textContent = textFor(key);
+}
+
+function setLabelText(inputEl, key) {
+  const label = inputEl?.closest("label");
+  if (!label) return;
+  const textNode = [...label.childNodes].find(node => node.nodeType === Node.TEXT_NODE && node.textContent.trim());
+  if (textNode) textNode.textContent = `\n                ${textFor(key)}\n                `;
+}
+
+function setOptionText(selectEl, value, key) {
+  const option = selectEl ? [...selectEl.options].find(item => item.value === value) : null;
+  if (option) option.textContent = textFor(key);
+}
+
+function setPlaceholder(inputEl, key) {
+  if (inputEl) inputEl.placeholder = textFor(key);
+}
+
+function setSetupOptionText(selector, key) {
+  const button = document.querySelector(selector);
+  if (button) button.textContent = textFor(key);
+}
+
+function applySetupLanguage() {
+  setElementText("#setupScreen .setup-card > .eyebrow", "setupConfigure");
+  setElementText("#setupScreen .setup-card > h1", "setupTitle");
+  setElementText("#setupScreen .setup-module:nth-of-type(1) h2", "identificationTitle");
+  setElementText("#setupScreen .setup-module:nth-of-type(1) .setup-note", "identificationNote");
+  setLabelText(loginNameEl, "userLabel");
+  setLabelText(loginTeamEl, "teamUniqueLabel");
+  setLabelText(loginDniEl, "dniLabel");
+  setLabelText(loginPhoneEl, "phoneLabel");
+  setLabelText(loginEmailEl, "emailLabel");
+  setLabelText(loginAddressEl, "addressLabel");
+  setLabelText(loginCountryEl, "countryLabel");
+  setLabelText(loginCodeEl, "mfaCodeLabel");
+  setElementText(loginBtn, "registerLogin");
+  setElementText(newProfileBtn, "newProfile");
+  setElementText(".registered-list > span", "registeredTeams");
+
+  const setupHeadings = [...document.querySelectorAll("#setupScreen .setup-card > h2")];
+  if (setupHeadings[0]) setupHeadings[0].textContent = textFor("modeTitle");
+  if (setupHeadings[1]) setupHeadings[1].textContent = textFor("aiDifficultyTitle");
+  if (setupHeadings[2]) setupHeadings[2].textContent = textFor("formationTitle");
+  if (setupHeadings[3]) setupHeadings[3].textContent = textFor("durationTitle");
+  setSetupOptionText("[data-mode='local']", "localMode");
+  setSetupOptionText("[data-mode='ai']", "aiMode");
+  setSetupOptionText("[data-mode='online']", "onlineMode");
+  setSetupOptionText("[data-mode='league']", "leagueMode");
+  setSetupOptionText("[data-ai='easy']", "easy");
+  setSetupOptionText("[data-ai='medium']", "medium");
+  setSetupOptionText("[data-ai='hard']", "hard");
+  setSetupOptionText("[data-duration='5']", "duration5");
+  setSetupOptionText("[data-duration='10']", "duration10");
+  setSetupOptionText("[data-duration='15']", "duration15");
+  setElementText("#setupScreen .setup-card > .setup-note", "durationNote");
+  setElementText(openLockerSetupBtn, "lockerEnter");
+  setElementText(prepareLineupBtn, "lineupPrepare");
+  setElementText(styleBackBtn, "backToStyles");
+  setElementText(startMatchBtn, "startMatch");
+
+  setElementText("#localPanel h2", "localPlayer2Title");
+  setElementText("#localPanel .setup-note", "localPlayer2Note");
+  setLabelText(localP2TeamKeyEl, "player2TeamLabel");
+  setLabelText(localP2CodeEl, "player2MfaLabel");
+  setElementText(localP2AuthBtn, "validatePlayer2");
+  setElementText("#onlinePanel h2", "onlineTitle");
+  setElementText("#onlinePanel .setup-note", "onlineNote");
+  setElementText(createOnlineLinkBtn, "createOnlineLink");
+  setLabelText(joinOnlineLinkEl, "receivedLink");
+  setElementText("#leaguePanel h2", "leagueSetupTitle");
+  setElementText("#leaguePanel .setup-note", "leagueSetupNote");
+  setLabelText(leagueNameEl, "leagueNameLabel");
+  setLabelText(leagueFormatEl, "formatLabel");
+  setOptionText(leagueFormatEl, "fixture", "formatFixture");
+  setOptionText(leagueFormatEl, "knockout", "formatKnockout");
+  setOptionText(leagueFormatEl, "local", "formatLocal");
+  setElementText(createLeagueBtn, "createLeague");
+  setElementText("#competitionPanel h2", "aiCompetitionTitle");
+  setElementText("#competitionPanel .setup-note", "aiCompetitionNote");
+  setSetupOptionText("[data-competition='friendly']", "friendlyMatch");
+  setSetupOptionText("[data-competition='cup']", "cup8");
+  setSetupOptionText("[data-competition='league']", "league10");
+  setLabelText(competitionCodeInputEl, "competitionCodeLabel");
+  setElementText(resumeCompetitionBtn, "resume");
+  setElementText(abandonCompetitionBtn, "abandonCompetition");
+
+  setElementText("#physicalScreen .physical-top .eyebrow", "physEyebrow");
+  setElementText("#physicalScreen .physical-top h1", "physTitle");
+  setElementText("#physicalScreen .physical-top p:not(.eyebrow)", "physIntro");
+  setElementText(physicalBackBtn, "backToStyles");
+  setElementText(physicalShowMatchBtn, "showClock");
+  const physicalHeadings = [...document.querySelectorAll("#physicalScreen h2")];
+  if (physicalHeadings[0]) physicalHeadings[0].textContent = textFor("registerTitle");
+  if (physicalHeadings[1]) physicalHeadings[1].textContent = textFor("officialTitle");
+  if (physicalHeadings[2]) physicalHeadings[2].textContent = textFor("competitionTitle");
+  setElementText("#physicalSetupPanel .setup-note", "physicalNote");
+  setLabelText(physicalUserNameEl, "userLabel");
+  setLabelText(physicalTeamNameEl, "teamUniqueLabel");
+  setLabelText(physicalTeamCodeEl, "mfaCodeLabel");
+  setLabelText(physicalTeamAuthMethodEl, "authMethodLabel");
+  setOptionText(physicalTeamAuthMethodEl, "mfa", "authMfa");
+  setOptionText(physicalTeamAuthMethodEl, "fingerprint", "authFingerprint");
+  setOptionText(physicalTeamAuthMethodEl, "face", "authFace");
+  setElementText(physicalTeamAuthBtn, "validateIdentity");
+  setElementText(physicalRegisterTeamBtn, "registerTeam");
+  setElementText("#physicalSetupPanel .physical-list-wrap h3", "teamsRegistered");
+  setLabelText(physicalOfficialNameEl, "officialName");
+  setLabelText(physicalOfficialRoleEl, "officialRole");
+  setOptionText(physicalOfficialRoleEl, "veedor", "observerRole");
+  setOptionText(physicalOfficialRoleEl, "arbitro", "refereeRole");
+  setOptionText(physicalOfficialRoleEl, "organizador", "organizerRole");
+  setLabelText(physicalOfficialCodeEl, "officialCode");
+  setLabelText(physicalOfficialAuthMethodEl, "authMethodLabel");
+  setOptionText(physicalOfficialAuthMethodEl, "mfa", "authMfa");
+  setOptionText(physicalOfficialAuthMethodEl, "fingerprint", "authFingerprint");
+  setOptionText(physicalOfficialAuthMethodEl, "face", "authFace");
+  setElementText(physicalOfficialAuthBtn, "validateAuthority");
+  setElementText(physicalRegisterOfficialBtn, "registerOfficial");
+  const physicalSubtitles = [...document.querySelectorAll("#physicalScreen h3")];
+  if (physicalSubtitles[1]) physicalSubtitles[1].textContent = textFor("officials");
+  if (physicalSubtitles[2]) physicalSubtitles[2].textContent = textFor("inviteTitle");
+  if (physicalSubtitles[3]) physicalSubtitles[3].textContent = textFor("physicalMatchTitle");
+  if (physicalSubtitles[4]) physicalSubtitles[4].textContent = textFor("matchLogTitle");
+  if (physicalSubtitles[5]) physicalSubtitles[5].textContent = textFor("statusTitle");
+  setLabelText(physicalCompetitionNameEl, "competitionName");
+  setLabelText(physicalCompetitionTypeEl, "competitionType");
+  setOptionText(physicalCompetitionTypeEl, "challenge", "challenge1v1");
+  setOptionText(physicalCompetitionTypeEl, "league", "leagueTable");
+  setOptionText(physicalCompetitionTypeEl, "cup", "cupBracket");
+  setLabelText(physicalCompetitionCodeEl, "competitionCode");
+  setElementText(physicalGenerateCodeBtn, "generateCode");
+  setElementText(physicalCreateCompetitionBtn, "createCompetition");
+  setLabelText(physicalInviteTeamNameEl, "invitedTeam");
+  setLabelText(physicalInviteLinkEl, "generatedLink");
+  setElementText(physicalInviteBtn, "generateLink");
+  setLabelText(physicalHomeTeamEl, "homeTeam");
+  setLabelText(physicalAwayTeamEl, "awayTeam");
+  setLabelText(physicalObserverEl, "observer");
+  setElementText(physicalPrepareMatchBtn, "prepareClock");
+  document.querySelectorAll("[data-physical-duration]").forEach(button => {
+    const key = `duration${button.dataset.physicalDuration}`;
+    button.textContent = textFor(key);
+  });
+  setElementText("#physicalMatchPanel .eyebrow", "matchAct");
+  setElementText(physicalStartTimerBtn, "startResume");
+  setElementText(physicalPauseTimerBtn, "pause");
+  setElementText(physicalHalfBtn, "changeHalf");
+  setElementText(physicalFinishBtn, "finishAndSave");
+  setElementText(physicalNewMatchBtn, "newMatch");
+  setLabelText(physicalEvidenceFileEl, "evidenceLabel");
+  setElementText(physicalEvidenceBtn, "attachEvidence");
+
+  if (!activeProfile && loginStatusEl) loginStatusEl.textContent = textFor("setupLoginPrompt");
+  if (localP2StatusEl) {
+    localP2StatusEl.textContent = localSecondProfile
+      ? `${textFor("player2")}: ${localSecondProfile.name} / ${localSecondProfile.team}`
+      : textFor("localPlayer2Pending");
+  }
+  if (onlineStatusEl && !onlineStatusEl.textContent.includes("http")) onlineStatusEl.textContent = textFor("onlinePending");
+  if (leagueStatusEl) leagueStatusEl.textContent = textFor("leaguePending");
+  if (!pendingPhysicalTeamAuth && physicalTeamAuthStatusEl) physicalTeamAuthStatusEl.textContent = textFor("teamAuthPending");
+  if (!pendingPhysicalOfficialAuth && physicalOfficialAuthStatusEl) physicalOfficialAuthStatusEl.textContent = textFor("officialPending");
+  if (physicalInviteStatusEl && !physicalInviteLinkEl?.value) physicalInviteStatusEl.textContent = textFor("invitePending");
+  if (physicalStatusEl && !physicalSupportState.teams.length) physicalStatusEl.textContent = textFor("physicalStatusReady");
+  if (physicalMatchStatusEl && !physicalSupportState.activeMatch) physicalMatchStatusEl.textContent = textFor("matchReady");
 }
 
 function applyLanguage() {
@@ -1687,6 +2958,10 @@ function applyLanguage() {
   const quickHeaders = document.querySelectorAll(".quick-reveal-panel h3");
   if (quickHeaders[0]) quickHeaders[0].textContent = textFor("duelZone");
   if (quickHeaders[1]) quickHeaders[1].textContent = textFor("shotZone");
+  syncProfileUi();
+  renderPhysicalSupport();
+  applySetupLanguage();
+  renderCompetitionPanel();
   syncAudioButtons();
   renderHud();
   if (state) {
@@ -1710,16 +2985,16 @@ function renderHud() {
   selectedPieceEl.textContent = state.pendingShot
     ? state.pendingShot.shotCard
       ? state.mode === "ai" && state.pendingShot.attackingTeam === "red"
-        ? "Elegí carta de arquero 1-4"
-        : "Arquero elige carta 1-4"
-      : "Rematador elige carta 1-4"
+        ? textFor("humanKeeperChooseCard")
+        : textFor("keeperChooseCard")
+      : textFor("shooterChooseCard")
     : selected
     ? `${roleName(selected.type)} ${teamLabel(selected.team)}`
     : textFor("selectPiece");
 
   const active = state.pieces.filter(piece => piece.team === state.currentTeam && piece.status === "field").length;
   const bench = state.pieces.filter(piece => piece.team === state.currentTeam && piece.status === "bench").length;
-  const styleName = setupSelection.gameStyle === "intensity" ? "DT Intensidad" : "DT Estratega";
+  const styleName = styleDisplayName();
   squadStatusEl.textContent = `${active} ${textFor("fieldPlayers")} / ${bench} ${textFor("substitutes")} / ${styleName}`;
 
   teamANameEl.textContent = teamLabel("blue");
@@ -1813,9 +3088,9 @@ function renderShotCards() {
     ));
     button.title = state.pendingShot
       ? state.pendingShot.shotCard
-        ? "Elegir carta del arquero"
-        : "Elegir carta del rematador"
-      : "Carta de remate/arquero";
+        ? textFor("shotCardChooseKeeper")
+        : textFor("shotCardChooseShooter")
+      : textFor("shotKeeperCard");
   });
 }
 
@@ -2454,9 +3729,8 @@ function resolvePendingShot() {
   }
 
   if (shot.longDistance && shot.shotCard === shot.reboundCard) {
-    const shooter = getPieceById(shot.shooterId);
-    const rebound = getReboundSpot(shooter, shot.keeperTeam);
-    addLog(`Rebote: arquero acerto carta ${shot.reboundCard}. La pelota queda a dos cuadrantes.`);
+    const rebound = getReboundSpot(shot.keeperTeam);
+    addLog(`Rebote: arquero acerto carta ${shot.reboundCard}. La pelota queda a dos cuadrantes del arquero.`);
     state.lastShot = {
       shotCard: shot.shotCard,
       keeperCard: `${shot.keeperCard}/${shot.reboundCard}`,
@@ -3151,11 +4425,16 @@ function getShotLane() {
   return lane;
 }
 
-function getReboundSpot(shooter, keeperTeam) {
+function getReboundSpot(keeperTeam) {
+  const keeper = getPieceById(`${keeperTeam === "blue" ? "b" : "r"}-arq`);
   const keeperZone = getGoalZone(keeperTeam);
-  const stepY = keeperZone.y < shooter.y ? 1 : -1;
-  const targetY = Math.max(0, Math.min(board.height - 1, shooter.y + stepY * 2));
-  return { x: shooter.x, y: targetY };
+  const sourceX = Number.isFinite(keeper?.x) ? keeper.x : keeperZone.x;
+  const sourceY = Number.isFinite(keeper?.y) ? keeper.y : keeperZone.y;
+  const stepY = keeperTeam === "red" ? 1 : -1;
+  return {
+    x: Math.max(0, Math.min(board.width - 1, sourceX)),
+    y: Math.max(0, Math.min(board.height - 1, sourceY + stepY * 2))
+  };
 }
 
 function useSpecialCard(cardId) {
@@ -3319,8 +4598,8 @@ function openMatchEndDialog(outcome, competitionMessage = "") {
     const next = nextAiDifficulty(state.aiDifficulty);
     const isUpgrade = next !== state.aiDifficulty;
     rematchHarderBtn.textContent = isUpgrade
-      ? `Revancha IA ${aiDifficultyLabels[next]} - sube nivel`
-      : `Revancha IA ${aiDifficultyLabels[next]}`;
+      ? textTemplate("rematchAiLevelUp", { difficulty: difficultyText(next) })
+      : textTemplate("rematchAi", { difficulty: difficultyText(next) });
   }
   matchEndDialog.showModal();
 }
@@ -3328,7 +4607,7 @@ function openMatchEndDialog(outcome, competitionMessage = "") {
 function buildCompetitionSummary(message) {
   if (!competitionState?.active) return `<p>${message}</p>`;
   const fixtures = competitionState.fixtures
-    .map(item => `<li>${item.label}: ${item.played ? `${competitionState.playerTeam} ${item.score} ${item.rival}` : `${competitionState.playerTeam} vs ${item.rival} (${aiDifficultyLabels[item.difficulty]})`}</li>`)
+    .map(item => `<li>${competitionFixtureLabel(item)}: ${item.played ? `${competitionState.playerTeam} ${item.score} ${item.rival}` : `${competitionState.playerTeam} vs ${item.rival} (${difficultyText(item.difficulty)})`}</li>`)
     .join("");
   const table = competitionState.type === "league"
     ? `<div class="mini-table">${[...competitionState.table]
@@ -3336,7 +4615,7 @@ function buildCompetitionSummary(message) {
         .map(item => `<span>${item.team}</span><strong>${item.pts}</strong>`)
         .join("")}</div>`
     : "";
-  return `<p>${message}</p><p>Codigo: <strong>${competitionState.code}</strong></p><ol>${fixtures}</ol>${table}`;
+  return `<p>${message}</p><p>${textFor("codeLabel")}: <strong>${competitionState.code}</strong></p><ol>${fixtures}</ol>${table}`;
 }
 
 function continueCompetitionMatch() {
@@ -3660,6 +4939,14 @@ function colorLabel(team) {
   return team === "blue" ? "Azul" : "Rojo";
 }
 
+function profileRankLabel(profile) {
+  const storedRank = profile?.rank || "";
+  if (!storedRank || storedRank === "Rango inicial" || storedRank === "Initial rank" || storedRank === "Ranking inicial") {
+    return textFor("initialRank");
+  }
+  return storedRank;
+}
+
 function formatTime(seconds) {
   const minutes = Math.floor(seconds / 60).toString().padStart(2, "0");
   const rest = (seconds % 60).toString().padStart(2, "0");
@@ -3674,7 +4961,12 @@ function formatVisibleMatchTime() {
 function loadCompetitionState() {
   try {
     const data = JSON.parse(localStorage.getItem(competitionStorageKey) || "null");
-    return data && data.code ? data : null;
+    if (!data || !data.code) return null;
+    const migrated = migrateCompetitionState(data);
+    if (migrated !== data) {
+      localStorage.setItem(competitionStorageKey, JSON.stringify(migrated));
+    }
+    return migrated;
   } catch {
     return null;
   }
@@ -3685,7 +4977,38 @@ function saveCompetitionState() {
     localStorage.removeItem(competitionStorageKey);
     return;
   }
+  competitionState.formatVersion = competitionFormatVersion;
   localStorage.setItem(competitionStorageKey, JSON.stringify(competitionState));
+}
+
+function normalizeCompetitionType(data) {
+  if (data?.type === "cup" || String(data?.code || "").includes("COPA")) return "cup";
+  if (data?.type === "league" || String(data?.code || "").includes("LIGA")) return "league";
+  return data?.type || "friendly";
+}
+
+function competitionNeedsMigration(data, type) {
+  if (type !== "cup" && type !== "league") return false;
+  const expectedFixtureCount = type === "cup" ? aiCupPath.length : aiLeagueRivals.length * 2;
+  const expectedTableCount = type === "cup" ? 8 : aiLeagueRivals.length + 1;
+  return data.formatVersion !== competitionFormatVersion
+    || !Array.isArray(data.fixtures)
+    || data.fixtures.length !== expectedFixtureCount
+    || !Array.isArray(data.table)
+    || data.table.length !== expectedTableCount;
+}
+
+function migrateCompetitionState(data) {
+  const type = normalizeCompetitionType(data);
+  if (type !== "cup" && type !== "league") return data;
+  if (!competitionNeedsMigration(data, type)) return data;
+  const migrated = makeCompetition(type, {
+    code: data.code,
+    playerTeam: data.playerTeam || activeProfile?.team || textFor("defaultTeamName")
+  });
+  migrated.history = [textFor("competitionFormatUpdated")];
+  migrated.migratedFrom = data.formatVersion || "legacy";
+  return migrated;
 }
 
 function generateCompetitionCode(type) {
@@ -3695,34 +5018,39 @@ function generateCompetitionCode(type) {
   return `DT-${prefix}-${stamp}${seed}`;
 }
 
-function makeCompetition(type) {
-  const playerTeam = activeProfile?.team || "Equipo DT";
+function makeCompetition(type, options = {}) {
+  const playerTeam = options.playerTeam || activeProfile?.team || textFor("defaultTeamName");
   const rivals = type === "cup"
-    ? [
-        { label: "Semifinal", rival: "IA Barrial", difficulty: "easy" },
-        { label: "Final", rival: "IA Campeona", difficulty: "medium" }
-      ]
+    ? aiCupPath
     : [
-        { label: "Fecha 1", rival: "IA Norte", difficulty: "easy" },
-        { label: "Fecha 2", rival: "IA Sur", difficulty: "medium" },
-        { label: "Fecha 3", rival: "IA Campeona", difficulty: "hard" }
+        ...aiLeagueRivals.map((rival, index) => ({
+          label: `Fecha ${index + 1}`,
+          rival,
+          difficulty: aiDifficultyOrder[index % aiDifficultyOrder.length],
+          homeAway: "ida"
+        })),
+        ...aiLeagueRivals.map((rival, index) => ({
+          label: `Fecha ${index + 1 + aiLeagueRivals.length}`,
+          rival,
+          difficulty: aiDifficultyOrder[(index + 1) % aiDifficultyOrder.length],
+          homeAway: "revancha"
+        }))
       ];
+  const tableTeams = type === "cup"
+    ? [playerTeam, ...aiCupPath.map(item => item.rival), "IA Norte", "IA Sur", "IA Puerto", "IA Academia"]
+    : [playerTeam, ...aiLeagueRivals];
   return {
+    formatVersion: competitionFormatVersion,
     active: type !== "friendly",
     type,
-    code: generateCompetitionCode(type),
+    code: options.code || generateCompetitionCode(type),
     playerTeam,
     matchIndex: 0,
     eliminated: false,
     champion: false,
     completed: false,
     fixtures: rivals.map(item => ({ ...item, played: false, score: null, result: null })),
-    table: [
-      { team: playerTeam, pts: 0, pj: 0, gf: 0, gc: 0 },
-      { team: "IA Norte", pts: 0, pj: 0, gf: 0, gc: 0 },
-      { team: "IA Sur", pts: 0, pj: 0, gf: 0, gc: 0 },
-      { team: "IA Campeona", pts: 0, pj: 0, gf: 0, gc: 0 }
-    ],
+    table: tableTeams.map(team => ({ team, pts: 0, pj: 0, gf: 0, gc: 0 })),
     history: []
   };
 }
@@ -3736,11 +5064,11 @@ function setCompetitionMode(type) {
   if (type === "friendly") {
     competitionState = null;
     saveCompetitionState();
-    renderCompetitionPanel("Partido unico seleccionado.");
+    renderCompetitionPanel(textFor("singleMatchSelected"));
     return;
   }
   if (!activeProfile) {
-    renderCompetitionPanel("Primero registra o activa un equipo para crear una competencia IA.");
+    renderCompetitionPanel(textFor("competitionNeedsProfile"));
     return;
   }
   competitionState = makeCompetition(type);
@@ -3748,14 +5076,17 @@ function setCompetitionMode(type) {
   setupSelection.aiDifficulty = currentCompetitionFixture()?.difficulty || "easy";
   saveCompetitionState();
   markSetupSelections();
-  renderCompetitionPanel(`${type === "cup" ? "Mini copa" : "Torneo liga"} creado. Codigo ${competitionState.code}.`);
+  renderCompetitionPanel(textTemplate("competitionCreated", {
+    type: competitionTypeName(type),
+    code: competitionState.code
+  }));
 }
 
 function resumeCompetitionByCode() {
   const code = competitionCodeInputEl.value.trim().toUpperCase();
   const saved = loadCompetitionState();
   if (!saved || saved.code.toUpperCase() !== code) {
-    renderCompetitionPanel("No se encontro una competencia guardada con ese codigo en este dispositivo.");
+    renderCompetitionPanel(textFor("competitionNotFound"));
     return;
   }
   competitionState = saved;
@@ -3763,14 +5094,14 @@ function resumeCompetitionByCode() {
   setupSelection.aiDifficulty = currentCompetitionFixture()?.difficulty || setupSelection.aiDifficulty;
   saveCompetitionState();
   markSetupSelections();
-  renderCompetitionPanel(`Competencia retomada: ${competitionState.code}.`);
+  renderCompetitionPanel(textTemplate("competitionResumed", { code: competitionState.code }));
 }
 
 function abandonCompetition() {
   competitionState = null;
   saveCompetitionState();
   if (competitionCodeInputEl) competitionCodeInputEl.value = "";
-  renderCompetitionPanel("Competencia abandonada. Queda seleccionado partido unico.");
+  renderCompetitionPanel(textFor("singleMatchSelected"));
 }
 
 function updateTableLine(team, gf, gc) {
@@ -3788,13 +5119,17 @@ function simulateLeagueRound() {
   if (!competitionState || competitionState.type !== "league") return;
   const rivals = competitionState.table.filter(item => item.team !== competitionState.playerTeam);
   if (rivals.length < 2) return;
-  const a = rivals[competitionState.matchIndex % rivals.length];
-  const b = rivals[(competitionState.matchIndex + 1) % rivals.length];
-  const ga = 1 + Math.floor(Math.random() * 3);
-  const gb = Math.floor(Math.random() * 3);
-  updateTableLine(a.team, ga, gb);
-  updateTableLine(b.team, gb, ga);
-  competitionState.history.push(`${a.team} ${ga} - ${gb} ${b.team}`);
+  const offset = competitionState.matchIndex % rivals.length;
+  const rotated = rivals.map((_, index) => rivals[(index + offset) % rivals.length]);
+  for (let index = 0; index < rotated.length - 1; index += 2) {
+    const a = rotated[index];
+    const b = rotated[index + 1];
+    const ga = Math.floor(Math.random() * 4);
+    const gb = Math.floor(Math.random() * 4);
+    updateTableLine(a.team, ga, gb);
+    updateTableLine(b.team, gb, ga);
+    competitionState.history.push(`${a.team} ${ga} - ${gb} ${b.team}`);
+  }
 }
 
 function recordCompetitionResult(outcome) {
@@ -3806,24 +5141,33 @@ function recordCompetitionResult(outcome) {
   fixture.played = true;
   fixture.score = `${outcome.blue} - ${outcome.red}`;
   fixture.result = result;
-  competitionState.history.push(`${fixture.label}: ${competitionState.playerTeam} ${fixture.score} ${fixture.rival}`);
+  competitionState.history.push(`${competitionFixtureLabel(fixture)}: ${competitionState.playerTeam} ${fixture.score} ${fixture.rival}`);
 
   if (competitionState.type === "cup") {
     if (!playerWon) {
       competitionState.eliminated = true;
       competitionState.completed = true;
       saveCompetitionState();
-      return `Mini copa: quedaste eliminado en ${fixture.label}. Codigo ${competitionState.code}.`;
+      return textTemplate("cupEliminated", {
+        stage: competitionFixtureLabel(fixture),
+        code: competitionState.code
+      });
     }
     if (competitionState.matchIndex >= competitionState.fixtures.length - 1) {
       competitionState.champion = true;
       competitionState.completed = true;
       saveCompetitionState();
-      return `Mini copa: campeon ${competitionState.playerTeam}. Codigo ${competitionState.code}.`;
+      return textTemplate("cupChampion", {
+        team: competitionState.playerTeam,
+        code: competitionState.code
+      });
     }
     competitionState.matchIndex += 1;
     saveCompetitionState();
-    return `Mini copa: ganaste ${fixture.label}. Proxima instancia: ${currentCompetitionFixture().label}.`;
+    return textTemplate("cupWonNext", {
+      stage: competitionFixtureLabel(fixture),
+      next: competitionFixtureLabel(currentCompetitionFixture())
+    });
   }
 
   updateTableLine(competitionState.playerTeam, outcome.blue, outcome.red);
@@ -3836,29 +5180,37 @@ function recordCompetitionResult(outcome) {
     competitionState.champion = sorted[0]?.team === competitionState.playerTeam;
     saveCompetitionState();
     return competitionState.champion
-      ? `Torneo liga: campeon ${competitionState.playerTeam}.`
-      : `Torneo liga finalizado. Campeon: ${sorted[0]?.team || "por definir"}.`;
+      ? textTemplate("leagueChampionPlayer", { team: competitionState.playerTeam })
+      : textTemplate("leagueFinishedChampion", { team: sorted[0]?.team || textFor("unknownChampion") });
   }
   saveCompetitionState();
-  return `Torneo liga: resultado cargado. Proxima fecha: ${currentCompetitionFixture().label}.`;
+  return textTemplate("leagueResultLoaded", { next: competitionFixtureLabel(currentCompetitionFixture()) });
 }
 
 function renderCompetitionPanel(message = "") {
   if (!competitionStatusEl) return;
+  if (competitionState?.active) {
+    const migrated = migrateCompetitionState(competitionState);
+    if (migrated !== competitionState) {
+      competitionState = migrated;
+      saveCompetitionState();
+      message = message || textFor("competitionFormatUpdated");
+    }
+  }
   document.querySelectorAll("[data-competition]").forEach(button => {
     const selected = competitionState?.active ? competitionState.type : "friendly";
     button.classList.toggle("selected", button.dataset.competition === selected);
   });
   if (!competitionState?.active) {
-    competitionStatusEl.textContent = message || "Partido unico seleccionado.";
+    competitionStatusEl.textContent = message || textFor("singleMatchSelected");
     return;
   }
   if (competitionCodeInputEl) competitionCodeInputEl.value = competitionState.code;
   const fixture = currentCompetitionFixture();
   const fixtureLines = competitionState.fixtures.map((item, index) => {
     const mark = index === competitionState.matchIndex && !competitionState.completed ? ">" : "-";
-    const result = item.played ? ` ${item.score}` : ` vs ${item.rival} (${aiDifficultyLabels[item.difficulty]})`;
-    return `${mark} ${item.label}:${result}`;
+    const result = item.played ? ` ${item.score}` : ` vs ${item.rival} (${difficultyText(item.difficulty)})`;
+    return `${mark} ${competitionFixtureLabel(item)}:${result}`;
   });
   const tableLines = competitionState.type === "league"
     ? [...competitionState.table]
@@ -3866,14 +5218,17 @@ function renderCompetitionPanel(message = "") {
         .map(item => `${item.team}: ${item.pts} pts (${item.gf}-${item.gc})`)
     : [];
   const current = fixture && !competitionState.completed
-    ? `Proximo rival: ${fixture.rival}. Dificultad ${aiDifficultyLabels[fixture.difficulty]}.`
+    ? textTemplate("nextRival", {
+        rival: fixture.rival,
+        difficulty: difficultyText(fixture.difficulty)
+      })
     : competitionState.champion
-    ? "Competencia completada: campeon."
+    ? textFor("competitionCompleteChampion")
     : competitionState.eliminated
-    ? "Competencia completada: eliminado."
-    : "Competencia completada.";
+    ? textFor("competitionCompleteEliminated")
+    : textFor("competitionComplete");
   competitionStatusEl.innerHTML = `
-    <strong>${competitionState.type === "cup" ? "Mini copa 4" : "Torneo liga"} ${competitionState.code}</strong><br>
+    <strong>${competitionState.type === "cup" ? textFor("cup8") : textFor("league10")} ${competitionState.code}</strong><br>
     ${message || current}<br>
     ${fixtureLines.join("<br>")}
     ${tableLines.length ? `<br><br>${tableLines.join("<br>")}` : ""}
@@ -3971,8 +5326,8 @@ function applyLockerSettings() {
 function openLockerRoom() {
   applyLockerSettings();
   lockerStatusEl.textContent = activeProfile
-    ? `Vestuario de ${activeProfile.team}.`
-    : "Podes previsualizar el vestuario; registra un equipo para guardar charlas.";
+    ? textTemplate("lockerStatusActive", { team: activeProfile.team })
+    : textFor("lockerStatusPreview");
   lockerDialog.showModal();
   introAudioBtn?.classList.remove("hidden");
   switchAudioScene("locker");
@@ -4110,7 +5465,7 @@ function saveLockerConfiguration() {
     newGame();
     state.started = wasStarted;
   }
-  lockerStatusEl.textContent = "Vestuario guardado. La proxima salida a cancha toma esta tactica, visual y ambiente.";
+  lockerStatusEl.textContent = textFor("lockerSaved");
   markSetupSelections();
   render();
 }
@@ -4125,7 +5480,7 @@ function renderLockerBench() {
   if (!benchPieces.length) {
     const empty = document.createElement("div");
     empty.className = "locker-bench-chip";
-    empty.textContent = "Sin suplentes cargados";
+    empty.textContent = textFor("benchEmpty");
     lockerBenchListEl.append(empty);
   } else {
     benchPieces.forEach(piece => {
@@ -4155,26 +5510,29 @@ function renderLockerBench() {
 
 function prepareLockerChange() {
   if (!lockerOutSelectEl?.value || !lockerInSelectEl?.value) {
-    lockerStatusEl.textContent = "Selecciona quien sale y quien entra para preparar el cambio.";
+    lockerStatusEl.textContent = textFor("lockerChangeSelect");
     return;
   }
   const outPiece = getPieceById(lockerOutSelectEl.value);
   const inPiece = getPieceById(lockerInSelectEl.value);
   if (!outPiece || !inPiece) {
-    lockerStatusEl.textContent = "No se encontro una de las fichas del cambio.";
+    lockerStatusEl.textContent = textFor("lockerChangeMissing");
     return;
   }
-  lockerStatusEl.textContent = `Cambio preparado: sale ${roleName(outPiece.type)}, entra ${roleName(inPiece.type)}.`;
+  lockerStatusEl.textContent = textTemplate("lockerChangePrepared", {
+    outRole: roleName(outPiece.type),
+    inRole: roleName(inPiece.type)
+  });
 }
 
 function saveTeamTalk() {
   const text = teamTalkInput.value.trim();
   if (!activeProfile) {
-    lockerStatusEl.textContent = "Registra o activa un equipo antes de guardar la charla tecnica.";
+    lockerStatusEl.textContent = textFor("teamTalkNeedsProfile");
     return;
   }
   if (!text) {
-    lockerStatusEl.textContent = "Escribe una charla tecnica antes de guardarla.";
+    lockerStatusEl.textContent = textFor("teamTalkNeedsText");
     return;
   }
   lockerSettings.talks = lockerSettings.talks || [];
@@ -4186,7 +5544,7 @@ function saveTeamTalk() {
   });
   saveLockerSettings();
   teamTalkInput.value = "";
-  lockerStatusEl.textContent = `Charla guardada para ${activeProfile.team}.`;
+  lockerStatusEl.textContent = textTemplate("teamTalkSaved", { team: activeProfile.team });
 }
 
 function loadProfileRegistry() {
@@ -4230,13 +5588,13 @@ function saveProfile() {
   const country = loginCountryEl.value.trim();
   const code = loginCodeEl.value.trim();
   if (!name || !team || !dni || !phone || !email || !address || !country || code.length < 4) {
-    loginStatusEl.textContent = "Completa usuario, equipo unico, DNI, telefono, mail, direccion, pais y codigo MFA.";
+    loginStatusEl.textContent = textFor("profileMissingFields");
     return;
   }
   const registry = loadProfileRegistry();
   const existing = registry[normalizeTeamKey(team)];
   if (existing?.mfaCode && existing.mfaCode !== code) {
-    loginStatusEl.textContent = "Ese equipo ya existe. Para ingresar o actualizarlo, el codigo MFA debe coincidir.";
+    loginStatusEl.textContent = textFor("profileMfaMismatch");
     activeProfile = null;
     syncSetupUi();
     return;
@@ -4259,7 +5617,7 @@ function saveProfile() {
   };
   localStorage.setItem("dtDigitalProfile", JSON.stringify(activeProfile));
   saveProfileToRegistry(activeProfile);
-  loginStatusEl.textContent = `Perfil activo: ${activeProfile.name} / ${activeProfile.team}. ID ${activeProfile.id}`;
+  loginStatusEl.textContent = `${textFor("activeProfile")}: ${activeProfile.name} / ${activeProfile.team}. ID ${activeProfile.id}`;
   syncSetupUi();
 }
 
@@ -4267,7 +5625,7 @@ function clearProfileForm() {
   [loginNameEl, loginTeamEl, loginDniEl, loginPhoneEl, loginEmailEl, loginAddressEl, loginCountryEl, loginCodeEl].forEach(input => {
     input.value = "";
   });
-  loginStatusEl.textContent = "Carga los datos del nuevo equipo. Los perfiles anteriores quedan en equipos registrados.";
+  loginStatusEl.textContent = textFor("newProfilePrompt");
 }
 
 function setActiveProfileByTeam(team) {
@@ -4277,51 +5635,51 @@ function setActiveProfileByTeam(team) {
   activeProfile = profile;
   localStorage.setItem("dtDigitalProfile", JSON.stringify(activeProfile));
   if (localSecondProfile?.id === activeProfile.id) localSecondProfile = null;
-  loginStatusEl.textContent = `Perfil activo: ${profile.name} / ${profile.team}. ID ${profile.id}`;
+  loginStatusEl.textContent = `${textFor("activeProfile")}: ${profile.name} / ${profile.team}. ID ${profile.id}`;
   syncSetupUi();
 }
 
 function fillSecondPlayerTeam(team) {
   localP2TeamKeyEl.value = team;
-  localP2StatusEl.textContent = `Equipo cargado para jugador 2: ${team}. Ingresa su MFA y valida.`;
+  localP2StatusEl.textContent = textTemplate("player2TeamLoaded", { team });
 }
 
 function authenticateSecondLocalPlayer() {
   localSecondProfile = null;
   if (!activeProfile) {
-    localP2StatusEl.textContent = "Primero registra el jugador 1.";
+    localP2StatusEl.textContent = textFor("registerPlayer1First");
     syncSetupUi();
     return;
   }
   const teamKey = normalizeTeamKey(localP2TeamKeyEl.value);
   const code = localP2CodeEl.value.trim();
   if (!teamKey || code.length < 4) {
-    localP2StatusEl.textContent = "Ingresa el nombre exacto del equipo y su codigo MFA.";
+    localP2StatusEl.textContent = textFor("player2TeamAndMfaRequired");
     syncSetupUi();
     return;
   }
   const registry = loadProfileRegistry();
   const profile = registry[teamKey];
   if (!profile) {
-    localP2StatusEl.textContent = "No se encontro un equipo registrado con ese nombre en este dispositivo.";
+    localP2StatusEl.textContent = textFor("player2TeamNotFound");
     localSecondProfile = null;
     syncSetupUi();
     return;
   }
   if (profile.id === activeProfile?.id) {
-    localP2StatusEl.textContent = "El jugador 2 debe ser un usuario distinto al jugador 1.";
+    localP2StatusEl.textContent = textFor("player2MustDiffer");
     localSecondProfile = null;
     syncSetupUi();
     return;
   }
   if (code.length < 4 || code !== profile.mfaCode) {
-    localP2StatusEl.textContent = "Codigo MFA incorrecto para ese equipo.";
+    localP2StatusEl.textContent = textFor("player2MfaWrong");
     localSecondProfile = null;
     syncSetupUi();
     return;
   }
   localSecondProfile = profile;
-  localP2StatusEl.textContent = `Jugador 2 autenticado: ${profile.name} / ${profile.team}.`;
+  localP2StatusEl.textContent = textTemplate("player2Authenticated", { name: profile.name, team: profile.team });
   syncSetupUi();
 }
 
@@ -4335,13 +5693,13 @@ function syncProfileUi() {
     loginEmailEl.value = activeProfile.email || "";
     loginAddressEl.value = activeProfile.address || "";
     loginCountryEl.value = activeProfile.country || "";
-    loginStatusEl.textContent = `Perfil activo: ${activeProfile.name} / ${activeProfile.team}. ID ${activeProfile.id}`;
+    loginStatusEl.textContent = `${textFor("activeProfile")}: ${activeProfile.name} / ${activeProfile.team}. ID ${activeProfile.id}`;
     profileNameEl.textContent = activeProfile.name;
-    profileRankEl.textContent = `${activeProfile.team} / ${activeProfile.rank}`;
+    profileRankEl.textContent = `${activeProfile.team} / ${profileRankLabel(activeProfile)}`;
     return;
   }
-  profileNameEl.textContent = "Invitado";
-  profileRankEl.textContent = "Rango inicial";
+  profileNameEl.textContent = textFor("guest");
+  profileRankEl.textContent = textFor("initialRank");
 }
 
 function renderRegisteredProfiles() {
@@ -4351,7 +5709,7 @@ function renderRegisteredProfiles() {
   if (!profiles.length) {
     const empty = document.createElement("div");
     empty.className = "registered-profile";
-    empty.textContent = "Todavia no hay equipos registrados.";
+    empty.textContent = textFor("noRegisteredTeams");
     registeredProfilesEl.append(empty);
     return;
   }
@@ -4360,8 +5718,8 @@ function renderRegisteredProfiles() {
     item.className = "registered-profile";
     item.innerHTML = `
       <div><strong>${profile.team}</strong><span> ${profile.name} / ${profile.id}</span></div>
-      <button type="button" data-active-team="${profile.team}">Jugador 1</button>
-      <button type="button" data-second-team="${profile.team}">Jugador 2</button>
+      <button type="button" data-active-team="${profile.team}">${textFor("player1")}</button>
+      <button type="button" data-second-team="${profile.team}">${textFor("player2")}</button>
     `;
     registeredProfilesEl.append(item);
   });
@@ -4378,22 +5736,22 @@ function syncSetupUi() {
   leaguePanelEl.classList.toggle("hidden", !isLeague);
   document.querySelectorAll("[data-mode], [data-ai], [data-formation]").forEach(button => {
     button.disabled = !activeProfile;
-    if (!activeProfile) button.title = "Primero registra usuario.";
-    else if (button.dataset.mode === "local" && registeredCount < 2) button.title = "Selecciona para cargar segundo equipo; no inicia hasta registrar dos.";
+    if (!activeProfile) button.title = textFor("registerUserFirstTitle");
+    else if (button.dataset.mode === "local" && registeredCount < 2) button.title = textFor("localModeNeedsTwoProfilesTitle");
     else button.title = "";
   });
   localP2AuthBtn.disabled = !activeProfile;
-  localP2AuthBtn.title = activeProfile ? "" : "Primero registra el jugador 1.";
+  localP2AuthBtn.title = activeProfile ? "" : textFor("registerPlayer1First");
   document.querySelectorAll("[data-duration]").forEach(button => {
     const missingSecondLocal = setupSelection.mode === "local" && !localSecondProfile;
     button.disabled = !activeProfile || missingSecondLocal || isOnline || isLeague;
-    if (isOnline) button.title = "Online crea o recibe enlace; no inicia cancha directa.";
-    else if (isLeague) button.title = "Liga se configura desde administrador y calendario.";
-    else if (!activeProfile) button.title = "Primero registra usuario.";
+    if (isOnline) button.title = textFor("onlineNoDirectStartTitle");
+    else if (isLeague) button.title = textFor("leagueNoDirectStartTitle");
+    else if (!activeProfile) button.title = textFor("registerUserFirstTitle");
     else if (missingSecondLocal) button.title = registeredCount < 2
-      ? "Registra otro equipo y autenticalo como jugador 2."
-      : "Autentica el jugador 2 por equipo y MFA.";
-    else button.title = "Iniciar partido";
+      ? textFor("localNeedsTwoTeams")
+      : textFor("localNeedsPlayer2Auth");
+    else button.title = textFor("startGameTitle");
   });
   if (startMatchBtn) {
     const missingSecondLocal = setupSelection.mode === "local" && !localSecondProfile;
@@ -4403,23 +5761,23 @@ function syncSetupUi() {
 
 function startConfiguredGame(realMinutes) {
   if (!activeProfile) {
-    loginStatusEl.textContent = "Primero registra el usuario antes de iniciar una partida.";
+    loginStatusEl.textContent = textFor("setupStartNeedsProfile");
     return;
   }
   if (setupSelection.mode === "local" && Object.keys(loadProfileRegistry()).length < 2) {
-    localP2StatusEl.textContent = "Para 1 vs 1 local primero registra al menos dos equipos.";
+    localP2StatusEl.textContent = textFor("localNeedsTwoTeams");
     return;
   }
   if (setupSelection.mode === "local" && !localSecondProfile) {
-    localP2StatusEl.textContent = "Para 1 vs 1 local debe autenticarse el jugador 2 registrado.";
+    localP2StatusEl.textContent = textFor("localNeedsPlayer2Auth");
     return;
   }
   if (setupSelection.mode === "online") {
-    onlineStatusEl.textContent = "Online/enlace no inicia cancha directa: crea o pega un enlace para vincular jugadores.";
+    onlineStatusEl.textContent = textFor("onlineNoDirectStart");
     return;
   }
   if (setupSelection.mode === "league") {
-    leagueStatusEl.textContent = "Liga requiere administrador, equipos registrados, formato y calendario antes de jugar.";
+    leagueStatusEl.textContent = textFor("leagueNoDirectStart");
     return;
   }
   const fixture = currentCompetitionFixture();
@@ -4448,11 +5806,11 @@ function startConfiguredGame(realMinutes) {
 
 function prepareLineupOnField() {
   if (!activeProfile) {
-    loginStatusEl.textContent = "Primero registra el usuario antes de preparar la alineacion.";
+    loginStatusEl.textContent = textFor("setupLineupNeedsProfile");
     return;
   }
   if (setupSelection.mode === "local" && !localSecondProfile) {
-    localP2StatusEl.textContent = "Para preparar 1 vs 1 local autentica tambien el jugador 2.";
+    localP2StatusEl.textContent = textFor("setupLineupLocalNeedsAuth");
     return;
   }
   saveLockerConfiguration();
@@ -4469,7 +5827,7 @@ function prepareLineupOnField() {
   lineupEditing = true;
   setupScreenEl.classList.add("hidden");
   switchAudioScene("match");
-  addLog("Modo alineacion: arrastra los jugadores antes de iniciar el partido.");
+  addLog(textFor("lineupMode"));
   render();
   centerFieldScroll();
   window.setTimeout(() => {
@@ -4592,7 +5950,7 @@ document.querySelectorAll("[data-duration]").forEach(button => {
   button.addEventListener("click", () => {
     setupSelection.realMinutes = Number(button.dataset.duration);
     markSetupSelections();
-    loginStatusEl.textContent = `Duracion seleccionada: ${setupSelection.realMinutes} minutos por tiempo. Primer paso recomendado: entrar al vestuario.`;
+    loginStatusEl.textContent = textTemplate("durationSelected", { minutes: setupSelection.realMinutes });
   });
 });
 
@@ -4630,8 +5988,8 @@ document.querySelectorAll("[data-game-style]").forEach(button => {
     physicalScreenEl?.classList.add("hidden");
     syncScreenChrome();
     switchAudioScene("menu");
-    const styleName = setupSelection.gameStyle === "intensity" ? "DT Intensidad" : "DT Estratega";
-    loginStatusEl.textContent = `${styleName} seleccionado. Ahora registra o elige tus equipos.`;
+    applyLanguage();
+    loginStatusEl.textContent = textTemplate("styleSelected", { style: styleDisplayName() });
   });
 });
 
@@ -4697,27 +6055,31 @@ registeredProfilesEl.addEventListener("click", event => {
 
 createOnlineLinkBtn.addEventListener("click", () => {
   if (!activeProfile) {
-    onlineStatusEl.textContent = "Primero registra el usuario para crear un enlace.";
+    onlineStatusEl.textContent = textFor("onlineNeedsProfile");
     return;
   }
   const link = `dt-digital://partida/${activeProfile.id}-${Date.now().toString(36)}`;
-  onlineStatusEl.textContent = `Enlace creado para compartir: ${link}`;
+  onlineStatusEl.textContent = textTemplate("onlineLinkCreated", { link });
 });
 
 joinOnlineLinkEl.addEventListener("change", () => {
   onlineStatusEl.textContent = joinOnlineLinkEl.value.trim()
-    ? "Enlace recibido. En version online se sincronizaria como 1 vs 1 remoto."
-    : "Pega un enlace recibido para vincular la partida.";
+    ? textFor("onlineLinkReceived")
+    : textFor("onlinePasteLink");
 });
 
 createLeagueBtn.addEventListener("click", () => {
   if (!activeProfile) {
-    leagueStatusEl.textContent = "Primero registra el administrador de la liga.";
+    leagueStatusEl.textContent = textFor("leagueNeedsAdmin");
     return;
   }
-  const name = leagueNameEl.value.trim() || "Liga DT";
+  const name = leagueNameEl.value.trim() || textFor("defaultLeagueName");
   const formatLabel = leagueFormatEl.options[leagueFormatEl.selectedIndex].textContent;
-  leagueStatusEl.textContent = `${name} creada por ${activeProfile.name}. Formato: ${formatLabel}. Proximo paso: invitar equipos y cerrar inscripcion.`;
+  leagueStatusEl.textContent = textTemplate("leagueCreated", {
+    name,
+    admin: activeProfile.name,
+    format: formatLabel
+  });
 });
 
 document.querySelectorAll("[data-role]").forEach(button => {
@@ -4824,22 +6186,27 @@ physicalShowMatchBtn?.addEventListener("click", () => {
     physicalMatchPanelEl?.classList.remove("hidden");
     physicalMatchPanelEl?.scrollIntoView({ behavior: "smooth", block: "start" });
   } else if (physicalStatusEl) {
-    physicalStatusEl.textContent = "Todavia no hay un reloj preparado. Registra equipos y prepara el partido.";
+    physicalStatusEl.textContent = textFor("noPhysicalClockPrepared");
   }
 });
 physicalRegisterTeamBtn?.addEventListener("click", registerPhysicalTeam);
 physicalRegisterOfficialBtn?.addEventListener("click", registerPhysicalOfficial);
+physicalTeamAuthBtn?.addEventListener("click", () => validatePhysicalIdentity("team"));
+physicalOfficialAuthBtn?.addEventListener("click", () => validatePhysicalIdentity("official"));
 physicalGenerateCodeBtn?.addEventListener("click", () => {
   if (physicalCompetitionCodeEl) physicalCompetitionCodeEl.value = makePhysicalCode("COMP");
 });
 physicalCreateCompetitionBtn?.addEventListener("click", createPhysicalCompetition);
+physicalInviteBtn?.addEventListener("click", generatePhysicalInvite);
 physicalPrepareMatchBtn?.addEventListener("click", preparePhysicalMatch);
 document.querySelectorAll("[data-physical-duration]").forEach(button => {
   button.addEventListener("click", () => {
     physicalSupportState.selectedDuration = Number(button.dataset.physicalDuration);
     savePhysicalSupportState();
     updatePhysicalDurationButtons();
-    if (physicalStatusEl) physicalStatusEl.textContent = `Duracion fisica seleccionada: ${physicalSupportState.selectedDuration} minutos por tiempo.`;
+    if (physicalStatusEl) {
+      physicalStatusEl.textContent = textTemplate("physicalDurationSelected", { minutes: physicalSupportState.selectedDuration });
+    }
   });
 });
 physicalGoalHomeBtn?.addEventListener("click", () => addPhysicalGoal("home"));
@@ -4849,6 +6216,7 @@ physicalPauseTimerBtn?.addEventListener("click", pausePhysicalTimer);
 physicalHalfBtn?.addEventListener("click", changePhysicalHalf);
 physicalFinishBtn?.addEventListener("click", finishPhysicalMatch);
 physicalNewMatchBtn?.addEventListener("click", resetPhysicalMatch);
+physicalEvidenceBtn?.addEventListener("click", addPhysicalEvidence);
 
 document.querySelector("#makeChangeBtn").addEventListener("click", () => {
   addLog("Cambio registrado como pendiente para implementar interfaz de sustituciones.");

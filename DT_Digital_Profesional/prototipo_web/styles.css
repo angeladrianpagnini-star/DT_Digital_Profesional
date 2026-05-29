@@ -596,6 +596,26 @@ body:not(.show-language-switch) .language-switch {
   color: var(--muted);
 }
 
+.physical-evidence-control {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.physical-evidence-control input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: #0b1511;
+  color: var(--text);
+}
+
+.physical-evidence-list {
+  margin-top: 10px;
+}
+
 .setup-card {
   width: min(520px, 100%);
   max-height: calc(100vh - 28px);
